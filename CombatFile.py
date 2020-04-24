@@ -234,7 +234,7 @@ class Map(object):  # The main class; where the action happens
         while i <= (currentRoom.gnollCount):
             randRow = random.randint(1, MAPSIZE - 2)
             randColumn = random.randint(1, MAPSIZE - 2)
-            tempTile = Special("Gnoll", "GnollSprite.gif", randColumn, randRow)
+            tempTile = Special("Gnoll", "GameArt/OverworldSprites/GnollSprite.gif", randColumn, randRow)
             grid[randColumn][randRow].append(tempTile)
             if ((randRow in (8, 9)) and (randColumn in (4, 5, 6))) or grid.count(randRow) > 0 or grid.count(
                     randColumn) > 0:
@@ -270,7 +270,7 @@ class Map(object):  # The main class; where the action happens
         grid[5][3].append(tempTile)
 
     if currentRoom == f1:
-        tempTile = Special("Merchant", "MerchSprite.gif", 5, 5)
+        tempTile = Special("Merchant", "GameArt/OverworldSprites/MerchSprite.gif", 5, 5)
         grid[5][5].append(tempTile)
         door = Special("Door", WOOD, 5, 0)
         grid[5][0].append(door)
@@ -1873,26 +1873,26 @@ class Enemy(Fightable):
         # This code is gonna be horrible
         if(self.name == "gnoll"):
             color = randint(1, 3)
-            image = pygame.image.load(self._imageFolder + "/Color{} Gnoll/Body.png".format(color))
-            image.blit(pygame.image.load(self._imageFolder + "/Color{} Gnoll/Head1.png".format(color)), (0, 0))
+            image = pygame.image.load("GameArt/"+self._imageFolder + "/Color{} Gnoll/Body.png".format(color))
+            image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Color{} Gnoll/Head1.png".format(color)), (0, 0))
             mane = randint(1, 2)
-            image.blit(pygame.image.load(self._imageFolder + "/Color{} Gnoll/Mane{}.png".format(color, mane)), (0, 0))
+            image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Color{} Gnoll/Mane{}.png".format(color, mane)), (0, 0))
             chin = randint(1, 2)
             chest = randint(1, 2)
             if chin == 1:
-                image.blit(pygame.image.load(self._imageFolder + "/Markings/Head1Chin.png"), (0, 0))
+                image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Markings/Head1Chin.png"), (0, 0))
             if chest == 1:
-                image.blit(pygame.image.load(self._imageFolder + "/Markings/Chest.png"), (0, 0))
+                image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Markings/Chest.png"), (0, 0))
             if chin == 1 and chest == 1:
-                image.blit(pygame.image.load(self._imageFolder + "/Markings/ChinChestMid.png"), (0, 0))
+                image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Markings/ChinChestMid.png"), (0, 0))
             spots = randint(1, 2)
             if spots == 1:
-                image.blit(pygame.image.load(self._imageFolder + "/Markings/Head1HeadSpots.png"), (0, 0))
+                image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Markings/Head1HeadSpots.png"), (0, 0))
             spots = randint(1, 2)
             if spots == 1:
-                image.blit(pygame.image.load(self._imageFolder + "/Markings/Spots1.png"), (0, 0))
+                image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Markings/Spots1.png"), (0, 0))
             else:
-                image.blit(pygame.image.load(self._imageFolder + "/Markings/Spots2.png"), (0, 0))
+                image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Markings/Spots2.png"), (0, 0))
 
 
 
