@@ -3,8 +3,9 @@ import pygame
 
 pygame.init()                                 #start up dat pygame
 clock = pygame.time.Clock()                   #for framerate or something? still not very sure
-screen = pygame.display.set_mode([716, 716])  #making the window
-Done = False                                  #variable to keep track if window is open
+WIDTH = 716
+HEIGHT = 716
+screen = pygame.display.set_mode([WIDTH, HEIGHT])  #making the window                               
 MAPSIZE = 11                                  #how many tiles in either direction of grid
 
 TILEWIDTH = 64                                #pixel sizes for grid squares
@@ -98,20 +99,21 @@ class SpecialFloor(Floor):
     @property
     def merchant(self):
         return self._merchant
-    merchant.setter
+    @merchant.setter
     def merchant(self, value):
         self._merchant = value
                 
 class Special(object):                       #The main class for stationary things that inhabit the grid ... grass, trees, rocks and stuff.
-    def __init__(self, name, column, row):
+    def __init__(self, name, image, column, row):
         self.name = name
+        self.image = image
         self.column = column
         self.row = row
 
 
 class Player(Special):                      #The player 
-    def __init__(self, name, column, row):
-        Special.__init__(self, name, column, row)       
+    def __init__(self, name, image, column, row):
+        Special.__init__(self, name, image, column, row)       
 
     def move(self, direction):              #This function is how a character moves around in a certain direction
         
@@ -149,6 +151,33 @@ class Player(Special):                      #The player
     def location(self):
         print("Coordinates: " + str(self.column) + ", " + str(self.row))
 
+class Item(object):
+    def __init__(self, name, attack, armor, weight, price):
+        self.name = name
+        self.attack = attack
+        self.armor = armor
+        self.weight = weight
+        self.price = price
+
+
+class Inventory(object):    
+    def __init__(self):
+        self.items = {}
+
+    def add_item(self, item):
+        self.items[item.name] = item
+
+    def print_items(self):
+        print('\t'.join(['Name', 'Atk', 'Arm', 'Lb', 'Val']))
+        for item in self.items.values():
+            print('\t'.join([str(x) for x in [item.name, item.attack, item.armor, item.weight, item.price]]))
+
+
+##inventory = Inventory()
+##inventory.add_item(Item('Sword', 5, 1, 15, 2))
+##inventory.add_item(Item('Armor', 0, 10, 25, 5))
+##print(inventory)
+
 class Map(object):              #The main class; where the action happens
 
     f1 = SpecialFloor("Floor 1", 0, 0, 1)
@@ -165,12 +194,12 @@ class Map(object):              #The main class; where the action happens
     f12 = FightFloor("Floor 3", 5, 0, 0, 7)
     f13 = SpecialFloor("Floor 1", 0, 0, 1)
 
-    currentRoom = f5
+    currentRoom = f4
     
     global MAPSIZE
     grid = []
 
-    hero = Player("Hero", 5, MAPSIZE - 2)
+    hero = Player("Hero", GREEN, 5, MAPSIZE - 2)
             
     for row in range(MAPSIZE):                  # Creating grid
         grid.append([])
@@ -179,12 +208,12 @@ class Map(object):              #The main class; where the action happens
 
     for row in range(MAPSIZE):                  #Filling grid with the ground
         for column in range(MAPSIZE):
-             tempTile = Special("Ground", column, row)
+             tempTile = Special("Ground", WHITE, column, row)
              grid[column][row].append(tempTile)
 
     for row in range(MAPSIZE):                  #Adding walls
         for column in range(MAPSIZE):
-             tempTile = Special("Wall", column, row)
+             tempTile = Special("Wall", RED, column, row)
              if row == 0 or row == (MAPSIZE - 1) or column == 0 or column == (MAPSIZE - 1):
                  grid[column][row].append(tempTile)
                  
@@ -193,7 +222,7 @@ class Map(object):              #The main class; where the action happens
         while i <= (currentRoom.hillCount):                               
             randRow = random.randint(1, MAPSIZE - 2)
             randColumn = random.randint(1, MAPSIZE - 2)
-            tempTile = Special("Hill Giant", randColumn, randRow)
+            tempTile = Special("Hill Giant", BLUE, randColumn, randRow)
             grid[randColumn][randRow].append(tempTile)
             if ((randRow in (8, 9)) and (randColumn in (4, 5, 6))) or (grid.count(randRow) > 0 and grid.count(randColumn) > 0):
                 grid[randColumn][randRow].remove(tempTile)
@@ -204,7 +233,7 @@ class Map(object):              #The main class; where the action happens
         while i <= (currentRoom.gnollCount):                               
             randRow = random.randint(1, MAPSIZE - 2)
             randColumn = random.randint(1, MAPSIZE - 2)
-            tempTile = Special("Gnoll", randColumn, randRow)
+            tempTile = Special("Gnoll", "GameArt\OverworldSprites\GnollSprite.gif", randColumn, randRow)
             grid[randColumn][randRow].append(tempTile)
             if ((randRow in (8, 9)) and (randColumn in (4, 5, 6))) or grid.count(randRow) > 0 or grid.count(randColumn) > 0:
                 grid[randColumn][randRow].remove(tempTile)
@@ -215,85 +244,62 @@ class Map(object):              #The main class; where the action happens
         while i <= (currentRoom.flindCount):                               
             randRow = random.randint(1, MAPSIZE - 2)
             randColumn = random.randint(1, MAPSIZE - 2)
-            tempTile = Special("Flind", randColumn, randRow)
+            tempTile = Special("Flind", RUST, randColumn, randRow)
             grid[randColumn][randRow].append(tempTile)
             if ((randRow in (8, 9)) and (randColumn in (4, 5, 6))) or grid.count(randRow) > 0 or grid.count(randColumn) > 0:
                 grid[randColumn][randRow].remove(tempTile)
             else:
                 i += 1
     if currentRoom == f5:
-        tempTile = Special("Healer", 3, 6)
+        tempTile = Special("Healer", PINK, 3, 6)
         grid[3][6].append(tempTile)
-        tempTile = Special("Mage", 7, 6)
+        tempTile = Special("Mage", PINK, 7, 6)
         grid[7][6].append(tempTile)
-        tempTile = Special("Mini1", 5, 3)
+        tempTile = Special("Mini1", MAGENTA, 5, 3)
         grid[5][3].append(tempTile)
 
     if currentRoom == f9:
-        tempTile = Special("Fighter", 3, 6)
+        tempTile = Special("Fighter", PINK, 3, 6)
         grid[3][6].append(tempTile)
-        tempTile = Special("Rouge", 7, 6)
+        tempTile = Special("Rouge", PINK, 7, 6)
         grid[7][6].append(tempTile)
-        tempTile = Special("Mini2", 5, 3)
+        tempTile = Special("Mini2", ORANGE, 5, 3)
         grid[5][3].append(tempTile)
 
     if currentRoom == f1:
-        tempTile = Special("Merchant", 5, 5)
+        tempTile = Special("Merchant", "MerchantSprite.gif", 5, 5)
         grid[5][5].append(tempTile)
         door = Special("Door", 5, 0)
         grid[5][0].append(door)
 
     if currentRoom == f13:
-        tempTile = Special("Boss", 5, 5)
+        tempTile = Special("Boss", LIME, 5, 5)
         grid[5][5].append(tempTile)
 
     def draw(self):
         screen.fill(BLACK)
         for row in range(MAPSIZE):           # Drawing grid
             for column in range(MAPSIZE):
+                who = None
                 for i in range(0, len(Map.grid[column][row])):
                     color = WHITE
-                    if Map.grid[column][row][i].name == "Hill Giant":
-                        color = BLUE
-                    if Map.grid[column][row][i].name == "Gnoll":
-                        color = GBLUE
-                    if Map.grid[column][row][i].name == "Flind":
-                        color = RUST
-                    if Map.grid[column][row][i].name == "Healer":
-                        color = PINK
-                    if Map.grid[column][row][i].name == "Mage":
-                        color = TAN
-                    if Map.grid[column][row][i].name == "Mini1":
-                        color = MAGENTA
-                    if Map.grid[column][row][i].name == "Fighter":
-                        color = GRAY
-                    if Map.grid[column][row][i].name == "Rouge":
-                        color = PURPLE
-                    if Map.grid[column][row][i].name == "Mini2":
-                        color = ORANGE
-                    if Map.grid[column][row][i].name == "Wall":
-                        color = RED
-                    if Map.grid[column][row][i].name == "Hero":
-                        color = GREEN
-                    if Map.grid[column][row][i].name == "Merchant":
-                        color = BROWN
-                    if Map.grid[column][row][i].name == "Boss":
-                        color = LIME
-                    if Map.grid[column][row][i].name == "Door":
-                        color = WOOD
+                    if not isinstance(Map.grid[column][row][i].image, str):
+                        color = Map.grid[column][row][i].image
+                    else:
+                        who = Map.grid[column][row][i]
     
 
-                pygame.draw.rect(screen, color, [(TILEWIDTH + TILEMARGIN) * column + TILEMARGIN,
-                                                 (TILEHEIGHT + TILEMARGIN) * row + TILEMARGIN,
-                                                 TILEWIDTH,
-                                                 TILEHEIGHT])
+                recta = pygame.draw.rect(screen, color, [(TILEWIDTH + TILEMARGIN) * column + TILEMARGIN,
+                                                         (TILEHEIGHT + TILEMARGIN) * row + TILEMARGIN,
+                                                         TILEWIDTH,
+                                                         TILEHEIGHT])
 
-    def update(self):        #Very important function
-                             #This function goes through the entire grid
-                             #And checks to see if any object's internal coordinates
-                             #Disagree with its current position in the grid
-                             #If they do, it removes the objects and places it 
-                             #on the grid according to its internal coordinates 
+    def update(self):#Very important function
+    #This function goes through the entire grid
+    #And checks to see if any object's internal coordinates
+    #Disagree with its current position in the grid
+    #If they do, it removes the objects and places it 
+    #on the grid according to its internal coordinates 
 
         for column in range(MAPSIZE):      
             for row in range(MAPSIZE):
@@ -304,36 +310,83 @@ class Map(object):              #The main class; where the action happens
                         Map.grid[column][row].remove(Map.grid[column][row][i])
         Map.grid[int(Map.hero.column)][int(Map.hero.row)].append(Map.hero)    
 
+def text_format(message, textFont, textSize, textColor):
+    newFont=pygame.font.Font(textFont, textSize)
+    newText=newFont.render(message, 0, textColor)
+
+    return newText
+
 Map = Map()
 
-while not Done:     #Main pygame loop
-    Map.draw()
-    for event in pygame.event.get():        #catching events
-        if event.type == pygame.QUIT:
-            Done = True
+def game():
+    Done = False
+    
+    while not Done:     #Main pygame loop
 
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            Pos = pygame.mouse.get_pos()
-            Column = Pos[0] // (TILEWIDTH + TILEMARGIN)  #Translating the position of the mouse into rows and columns
-            Row = Pos[1] // (TILEHEIGHT + TILEMARGIN)
-            print(str(Row) + ", " + str(Column))
+        menu = True
+        font = "Retro.ttf"
+        selected = "start"
+        
+        while menu:
+            for event in pygame.event.get():
+                if event.type==pygame.QUIT:
+                    Done = True
+                if event.type==pygame.KEYDOWN:
+                    if event.key==pygame.K_UP:
+                        selected="start"
+                    elif event.key==pygame.K_DOWN:
+                        selected="quit"
+                    if event.key==pygame.K_RETURN:
+                        if selected=="start":
+                            menu = False
+                            Map = True
+                        if selected=="quit":
+                            pygame.quit()
+                            quit()
 
-            for i in range(len(Map.grid[Column][Row])):
-                print(str(Map.grid[Column][Row][i].name))  #print stuff that inhabits that square
+            # Main Menu UI
+            screen.fill(BLUE)
+            title=text_format("The Tower", font, 90, GREEN)
+            if selected=="start":
+                text_start=text_format("START", font, 75, WHITE)
+            else:
+                text_start = text_format("START", font, 75, BLACK)
+            if selected=="quit":
+                text_quit=text_format("QUIT", font, 75, WHITE)
+            else:
+                text_quit = text_format("QUIT", font, 75, BLACK)
 
-        elif event.type == pygame.KEYDOWN:
-            KeyLookup = {
-                pygame.K_LEFT: "LEFT",
-                pygame.K_RIGHT: "RIGHT",
-                pygame.K_DOWN: "DOWN",
-                pygame.K_UP: "UP"
-            }
-            Map.hero.move(KeyLookup.get(event.key))
+            title_rect=title.get_rect()
+            start_rect=text_start.get_rect()
+            quit_rect=text_quit.get_rect()
+
+            # Main Menu Text
+            screen.blit(title, (WIDTH/2 - (title_rect[2]/2), 80))
+            screen.blit(text_start, (WIDTH/2 - (start_rect[2]/2), 300))
+            screen.blit(text_quit, (WIDTH/2 - (quit_rect[2]/2), 360))
+            pygame.display.update()
+            clock.tick(60)
+            pygame.display.set_caption("Python - Pygame Simple Main Menu Selection")
+
+        while Map:
+            for event in pygame.event.get():        #catching events
+                if event.type == pygame.QUIT:
+                    Done = True    
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        Map.hero.move("LEFT")
+                    if event.key == pygame.K_RIGHT:
+                        Map.hero.move("RIGHT")
+                    if event.key == pygame.K_UP:
+                        Map.hero.move("UP")
+                    if event.key == pygame.K_DOWN:
+                        Map.hero.move("DOWN")
 
 
-    clock.tick(60)      #Limit to 60 fps or something
-    pygame.display.flip()     #Honestly not sure what this does, but it breaks if I remove it
-    Map.update()
+            clock.tick(60)      #Limit to 60 fps or something
+            pygame.display.flip()     #Honestly not sure what this does, but it breaks if I remove it
+            Map.update()
 
-
+game()
 pygame.quit()
+quit()

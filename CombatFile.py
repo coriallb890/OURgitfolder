@@ -4,7 +4,9 @@ import pygame
 
 pygame.init()  # start up dat pygame
 clock = pygame.time.Clock()  # for framerate or something? still not very sure
-screen = pygame.display.set_mode([716, 716])  # making the window
+WIDTH = 716
+HEIGHT = 716
+screen = pygame.display.set_mode([WIDTH, HEIGHT])  # making the window
 Done = False  # variable to keep track if window is open
 MAPSIZE = 11  # how many tiles in either direction of grid
 
@@ -109,7 +111,7 @@ class SpecialFloor(Floor):
     def merchant(self):
         return self._merchant
 
-    merchant.setter
+    @merchant.setter
 
     def merchant(self, value):
         self._merchant = value
@@ -234,7 +236,7 @@ class Map(object):  # The main class; where the action happens
         while i <= (currentRoom.gnollCount):
             randRow = random.randint(1, MAPSIZE - 2)
             randColumn = random.randint(1, MAPSIZE - 2)
-            tempTile = Special("Gnoll", "GameArt/OverworldSprites/GnollSprite.gif", randColumn, randRow)
+            tempTile = Special("Gnoll", "GameArt\OverworldSprites\GnollSprite.gif", randColumn, randRow)
             grid[randColumn][randRow].append(tempTile)
             if ((randRow in (8, 9)) and (randColumn in (4, 5, 6))) or grid.count(randRow) > 0 or grid.count(
                     randColumn) > 0:
@@ -270,7 +272,7 @@ class Map(object):  # The main class; where the action happens
         grid[5][3].append(tempTile)
 
     if currentRoom == f1:
-        tempTile = Special("Merchant", "GameArt/OverworldSprites/MerchSprite.gif", 5, 5)
+        tempTile = Special("Merchant", "GameArt\OverworldSprites\MerchSprite.gif", 5, 5)
         grid[5][5].append(tempTile)
         door = Special("Door", WOOD, 5, 0)
         grid[5][0].append(door)
@@ -1873,26 +1875,26 @@ class Enemy(Fightable):
         # This code is gonna be horrible
         if(self.name == "gnoll"):
             color = randint(1, 3)
-            image = pygame.image.load("GameArt/"+self._imageFolder + "/Color{} Gnoll/Body.png".format(color))
-            image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Color{} Gnoll/Head1.png".format(color)), (0, 0))
+            image = pygame.image.load("GameArt\Gnoll\Color{} Gnoll\Body.png".format(color))
+            image.blit(pygame.image.load("GameArt\Gnoll\Color{} Gnoll\Head1.png".format(color)), (0, 0))
             mane = randint(1, 2)
-            image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Color{} Gnoll/Mane{}.png".format(color, mane)), (0, 0))
+            image.blit(pygame.image.load("GameArt\Gnoll\Color{} Gnoll\Mane{}.png".format(color, mane)), (0, 0))
             chin = randint(1, 2)
             chest = randint(1, 2)
             if chin == 1:
-                image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Markings/Head1Chin.png"), (0, 0))
+                image.blit(pygame.image.load("GameArt\Gnoll\Markings\Head1Chin.png"), (0, 0))
             if chest == 1:
-                image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Markings/Chest.png"), (0, 0))
+                image.blit(pygame.image.load("GameArt\Gnoll\Markings\Chest.png"), (0, 0))
             if chin == 1 and chest == 1:
-                image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Markings/ChinChestMid.png"), (0, 0))
+                image.blit(pygame.image.load("GameArt\Gnoll\Markings\ChinChestMid.png"), (0, 0))
             spots = randint(1, 2)
             if spots == 1:
-                image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Markings/Head1HeadSpots.png"), (0, 0))
+                image.blit(pygame.image.load("GameArt\Gnoll\Markings\Head1HeadSpots.png"), (0, 0))
             spots = randint(1, 2)
             if spots == 1:
-                image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Markings/Spots1.png"), (0, 0))
+                image.blit(pygame.image.load("GameArt\Gnoll\Markings\Spots1.png"), (0, 0))
             else:
-                image.blit(pygame.image.load("GameArt/"+self._imageFolder + "/Markings/Spots2.png"), (0, 0))
+                image.blit(pygame.image.load("GameArt\Gnoll\Markings\Spots2.png"), (0, 0))
 
 
 
@@ -1928,15 +1930,15 @@ while not Done:  # Main pygame loop
             Done = True
 
         elif event.type == pygame.KEYDOWN:
-            KeyLookup = {
-                pygame.K_LEFT: "LEFT",
-                pygame.K_RIGHT: "RIGHT",
-                pygame.K_DOWN: "DOWN",
-                pygame.K_UP: "UP",
-                pygame.K_KP_ENTER: "ENTER"
-            }
-            cont = Map.hero.move(KeyLookup.get(event.key))
-            if cont == -9:
+            if event.key == pygame.K_LEFT:
+                Map.hero.move("LEFT")
+            if event.key == pygame.K_RIGHT:
+                Map.hero.move("RIGHT")
+            if event.key == pygame.K_UP:
+                Map.hero.move("UP")
+            if event.key == pygame.K_DOWN:
+                Map.hero.move("DOWN")
+            if event.key == pygame.K_RETURN:
                 Done = True
 
     clock.tick(60)  # Limit to 60 fps or something
