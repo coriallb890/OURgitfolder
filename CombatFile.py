@@ -201,7 +201,7 @@ class Map(object):  # The main class; where the action happens
     global MAPSIZE
     grid = []
 
-    hero = Player("Hero", GREEN, 5, MAPSIZE - 2, 0)
+    hero = Player("Hero", "GameArt\OverworldSprites\PlayerSpriteTemp.png", 5, MAPSIZE - 2, 0)
 
     for row in range(MAPSIZE):  # Creating grid
         grid.append([])
@@ -210,12 +210,12 @@ class Map(object):  # The main class; where the action happens
 
     for row in range(MAPSIZE):  # Filling grid with the ground
         for column in range(MAPSIZE):
-            tempTile = Special("Ground", WHITE, column, row)
+            tempTile = Special("Ground", "GameArt\MapTiles\ground.png", column, row)
             grid[column][row].append(tempTile)
 
     for row in range(MAPSIZE):  # Adding walls
         for column in range(MAPSIZE):
-            tempTile = Special("Wall", RED, column, row)
+            tempTile = Special("Wall", "GameArt\MapTiles\wall.png", column, row)
             if row == 0 or row == (MAPSIZE - 1) or column == 0 or column == (MAPSIZE - 1):
                 grid[column][row].append(tempTile)
 
@@ -224,7 +224,7 @@ class Map(object):  # The main class; where the action happens
         while i <= (currentRoom.hillCount):
             randRow = random.randint(1, MAPSIZE - 2)
             randColumn = random.randint(1, MAPSIZE - 2)
-            tempTile = Special("Hill Giant", BLUE, randColumn, randRow)
+            tempTile = Special("Hill Giant", "GameArt\OverworldSprites\GiantSpriteTemp.gif", randColumn, randRow)
             grid[randColumn][randRow].append(tempTile)
             if ((randRow in (8, 9)) and (randColumn in (4, 5, 6))) or (
                     grid.count(randRow) > 0 and grid.count(randColumn) > 0):
@@ -532,9 +532,10 @@ class Gender:
 
 
 class Item(object):
-    def __init__(self, name, cost, value):
+    def __init__(self, name, cost, grade):
         self._name = name
         self._cost = cost
+        self._grade = grade
 
     @property
     def name(self):
@@ -553,17 +554,17 @@ class Item(object):
         self._cost = value
 
     @property
-    def value(self):
-        return self._value
+    def grade(self):
+        return self._grade
 
-    @value.setter
-    def value(self, value):
-        self._value = value
+    @grade.setter
+    def grade(self, value):
+        self._grade = value
 
 
 class Weapon(Item):
-    def __init__(self, name, cost, value, fight, rang, accuracy, consistency, critRate):
-        super(Weapon, self).__init__(name, cost, value)
+    def __init__(self, name, cost, grade, fight, rang, accuracy, consistency, critRate):
+        super(Weapon, self).__init__(name, cost, grade)
         self._fight = fight
         self._range = rang
         self._accuracy = accuracy
@@ -612,8 +613,8 @@ class Weapon(Item):
 
 
 class Armor(Item):
-    def __init__(self, name, cost, value, defense, durabillity):
-        super(Armor, self).__init__(name, cost, value)
+    def __init__(self, name, cost, grade, defense, durabillity):
+        super(Armor, self).__init__(name, cost, grade)
         self._defense = defense
         self._durabillity = durabillity
 
