@@ -112,7 +112,6 @@ class SpecialFloor(Floor):
         return self._merchant
 
     @merchant.setter
-
     def merchant(self, value):
         self._merchant = value
 
@@ -293,14 +292,16 @@ class Map(object):  # The main class; where the action happens
                     else:
                         who = Map.grid[column][row][i]
 
-                recta = pygame.draw.rect(screen, color, [(TILEWIDTH + TILEMARGIN) * column + TILEMARGIN,
+                if who is not None:
+                    img = pygame.image.load("GameArt\MapTiles\ground.png")
+                    img.blit(pygame.image.load(who.image), (0, 0))
+                    screen.blit(img, ((TILEWIDTH + TILEMARGIN) * column + TILEMARGIN,
+                                      (TILEHEIGHT + TILEMARGIN) * row + TILEMARGIN))
+                else:
+                    recta = pygame.draw.rect(screen, color, [(TILEWIDTH + TILEMARGIN) * column + TILEMARGIN,
                                                          (TILEHEIGHT + TILEMARGIN) * row + TILEMARGIN,
                                                          TILEWIDTH,
                                                          TILEHEIGHT])
-                if who is not None:
-                    img = pygame.image.load(who.image)
-                    screen.blit(img, ((TILEWIDTH + TILEMARGIN) * column + TILEMARGIN,
-                                      (TILEHEIGHT + TILEMARGIN) * row + TILEMARGIN))
 
     def update(self):  # Very important function
         # This function goes through the entire grid
@@ -1332,10 +1333,10 @@ class Fightable(object):
         while Fightable.totalHealth(heroes) > 0 and Fightable.totalHealth(enemies) > 0:
             while True:
                 screen.fill(BLACK)  # 4 sets of 165
-                starty = 150 - (len(coordinates[0])-1)*35
+                starty = 150 - (len(coordinates[0]) - 1) * 35
                 for x in range(0, len(coordinates[0])):
                     pygame.draw.rect(screen, WHITE,
-                                     [157 + ((x % 2) * 50), ((len(coordinates[0]) - x) * 125)+starty, 400,
+                                     [157 + ((x % 2) * 50), ((len(coordinates[0]) - x) * 125) + starty, 400,
                                       100])
                 font = pygame.font.SysFont('Arial', 25)
                 pygame.draw.rect(screen, WHITE, [35, 0, 216, 100])
@@ -1793,11 +1794,12 @@ class Hero(Fightable):
 
     def blurtStats(self, font, coords):
         screen.blit(font.render(self.name + " | " + self.caste, True, (255, 0, 0)), coords)
-        screen.blit(font.render("{}/{} HP".format(self.health, self.maxHealth), True, (255, 0, 0)), (coords[0], coords[1]+30))
+        screen.blit(font.render("{}/{} HP".format(self.health, self.maxHealth), True, (255, 0, 0)),
+                    (coords[0], coords[1] + 30))
         string = ""
         for x in self.statusEffects:
             string += x.name[0]
-        screen.blit(font.render(string, True, (255, 0, 0)), (coords[0], coords[1]+60))
+        screen.blit(font.render(string, True, (255, 0, 0)), (coords[0], coords[1] + 60))
 
     def __str__(self):
         string = self.name + ", " + self.caste + "\n"
@@ -1874,7 +1876,7 @@ class Enemy(Fightable):
 
     def generateImage(self):
         # This code is gonna be horrible
-        if(self.name == "gnoll"):
+        if (self.name == "gnoll"):
             color = randint(1, 3)
             image = pygame.image.load("GameArt\Gnoll\Color{} Gnoll\Body.png".format(color))
             image.blit(pygame.image.load("GameArt\Gnoll\Color{} Gnoll\Head1.png".format(color)), (0, 0))
@@ -1896,8 +1898,6 @@ class Enemy(Fightable):
                 image.blit(pygame.image.load("GameArt\Gnoll\Markings\Spots1.png"), (0, 0))
             else:
                 image.blit(pygame.image.load("GameArt\Gnoll\Markings\Spots2.png"), (0, 0))
-
-
 
             image = pygame.transform.scale(image, (175, 280))
             return image
@@ -1953,6 +1953,8 @@ test = Hero("Valor", [], [
     [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, Weapon("Wooden Sword", 0, 0, 1, 1, 90, 2, 5),
             Armor("Common Clothes", 0, 0, 1, 500000000))
 
-Fightable.combat([test, test, test], [enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest])
+Fightable.combat([test, test, test],
+                 [enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest,
+                  enemyTest, enemyTest])
 
 pygame.quit()
