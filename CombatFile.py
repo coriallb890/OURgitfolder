@@ -200,7 +200,7 @@ class Map(object):  # The main class; where the action happens
     global MAPSIZE
     grid = []
 
-    hero = Player("Hero", "GameArt\OverworldSprites\PlayerSpriteTemp.png", 5, MAPSIZE - 2, 0)
+    hero = Player("Hero", "GameArt\OverworldSprites\GiantSpriteTemp.gif", 5, MAPSIZE - 2, 0)
 
     for row in range(MAPSIZE):  # Creating grid
         grid.append([])
@@ -1924,37 +1924,100 @@ class Enemy(Fightable):
 
 Map = Map()
 
-while not Done:  # Main pygame loop
+def text_format(message, textFont, textSize, textColor):
+    newFont=pygame.font.Font(textFont, textSize)
+    newText=newFont.render(message, 0, textColor)
+
+    return newText
+
+def menu():
+    
+    font = "Retro.ttf"
+    selected = "start"
+    menu = True
+
+    while menu:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type==pygame.KEYDOWN:
+                if event.key==pygame.K_UP:
+                    selected="start"
+                elif event.key==pygame.K_DOWN:
+                    selected="quit"
+                if event.key==pygame.K_RETURN:
+                    if selected=="start":
+                        gameMap()
+                        return
+                    if selected=="quit":
+                        pygame.quit()
+                        quit()
+
+        # Main Menu UI
+        screen.fill(BLUE)
+        title=text_format("The Tower", font, 90, GREEN)
+        if selected=="start":
+            text_start=text_format("START", font, 75, WHITE)
+        else:
+            text_start = text_format("START", font, 75, BLACK)
+        if selected=="quit":
+            text_quit=text_format("QUIT", font, 75, WHITE)
+        else:
+            text_quit = text_format("QUIT", font, 75, BLACK)
+
+        title_rect=title.get_rect()
+        start_rect=text_start.get_rect()
+        quit_rect=text_quit.get_rect()
+
+        # Main Menu Text
+        screen.blit(title, (WIDTH/2 - (title_rect[2]/2), 80))
+        screen.blit(text_start, (WIDTH/2 - (start_rect[2]/2), 300))
+        screen.blit(text_quit, (WIDTH/2 - (quit_rect[2]/2), 360))
+        pygame.display.update()
+        clock.tick(60)
+        pygame.display.set_caption("Python - Pygame Simple Main Menu Selection")
+
+
+    
+def gameMap():
+    
     Map.draw()
-    for event in pygame.event.get():  # catching events
-        if event.type == pygame.QUIT:
-            Done = True
+    gameMap = True
+    
+    while gameMap:
+        for event in pygame.event.get():        #catching events
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    Map.hero.move("LEFT")
+                if event.key == pygame.K_RIGHT:
+                    Map.hero.move("RIGHT")
+                if event.key == pygame.K_UP:
+                    Map.hero.move("UP")
+                if event.key == pygame.K_DOWN:
+                    Map.hero.move("DOWN")
+                if event.key == pygame.K_RETURN:
+                    return
 
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                Map.hero.move("LEFT")
-            if event.key == pygame.K_RIGHT:
-                Map.hero.move("RIGHT")
-            if event.key == pygame.K_UP:
-                Map.hero.move("UP")
-            if event.key == pygame.K_DOWN:
-                Map.hero.move("DOWN")
-            if event.key == pygame.K_RETURN:
-                Done = True
 
-    clock.tick(60)  # Limit to 60 fps or something
-    pygame.display.flip()  # Honestly not sure what this does, but it breaks if I remove it
-    Map.update()
-enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "", 15, 4, 2, 2, [], [], 1, "Gnoll")
-test = Hero("Valor", [], [
-    [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
-    [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
-    [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
-    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, Weapon("Wooden Sword", 0, 0, 1, 1, 90, 2, 5),
-            Armor("Common Clothes", 0, 0, 1, 500000000))
+        clock.tick(60)      #Limit to 60 fps or something
+        pygame.display.flip()     #Honestly not sure what this does, but it breaks if I remove it
+        Map.update()
+        
+##enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "", 15, 4, 2, 2, [], [], 1, "Gnoll")
+##test = Hero("Valor", [], [
+##    [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
+##    [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
+##    [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
+##    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, Weapon("Wooden Sword", 0, 0, 1, 1, 90, 2, 5),
+##            Armor("Common Clothes", 0, 0, 1, 500000000))
+##
+##Fightable.combat([test, test, test],
+##                 [enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest,
+##                  enemyTest, enemyTest])
 
-Fightable.combat([test, test, test],
-                 [enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest,
-                  enemyTest, enemyTest])
-
+menu()
 pygame.quit()

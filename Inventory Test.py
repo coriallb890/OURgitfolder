@@ -318,75 +318,79 @@ def text_format(message, textFont, textSize, textColor):
 
 Map = Map()
 
-def game():
-    Done = False
+def menu():
     
-    while not Done:     #Main pygame loop
+    font = "Retro.ttf"
+    selected = "start"
+    menu = True
 
-        menu = True
-        font = "Retro.ttf"
-        selected = "start"
-        
-        while menu:
-            for event in pygame.event.get():
-                if event.type==pygame.QUIT:
-                    Done = True
-                if event.type==pygame.KEYDOWN:
-                    if event.key==pygame.K_UP:
-                        selected="start"
-                    elif event.key==pygame.K_DOWN:
-                        selected="quit"
-                    if event.key==pygame.K_RETURN:
-                        if selected=="start":
-                            menu = False
-                            Map = True
-                        if selected=="quit":
-                            pygame.quit()
-                            quit()
+    while menu:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type==pygame.KEYDOWN:
+                if event.key==pygame.K_UP:
+                    selected="start"
+                elif event.key==pygame.K_DOWN:
+                    selected="quit"
+                if event.key==pygame.K_RETURN:
+                    if selected=="start":
+                        gameMap()
+                        return
+                    if selected=="quit":
+                        pygame.quit()
+                        quit()
 
-            # Main Menu UI
-            screen.fill(BLUE)
-            title=text_format("The Tower", font, 90, GREEN)
-            if selected=="start":
-                text_start=text_format("START", font, 75, WHITE)
-            else:
-                text_start = text_format("START", font, 75, BLACK)
-            if selected=="quit":
-                text_quit=text_format("QUIT", font, 75, WHITE)
-            else:
-                text_quit = text_format("QUIT", font, 75, BLACK)
+        # Main Menu UI
+        screen.fill(BLUE)
+        title=text_format("The Tower", font, 90, GREEN)
+        if selected=="start":
+            text_start=text_format("START", font, 75, WHITE)
+        else:
+            text_start = text_format("START", font, 75, BLACK)
+        if selected=="quit":
+            text_quit=text_format("QUIT", font, 75, WHITE)
+        else:
+            text_quit = text_format("QUIT", font, 75, BLACK)
 
-            title_rect=title.get_rect()
-            start_rect=text_start.get_rect()
-            quit_rect=text_quit.get_rect()
+        title_rect=title.get_rect()
+        start_rect=text_start.get_rect()
+        quit_rect=text_quit.get_rect()
 
-            # Main Menu Text
-            screen.blit(title, (WIDTH/2 - (title_rect[2]/2), 80))
-            screen.blit(text_start, (WIDTH/2 - (start_rect[2]/2), 300))
-            screen.blit(text_quit, (WIDTH/2 - (quit_rect[2]/2), 360))
-            pygame.display.update()
-            clock.tick(60)
-            pygame.display.set_caption("Python - Pygame Simple Main Menu Selection")
-
-        while Map:
-            for event in pygame.event.get():        #catching events
-                if event.type == pygame.QUIT:
-                    Done = True    
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        Map.hero.move("LEFT")
-                    if event.key == pygame.K_RIGHT:
-                        Map.hero.move("RIGHT")
-                    if event.key == pygame.K_UP:
-                        Map.hero.move("UP")
-                    if event.key == pygame.K_DOWN:
-                        Map.hero.move("DOWN")
+        # Main Menu Text
+        screen.blit(title, (WIDTH/2 - (title_rect[2]/2), 80))
+        screen.blit(text_start, (WIDTH/2 - (start_rect[2]/2), 300))
+        screen.blit(text_quit, (WIDTH/2 - (quit_rect[2]/2), 360))
+        pygame.display.update()
+        clock.tick(60)
+        pygame.display.set_caption("Python - Pygame Simple Main Menu Selection")
 
 
-            clock.tick(60)      #Limit to 60 fps or something
-            pygame.display.flip()     #Honestly not sure what this does, but it breaks if I remove it
-            Map.update()
+    
+def gameMap():
+    Map.draw()
+    map = True
+    while map:
+        for event in pygame.event.get():        #catching events
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    Map.hero.move("LEFT")
+                if event.key == pygame.K_RIGHT:
+                    Map.hero.move("RIGHT")
+                if event.key == pygame.K_UP:
+                    Map.hero.move("UP")
+                if event.key == pygame.K_DOWN:
+                    Map.hero.move("DOWN")
 
-game()
+
+        clock.tick(60)      #Limit to 60 fps or something
+        pygame.display.flip()     #Honestly not sure what this does, but it breaks if I remove it
+        Map.update()
+
+menu()
 pygame.quit()
 quit()
