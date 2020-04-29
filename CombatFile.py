@@ -200,7 +200,7 @@ class Map(object):  # The main class; where the action happens
     global MAPSIZE
     grid = []
 
-    hero = Player("Hero", "GameArt\OverworldSprites\GiantSpriteTemp.gif", 5, MAPSIZE - 2, 0)
+    hero = Player("Hero", "GameArt\OverworldSprites\PlayerSpriteTemp.gif", 5, MAPSIZE - 2, 0)
 
     for row in range(MAPSIZE):  # Creating grid
         grid.append([])
@@ -1981,11 +1981,11 @@ def menu():
 
     
 def gameMap():
-    
-    Map.draw()
+
     gameMap = True
     
     while gameMap:
+        Map.draw()
         for event in pygame.event.get():        #catching events
             if event.type == pygame.QUIT:
                 pygame.quit()

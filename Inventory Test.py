@@ -369,9 +369,10 @@ def menu():
 
     
 def gameMap():
-    Map.draw()
+
     map = True
     while map:
+        Map.draw()
         for event in pygame.event.get():        #catching events
             if event.type == pygame.QUIT:
                 pygame.quit()
