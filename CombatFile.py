@@ -3,7 +3,9 @@ import random
 import pygame
 
 pygame.init()  # start up dat pygame
+pygame.font.init()
 clock = pygame.time.Clock()  # for framerate or something? still not very sure
+pygame.display.set_caption("The Tower")
 WIDTH = 716
 HEIGHT = 716
 screen = pygame.display.set_mode([WIDTH, HEIGHT])  # making the window
@@ -16,26 +18,12 @@ TILEMARGIN = 1
 
 BLACK = (0, 0, 0)  # fill
 WHITE = (255, 255, 255)  # floor
-GREEN = (0, 255, 0)  # player
-RED = (255, 0, 0)  # wall
-BLUE = (0, 0, 255)  # hill giants
-GBLUE = (0, 255, 170)  # gnolls
-RUST = (210, 150, 75)  # flind
-MAGENTA = (225, 0, 230)  # mini boss 1
-ORANGE = (155, 155, 0)  # mini boss 2
-BROWN = (100, 40, 0)  # merchant
-PINK = (225, 100, 180)  # healer
-TAN = (230, 220, 170)  # mage
-GRAY = (127, 127, 127)  # fighter
-PURPLE = (240, 0, 255)  # rouge
-LIME = (180, 255, 170)  # boss
-WOOD = (20, 190, 140)  # door
-
 
 class Floor(object):
-    def __init__(self, name, enemyCount):
+    def __init__(self, name, enemyCount, nextFloor):
         self.name = name
         self.enemyCount = enemyCount
+        self.nextFloor = nextFloor
 
     @property
     def name(self):
@@ -53,10 +41,18 @@ class Floor(object):
     def enemyCount(self, value):
         self._enemyCount = value
 
+    @property
+    def nextFloor(self):
+        return self._nextFloor
+
+    @nextFloor.setter
+    def nextFloor(self, value):
+        self._nextFloor = value
+
 
 class FightFloor(Floor):
-    def __init__(self, name, enemyCount, hillCount, gnollCount, flindCount):
-        Floor.__init__(self, name, enemyCount)
+    def __init__(self, name, enemyCount, nextFloor, hillCount, gnollCount, flindCount):
+        Floor.__init__(self, name, enemyCount, nextFloor)
         self.hillCount = hillCount
         self.gnollCount = gnollCount
         self.flindCount = flindCount
@@ -87,15 +83,15 @@ class FightFloor(Floor):
 
 
 class MiniFloor(Floor):
-    def __init__(self, name, enemyCount, mini, partyMem):
-        Floor.__init__(self, name, enemyCount)
+    def __init__(self, name, enemyCount, nextFloor, mini, partyMem):
+        Floor.__init__(self, name, enemyCount, nextFloor)
         self.mini = mini
         self.party = partyMem
 
 
 class SpecialFloor(Floor):
-    def __init__(self, name, enemyCount, boss, merchant):
-        Floor.__init__(self, name, enemyCount)
+    def __init__(self, name, enemyCount, nextFloor, boss, merchant):
+        Floor.__init__(self, name, enemyCount, nextFloor)
         self.boss = boss
         self.merchant = merchant
 
@@ -122,6 +118,20 @@ class Special(object):  # The main class for stationary things that inhabit the 
         self.image = image
         self.column = column
         self.row = row
+
+f13 = SpecialFloor("Floor 1", 1, None, 1, 0)
+f12 = FightFloor("Floor 3", 7, f13, 0, 0, 7)
+f11 = FightFloor("Floor 3", 5, f12, 0, 0, 5)
+f10 = FightFloor("Floor 3", 5, f11, 0, 2, 3)
+f9 = MiniFloor("Mini Boss Floor 2", 1, f10, 1, 2)
+f8 = FightFloor("Floor 3", 5, f9, 0, 3, 2)
+f7 = FightFloor("Floor 3", 5, f8, 0, 5, 0)
+f6 = FightFloor("Floor 3", 5, f7, 2, 3, 0)
+f5 = MiniFloor("Mini Boss Floor 1", 1, f6, 1, 2)
+f4 = FightFloor("Floor 3", 5, f5, 3, 2, 0)
+f3 = FightFloor("Floor 3", 5, f4, 5, 0, 0)
+f2 = FightFloor("Floor 2", 3, f3, 3, 0, 0)
+f1 = SpecialFloor("Floor 1", 1, f2, 0, 1)
 
 
 class Player(Special):  # The player
@@ -159,8 +169,7 @@ class Player(Special):  # The player
 
         Map.update()
 
-    def collision(self,
-                  direction):  # Checks if anything is on top of the grass in the direction that the character wants to move. Used in the move function
+    def collision(self, direction):  # Checks if anything is on top of the grass in the direction that the character wants to move. Used in the move function
         if direction == "UP":
             if len(Map.grid[self.column][(self.row) - 1]) > 1:
                 return True
@@ -178,108 +187,94 @@ class Player(Special):  # The player
     def location(self):
         print("Coordinates: " + str(self.column) + ", " + str(self.row))
 
+currentFloor = f1
 
 class Map(object):  # The main class; where the action happens
 
-    f1 = SpecialFloor("Floor 1", 0, 0, 1)
-    f2 = FightFloor("Floor 2", 3, 3, 0, 0)
-    f3 = FightFloor("Floor 3", 5, 5, 0, 0)
-    f4 = FightFloor("Floor 3", 5, 3, 2, 0)
-    f5 = MiniFloor("Mini Boss Floor 1", 1, 1, 2)
-    f6 = FightFloor("Floor 3", 5, 2, 3, 0)
-    f7 = FightFloor("Floor 3", 5, 0, 5, 0)
-    f8 = FightFloor("Floor 3", 5, 0, 3, 2)
-    f9 = MiniFloor("Mini Boss Floor 2", 1, 1, 2)
-    f10 = FightFloor("Floor 3", 5, 0, 2, 3)
-    f11 = FightFloor("Floor 3", 5, 0, 0, 5)
-    f12 = FightFloor("Floor 3", 5, 0, 0, 7)
-    f13 = SpecialFloor("Floor 1", 0, 0, 1)
-
-    currentRoom = f4
-
-    global MAPSIZE
     grid = []
 
-    hero = Player("Hero", "GameArt\OverworldSprites\PlayerSpriteTemp.gif", 5, MAPSIZE - 2, 0)
+    hero = Player("Hero", "GameArt\OverworldSprites\PlayerSpriteTemp.gif", 5, 9, 0)
+    rowRange = range(1,7) + range(10)
+    
+    def build(self):
+        if len(Map.grid) != 0:
+            del Map.grid[:]
+            
+        for row in range(MAPSIZE):  # Creating grid
+            Map.grid.append([])
+            for column in range(MAPSIZE):
+                Map.grid[row].append([])
 
-    for row in range(MAPSIZE):  # Creating grid
-        grid.append([])
-        for column in range(MAPSIZE):
-            grid[row].append([])
+        for row in range(MAPSIZE):  # Filling grid with the ground
+            for column in range(MAPSIZE):
+                tempTile = Special("Ground", "GameArt\Extra\Ground.png", column, row)
+                Map.grid[column][row].append(tempTile)
 
-    for row in range(MAPSIZE):  # Filling grid with the ground
-        for column in range(MAPSIZE):
-            tempTile = Special("Ground", "GameArt\MapTiles\ground.png", column, row)
-            grid[column][row].append(tempTile)
+        for row in range(MAPSIZE):  # Adding walls
+            for column in range(MAPSIZE):
+                tempTile = Special("Wall", "GameArt\Extra\Wall.png", column, row)
+                if row == 0 or row == (MAPSIZE - 1) or column == 0 or column == (MAPSIZE - 1):
+                    Map.grid[column][row].append(tempTile)
 
-    for row in range(MAPSIZE):  # Adding walls
-        for column in range(MAPSIZE):
-            tempTile = Special("Wall", "GameArt\MapTiles\wall.png", column, row)
-            if row == 0 or row == (MAPSIZE - 1) or column == 0 or column == (MAPSIZE - 1):
-                grid[column][row].append(tempTile)
-
-    if currentRoom == f2 or currentRoom == f3 or currentRoom == f4 or currentRoom == f6:
-        i = 1
-        while i <= (currentRoom.hillCount):
-            randRow = random.randint(1, MAPSIZE - 2)
-            randColumn = random.randint(1, MAPSIZE - 2)
-            tempTile = Special("Hill Giant", "GameArt\OverworldSprites\GiantSpriteTemp.gif", randColumn, randRow)
-            grid[randColumn][randRow].append(tempTile)
-            if ((randRow in (8, 9)) and (randColumn in (4, 5, 6))) or (
-                    grid.count(randRow) > 0 and grid.count(randColumn) > 0):
-                grid[randColumn][randRow].remove(tempTile)
-            else:
+        row = [1, 2, 3, 4, 5, 6, 7]
+        column = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            
+        if currentFloor == f2 or currentFloor == f3 or currentFloor == f4 or currentFloor == f6:
+            i = 1
+            while i <= (currentFloor.hillCount):
+                randRow = random.choice(row)
+                row.remove(randRow)
+                randColumn = random.choice(column)
+                column.remove(randColumn)
+                tempTile = Special("Hill Giant", "GameArt\OverworldSprites\GiantSpriteTemp.gif", randColumn, randRow)
+                Map.grid[randColumn][randRow].append(tempTile)
                 i += 1
-    if currentRoom == f4 or currentRoom == f6 or currentRoom == f7 or currentRoom == f8 or currentRoom == f10:
-        i = 1
-        while i <= (currentRoom.gnollCount):
-            randRow = random.randint(1, MAPSIZE - 2)
-            randColumn = random.randint(1, MAPSIZE - 2)
-            tempTile = Special("Gnoll", "GameArt\OverworldSprites\GnollSprite.gif", randColumn, randRow)
-            grid[randColumn][randRow].append(tempTile)
-            if ((randRow in (8, 9)) and (randColumn in (4, 5, 6))) or grid.count(randRow) > 0 or grid.count(
-                    randColumn) > 0:
-                grid[randColumn][randRow].remove(tempTile)
-            else:
+        if currentFloor == f4 or currentFloor == f6 or currentFloor == f7 or currentFloor == f8 or currentFloor == f10:
+            i = 1
+            while i <= (currentFloor.gnollCount):
+                randRow = random.choice(row)
+                row.remove(randRow)
+                randColumn = random.choice(column)
+                column.remove(randColumn)
+                tempTile = Special("Gnoll", "GameArt\OverworldSprites\GnollSprite.gif", randColumn, randRow)
+                Map.grid[randColumn][randRow].append(tempTile)
                 i += 1
-    if currentRoom == f8 or currentRoom == f11 or currentRoom == f10 or currentRoom == f12:
-        i = 1
-        while i <= (currentRoom.flindCount):
-            randRow = random.randint(1, MAPSIZE - 2)
-            randColumn = random.randint(1, MAPSIZE - 2)
-            tempTile = Special("Flind", RUST, randColumn, randRow)
-            grid[randColumn][randRow].append(tempTile)
-            if ((randRow in (8, 9)) and (randColumn in (4, 5, 6))) or grid.count(randRow) > 0 or grid.count(
-                    randColumn) > 0:
-                grid[randColumn][randRow].remove(tempTile)
-            else:
+        if currentFloor == f8 or currentFloor == f11 or currentFloor == f10 or currentFloor == f12:
+            i = 1
+            while i <= (currentFloor.flindCount):
+                randRow = random.choice(row)
+                row.remove(randRow)
+                randColumn = random.choice(column)
+                column.remove(randColumn)
+                tempTile = Special("Flind", "GameArt\OverworldSprites\FlindTemp.png", randColumn, randRow)
+                Map.grid[randColumn][randRow].append(tempTile)
                 i += 1
-    if currentRoom == f5:
-        tempTile = Special("Healer", PINK, 3, 6)
-        grid[3][6].append(tempTile)
-        tempTile = Special("Mage", PINK, 7, 6)
-        grid[7][6].append(tempTile)
-        tempTile = Special("Mini1", MAGENTA, 5, 3)
-        grid[5][3].append(tempTile)
+                    
+        if currentFloor == f5:
+            tempTile = Special("Healer", "GameArt\OverworldSprites\HealerTemp.png", 3, 6)
+            Map.grid[3][6].append(tempTile)
+            tempTile = Special("Mage", "GameArt\OverworldSprites\MageTemp.png", 7, 6)
+            Map.grid[7][6].append(tempTile)
+            tempTile = Special("Mini1", "GameArt\OverworldSprites\MiniTemp.png", 5, 3)
+            Map.grid[5][3].append(tempTile)
 
-    if currentRoom == f9:
-        tempTile = Special("Fighter", PINK, 3, 6)
-        grid[3][6].append(tempTile)
-        tempTile = Special("Rouge", PINK, 7, 6)
-        grid[7][6].append(tempTile)
-        tempTile = Special("Mini2", ORANGE, 5, 3)
-        grid[5][3].append(tempTile)
+        if currentFloor == f9:
+            tempTile = Special("Fighter", "GameArt\OverworldSprites\FighterTemp.png", 3, 6)
+            Map.grid[3][6].append(tempTile)
+            tempTile = Special("Rouge", "GameArt\OverworldSprites\RougeTemp.png", 7, 6)
+            Map.grid[7][6].append(tempTile)
+            tempTile = Special("Mini2", "GameArt\OverworldSprites\MiniTempT.png", 5, 3)
+            Map.grid[5][3].append(tempTile)
 
-    if currentRoom == f1:
-        tempTile = Special("Merchant", "GameArt\OverworldSprites\MerchSprite.gif", 5, 5)
-        grid[5][5].append(tempTile)
-        door = Special("Door", WOOD, 5, 0)
-        grid[5][0].append(door)
+        if currentFloor == f1:
+            tempTile = Special("Merchant", "GameArt\OverworldSprites\MerchSprite.gif", 5, 5)
+            Map.grid[5][5].append(tempTile)
 
-    if currentRoom == f13:
-        tempTile = Special("Boss", LIME, 5, 5)
-        grid[5][5].append(tempTile)
+        if currentFloor == f13:
+            tempTile = Special("Boss", "GameArt\OverworldSprites\BossTemp.png", 5, 5)
+            Map.grid[5][5].append(tempTile)
 
+    
     def draw(self):
         screen.fill(BLACK)
         for row in range(MAPSIZE):  # Drawing grid
@@ -293,7 +288,7 @@ class Map(object):  # The main class; where the action happens
                         who = Map.grid[column][row][i]
 
                 if who is not None:
-                    img = pygame.image.load("GameArt\MapTiles\ground.png")
+                    img = pygame.image.load("GameArt\Extra\ground.png")
                     img.blit(pygame.image.load(who.image), (0, 0))
                     screen.blit(img, ((TILEWIDTH + TILEMARGIN) * column + TILEMARGIN,
                                       (TILEHEIGHT + TILEMARGIN) * row + TILEMARGIN))
@@ -1924,100 +1919,282 @@ class Enemy(Fightable):
 
 Map = Map()
 
-def text_format(message, textFont, textSize, textColor):
-    newFont=pygame.font.Font(textFont, textSize)
-    newText=newFont.render(message, 0, textColor)
-
-    return newText
-
-def menu():
-    
-    font = "Retro.ttf"
+def menu():    
+    font1 = pygame.font.SysFont('Arial', 90)
+    font2 = pygame.font.SysFont('Arial', 60)
     selected = "start"
+    bg_img = pygame.image.load("GameArt\Extra\menu.gif")
     menu = True
 
     while menu:
         for event in pygame.event.get():
-            if event.type==pygame.QUIT:
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            if event.type==pygame.KEYDOWN:
-                if event.key==pygame.K_UP:
-                    selected="start"
-                elif event.key==pygame.K_DOWN:
-                    selected="quit"
-                if event.key==pygame.K_RETURN:
-                    if selected=="start":
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    selected = "start"
+                elif event.key == pygame.K_DOWN:
+                    selected = "quit"
+                if event.key == pygame.K_RETURN:
+                    if selected == "start":
                         gameMap()
                         return
-                    if selected=="quit":
+                    if selected == "quit":
                         pygame.quit()
                         quit()
 
+
         # Main Menu UI
-        screen.fill(BLUE)
-        title=text_format("The Tower", font, 90, GREEN)
-        if selected=="start":
-            text_start=text_format("START", font, 75, WHITE)
+        screen.blit(bg_img, bg_img.get_rect())
+        title = font1.render("The Tower", False, BLACK)
+        if selected == "start":
+            text_start = font2.render("START", False, WHITE)
         else:
-            text_start = text_format("START", font, 75, BLACK)
-        if selected=="quit":
-            text_quit=text_format("QUIT", font, 75, WHITE)
+            text_start = font2.render("START", False, BLACK)
+        if selected == "quit":
+            text_quit = font2.render("QUIT", False, WHITE)
         else:
-            text_quit = text_format("QUIT", font, 75, BLACK)
+            text_quit = font2.render("QUIT", False, BLACK)
 
-        title_rect=title.get_rect()
-        start_rect=text_start.get_rect()
-        quit_rect=text_quit.get_rect()
+        title_rect = title.get_rect()
+        start_rect = text_start.get_rect()
+        quit_rect = text_quit.get_rect()
 
-        # Main Menu Text
         screen.blit(title, (WIDTH/2 - (title_rect[2]/2), 80))
         screen.blit(text_start, (WIDTH/2 - (start_rect[2]/2), 300))
         screen.blit(text_quit, (WIDTH/2 - (quit_rect[2]/2), 360))
         pygame.display.update()
         clock.tick(60)
-        pygame.display.set_caption("Python - Pygame Simple Main Menu Selection")
+        
 
-
+def popup():
+    font1 = pygame.font.SysFont('Arial', 75)
+    font2 = pygame.font.SysFont('Arial', 60)
+    selected = 1
+    bg_img = pygame.image.load("GameArt\Extra\menu.gif")
+    pop = True
     
-def gameMap():
+    while pop:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    selected = 1
+                elif event.key == pygame.K_DOWN:
+                    selected = 2
+                if event.key == pygame.K_RETURN:
+                    if selected == 1:
+                        return
+                    if selected == 2:
+                        return
 
-    gameMap = True
-    
-    while gameMap:
-        Map.draw()
-        for event in pygame.event.get():        #catching events
+        # Pop Up UI
+        if currentFloor == f1:
+            screen.blit(bg_img, bg_img.get_rect())
+            title1 = font1.render("What move do you", False, BLACK)
+            title2 = font1.render("want to learn?", False, BLACK)
+            if selected == 1:
+                opt1 = font2.render("Healing Move", False, WHITE)
+            else:
+                opt1 = font2.render("Healing Move", False, BLACK)
+            if selected == 2:
+                opt2 = font2.render("Spell Move", False, WHITE)
+            else:
+                opt2 = font2.render("Spell Move", False, BLACK)
+
+
+        elif currentFloor == f5 or currentFloor == f9:
+            screen.blit(bg_img, bg_img.get_rect())
+            title1 = font1.render("Who do you want", False, BLACK)
+            title2 = font1.render("to join your party?", False, BLACK)
+            if currentFloor == f5:
+                if selected == 1:
+                    opt1 = font2.render("Healer", False, WHITE)
+                else:
+                    opt1 = font2.render("Healer", False, BLACK)
+                if selected == 2:
+                    opt2 = font2.render("Mage", False, WHITE)
+                else:
+                    opt2 = font2.render("Mage", False, BLACK)
+            if currentFloor == f9:
+                if selected == 1:
+                    opt1 = font2.render("Fighter", False, WHITE)
+                else:
+                    opt1 = font2.render("Fighter", False, BLACK)
+                if selected == 2:
+                    opt2 = font2.render("Rouge", False, WHITE)
+                else:
+                    opt2 = font2.render("Rouge", False, BLACK)                
+
+        title1_rect = title1.get_rect()
+        title2_rect = title2.get_rect()
+        start_rect = opt1.get_rect()
+        quit_rect = opt1.get_rect()
+
+        screen.blit(title1, (WIDTH/2 - (title1_rect[2]/2), 80))
+        screen.blit(title2, (WIDTH/2 - (title2_rect[2]/2), 160))
+        screen.blit(opt1, (WIDTH/2 - (start_rect[2]/2), 300))
+        screen.blit(opt2, (WIDTH/2 - (quit_rect[2]/2), 360))
+        pygame.display.update()
+        clock.tick(60)
+
+def merchText():
+    talk = True
+    background = pygame.image.load("GameArt\Extra\Background.png")
+    merchant = pygame.image.load("GameArt\Extra\Merch.gif")
+    box = pygame.image.load("GameArt\Extra\Text.png")
+    merch_rect = merchant.get_rect()
+    font = pygame.font.SysFont('Arial', 30)
+    text1 = font.render("Why, hello there stranger! Let me guess, you're here", False, BLACK)
+    text2 = font.render("about the missing villager, right? I can tell. You", False, BLACK)
+    text3 = font.render("have that same look in your eyes all the other", False, BLACK)
+    text4 = font.render("wannabe heros had.", False, BLACK)
+    i = 0
+    global currentFloor
+    while talk:
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
             elif event.type == pygame.KEYDOWN:
+                if i == 0:
+                    text1 = font.render("Well, the villagers are here, but they're not the ", False, BLACK)
+                    text2 = font.render("same as they were before. Yennughu, the beast", False, BLACK)
+                    text3 = font.render("responsible for this tower, has already turned them", False, BLACK)
+                    text4 = font.render("into the monsters that now live in this tower.", False, BLACK)
+                    i += 1
+                elif i == 1:
+                    text1 = font.render("He's been doing this for centuries now. He uses", False, BLACK)
+                    text2 = font.render("magic to move the tower around so he never runs", False, BLACK)
+                    text3 = font.render("out of victims to put under his curse.", False, BLACK)
+                    text4 = font.render("", False, BLACK)
+                    i += 1
+                elif i == 2:
+                    text1 = font.render("Looks like the curse has started to affect you", False, BLACK)
+                    text2 = font.render("as well. There's flind fur starting to grow on", False, BLACK)
+                    text3 = font.render("your arms. Don't worry, there's still a chance", False, BLACK)
+                    text4 = font.render("you can go back to normal. Won't be easy though.", False, BLACK)
+                    i += 1
+                elif i == 3:
+                    text1 = font.render("Only way to break the curse is to kill Yennughu,", False, BLACK)
+                    text2 = font.render("the creator the curse. But you have to fight your", False, BLACK)
+                    text3 = font.render("way up for even the chance to fight him. If you want", False, BLACK)
+                    text4 = font.render("some help though I may be of some assistance.", False, BLACK)
+                    i += 1
+                elif i == 4:
+                    text1 = font.render("I may be rusty, but I still know some powerful", False, BLACK)
+                    text2 = font.render("fighting techniques. I only have time to teach", False, BLACK)
+                    text3 = font.render("you one though.", False, BLACK)
+                    text4 = font.render("", False, BLACK)
+                    i += 1
+                elif i == 5:
+                    text1 = font.render("I'll also open up my shop for you. You'll ", False, BLACK)
+                    text2 = font.render("probably find some valueables after your fights", False, BLACK)
+                    text3 = font.render("that I'll gladly take them off your hands.", False, BLACK)
+                    text4 = font.render("", False, BLACK)
+                    i += 1
+                elif i == 6:
+                    text1 = font.render("I'll only open it after you finish clearing out", False, BLACK)
+                    text2 = font.render("mall the enemies on a floor. Those monsters", False, BLACK)
+                    text3 = font.render("are dangerous and I'm not gonna risk my life.", False, BLACK)
+                    text4 = font.render("", False, BLACK)
+                    i += 1
+                elif i == 7:
+                    text1 = font.render("That's all the help I can offer though. Don't", False, BLACK)
+                    text2 = font.render("worry though, I'm sure you'll be able to pull", False, BLACK)
+                    text3 = font.render("oit off.", False, BLACK)
+                    text4 = font.render("", False, BLACK)
+                    i += 1
+                elif i == 8:
+                    text1 = font.render("Hopefully.", False, BLACK)
+                    text2 = font.render("", False, BLACK)
+                    text3 = font.render("", False, BLACK)
+                    text4 = font.render("", False, BLACK)
+                    i += 1
+                elif i == 9:
+                    popup()
+                    changeFloor()
+                    return
+                    
+                    
+        screen.fill(WHITE)
+        screen.blit(background, background.get_rect())
+        screen.blit(merchant, (WIDTH/2 - (merch_rect[2]/2), 50))
+        screen.blit(box, (0, 475))
+        screen.blit(text1, (10, 505))
+        screen.blit(text2, (10, 540))
+        screen.blit(text3, (10, 575))
+        screen.blit(text4, (10, 610))
+        pygame.display.update()   
+
+def combat():
+    combat = True
+    while combat:
+        screen.fill(BLUE)
+        return
+
+def changeFloor():
+    global currentFloor    
+    currentFloor = currentFloor.nextFloor
+    Map.hero.column = 5
+    Map.hero.row = 9
+    Map.build()
+    return
+        
+   
+def gameMap():
+    bg_img = pygame.image.load("GameArt\Extra\menu.gif")
+    font = pygame.font.SysFont('Arial', 75)
+    gameMap = True
+    Map.build()
+    
+    while gameMap:
+        Map.draw()
+
+        if currentFloor == None:
+            screen.blit(bg_img, bg_img.get_rect())
+            
+        for event in pygame.event.get():        #catching events
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                Pos = pygame.mouse.get_pos()
+                print Pos
+                
+            elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     Map.hero.move("LEFT")
+                    if Map.hero.collision("LEFT"):
+                        combat()
                 if event.key == pygame.K_RIGHT:
                     Map.hero.move("RIGHT")
+                    if Map.hero.collision("RIGHT"):
+                        combat()
                 if event.key == pygame.K_UP:
                     Map.hero.move("UP")
+                    if Map.hero.collision("UP"):
+                        combat()
                 if event.key == pygame.K_DOWN:
                     Map.hero.move("DOWN")
+                    if Map.hero.collision("DOWN"):
+                        combat()
                 if event.key == pygame.K_RETURN:
-                    return
-
-
+                    changeFloor()
+                if event.key == pygame.K_a:
+                    popup()
+                if event.key == pygame.K_b:
+                    merchText()
+                        
+ 
+                    
         clock.tick(60)      #Limit to 60 fps or something
-        pygame.display.flip()     #Honestly not sure what this does, but it breaks if I remove it
+        pygame.display.update()     #Honestly not sure what this does, but it breaks if I remove it
         Map.update()
         
-##enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "", 15, 4, 2, 2, [], [], 1, "Gnoll")
-##test = Hero("Valor", [], [
-##    [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
-##    [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
-##    [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
-##    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, Weapon("Wooden Sword", 0, 0, 1, 1, 90, 2, 5),
-##            Armor("Common Clothes", 0, 0, 1, 500000000))
-##
-##Fightable.combat([test, test, test],
-##                 [enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest, enemyTest,
-##                  enemyTest, enemyTest])
-
 menu()
 pygame.quit()
