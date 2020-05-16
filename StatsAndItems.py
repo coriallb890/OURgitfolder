@@ -366,7 +366,7 @@ metalS = Armor("Metal Shield", 150, 2, "A sturdy metal shield that can protect y
 ## List of items by grade
 grade1Items = [dagger, axe, sword, leather, tree]
 grade2Items = [polished_dagger, red_axe, big_sword, chainmail, actual]
-grade4Items = [sharpened_dagger, battle_axe, bigger_sword, metalA, metalS,]
+grade3Items = [sharpened_dagger, battle_axe, bigger_sword, metalA, metalS,]
 
 ## Status Effects
 ## name // verb // stats // amounts // turns
