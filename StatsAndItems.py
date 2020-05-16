@@ -363,11 +363,6 @@ tree = Armor("Tree bark Shield", 25, 0, "Just a big piece of tree bark... Maybe 
 actual = Armor("Actual Shield", 75, 1, "A wooden shield with an actual handle. Now we're getting somehwere.", 5, 120)
 metalS = Armor("Metal Shield", 150, 2, "A sturdy metal shield that can protect you big time.", 7, 160)
 
-## List of items by grade
-grade1Items = [dagger, axe, sword, leather, tree]
-grade2Items = [polished_dagger, red_axe, big_sword, chainmail, actual]
-grade3Items = [sharpened_dagger, battle_axe, bigger_sword, metalA, metalS,]
-
 ## Status Effects
 ## name // verb // stats // amounts // turns
 
@@ -414,3 +409,8 @@ agilityp2 = Consumable("Agility Potion", 100, 1, "", "agility2")
 agilityp3 = Consumable("Big Agility Potion", 150, 2, "", "agility3")
 
 bigp = Consumable("Everything Potion", 200, 2, 'Known in some cultures as "Suicide."', "everything")
+
+## List of items by grade
+grade0Items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1]
+grade1Items = [polished_dagger, red_axe, big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2]
+grade2Items = [sharpened_dagger, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
