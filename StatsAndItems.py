@@ -341,51 +341,43 @@ class Consumable(Item):
 ## name // cost // grade // flavor text // fight // range // accuracy // consistency // critRate
 
 
-dagger = Weapon("Dagger", 10, 0, "You can't get more rogue-like than fighting with a dagger. It's nice and light, but "
-                                 "not exactly the sharpest.", 1, 1, 80, 1, 10)
-polished_dagger = Weapon("Polished Dagger", 20, 1, "Somehow, you found yourself a nice shiny dagger in this decrepit "
-                                                   "tower. It feels the same as your older dagger, but man... look how "
-                                                   "shiny it is!", 2, 1, 80, 1, 10)
-sharpened_dagger = Weapon("Sharpened Dagger", 35, 2, "A beautiful dagger with a sharp, honed edge. It looks pretty "
-                                                     "dope, gotta say.", 4, 1, 80, 1, 12)
+## Weapons
+## name // cost // grade // flavor text // fight // range // accuracy // consistency // critRate
 
-axe = Weapon("Axe", 35, 0, "It's more hefty than your original dagger, but it certainly packs a much larger punch. "
-                           "Er... cut?", 5, 3, 60, 1, 15)
-red_axe = Weapon("Red Axe", 35, 1, "It's a nice, shiny red axe. You're not sure why, but something about it feels a bit"
-                                   " anachronistic.", 6, 2, 60, 1, 15)
-battle_axe = Weapon("Battle Axe", 40, 2, "It's a large, black battle axe, towering even over you. It's super sharp, "
-                                         "super nice, and SUPER HEAVY.", 8, 2, 55, 1, 15)
+dagger = Weapon("Dagger", 10, 0, "Name: Dagger  Attack: 1  Range: 1  Cost: 10", 1, 1, 80, 1, 10)
+polished_dagger = Weapon("Polished Dagger", 20, 1, "Name: Polished Dagger  Attack: 2  Range: 1  Cost: 20", 2, 1, 80, 1, 10)
+sharpened_dagger = Weapon("Sharpened Dagger", 35, 2, "Name: Sharpened Dagger  Attack: 4  Range: 1  Cost: 35", 4, 1, 80, 1, 12)
 
-sword = Weapon("Sword", 30, 0, "Yeah, it's a sword. What are you gonna do about it? You gotta carry a sword if you "
-                               "wanna fight monsters. It's the law.", 4, 3, 70, 1, 15)
-big_sword = Weapon("Big Sword", 40, 1, "A wise man once asked, \"What's better than a regular-sized sword?\" Now you "
-                                       "know the answer.", 5, 3, 70, 1, 15)
-bigger_sword = Weapon("Bigger Sword", 45, 2, "Now, this is just ridiculous. Do you really NEED a sword THIS BIG?!? "
-                                             "Yes you do.", 6, 3, 70, 1, 15)
+axe = Weapon("Axe", 35, 0, "Name: Axe  Attack: 4  Range: 2  Cost: 35", 4, 2, 60, 1, 15)
+red_axe = Weapon("Red Axe", 40, 1, "Name: Red Axe  Attack: 6  Range: 2  Cost: 40", 6, 2, 60, 1, 15)
+battle_axe = Weapon("Battle Axe", 50, 2, "Name: Battle Axe  Attack: 8  Range: 2  Cost: 50", 8, 2, 55, 1, 15)
 
-glock = Weapon("Glock 18", 100, 100, "yeah i got a glock. the real question is... where am i getting all this ammo?",
-               100, 3, 100, 1, 100)
+sword = Weapon("Sword", 30, 0, "Name: Sword  Attack: 4  Range: 3  Cost: 30", 4, 3, 70, 1, 15)
+big_sword = Weapon("Big Sword", 40, 1, "Name: Big Sword  Attack: 5  Range: 3  Cost: 40", 5, 3, 70, 1, 15)
+bigger_sword = Weapon("Bigger Sword", 45, 2, "Name: Bigger Sword  Attack: 6  Range: 3  Cost: 45", 6, 3, 70, 1, 15)
+
+glock = Weapon("Glock 18", 100, 100, "yeah i got a glock. the real question is... where am i getting all this ammo?", 100, 3, 100, 1, 100)
 
 ## Armor
 ## name // cost // grade // flavor text // defense // durability
 
-leather = Armor("Leather Armor", 25, 0, "Some loose pieces of leather carelessly sewn together", 2, 100)
-chainmail = Armor("Chainmail Armor", 75, 1, "An actual piece of armor. Better than nothing I suppose.", 4, 150)
-metalA = Armor("Full-metal Armor", 150, 2, "A full on suit of armor. Now you can feel protected", 6, 200)
+leather = Armor("Leather Armor", 25, 0, "Name: Leather Armor  Defense: 2  Durability:100  Cost: 25", 2, 100)
+chainmail = Armor("Chainmail Armor", 75, 1, "Name: Chainmail Armor  Defense: 4  Durability: 150  Cost: 75", 4, 150)
+metalA = Armor("Full-metal Armor", 150, 2, "Name: Leather Armor  Defense: 6  Durability: 200  Cost: 150", 6, 200)
 
-tree = Armor("Tree bark Shield", 25, 0, "Just a big piece of tree bark... Maybe it can help?", 3, 80)
-actual = Armor("Actual Shield", 75, 1, "A wooden shield with an actual handle. Now we're getting somewhere.", 5, 120)
-metalS = Armor("Metal Shield", 150, 2, "A sturdy metal shield that can protect you big time.", 7, 160)
+tree = Armor("Tree bark Shield", 25, 0, "Name: Tree Bark Shield  Defense: 3  Max Durability: 80  Cost: 25", 3, 80)
+actual = Armor("Actual Shield", 75, 1, "Name: Actual Shield  Defense: 5  Max Durability: 120  Cost: 75", 5, 120)
+metalS = Armor("Metal Shield", 150, 2, "Name: Metal Shield  Defense: 7  Max Durability: 160  Cost: 150", 7, 160)
 
 ## Status Effects
 ## name // verb // stats // amounts // turns
 
 poison = StatusEffect("Poison", "poisoned", ["health"], [-3], 3)
-strike = StatusEffect("Cheap Strike", "shanked", ["health"], ["F-150"], 0)
+strike = StatusEffect("Cheap Strike", "shanked", ["health"], ["F-150"], 1)
 
-health1 = StatusEffect("Small Health", "drank", ["health"], [5], 0)
-health2 = StatusEffect("Health", "drank", ["health"], [10], 0)
-health3 = StatusEffect("Big Health", "drank", ["health"], [15], 0)
+health1 = StatusEffect("Small Health", "drank", ["health"], [5], 1)
+health2 = StatusEffect("Health", "drank", ["health"], [10], 1)
+health3 = StatusEffect("Big Health", "drank", ["health"], [15], 1)
 
 aura = StatusEffect("Boost Aura", "boosted", ["health", "fight"], [3, 2], 2)
 
@@ -406,28 +398,27 @@ everything = StatusEffect("Big Everything", "drank", ["health", "fight", "agilit
 ## Consumables
 ## name // cost // grade // flavor text // status effect
 
-healthp1 = Consumable("Small Health Potion", 75, 0, "\"Artifically Flavored.\" Comforting.", "health1")
-healthp2 = Consumable("Health Potion", 100, 1, "", "health2")
-healthp3 = Consumable("Big Health Potion", 150, 2, "", "health3")
+healthp1 = Consumable("Small Health Potion", 75, 0, "Name: Small Health Potion  Cost: 75", "health1")
+healthp2 = Consumable("Health Potion", 100, 1, "Name: Health Potion  Cost: 100", "health2")
+healthp3 = Consumable("Big Health Potion", 150, 2, "Name: Big Health Potion  Cost: 150", "health3")
 
-fightp1 = Consumable("Small Fight Potion", 75, 0, "It's what's the plants crave.", "fight1")
-fightp2 = Consumable("Fight Potion", 100, 2, "", "fight2")
-fightp3 = Consumable("Big Fight Potion", 150, 2, "", "fight3")
+fightp1 = Consumable("Small Fight Potion", 75, 0, "Name: Small Fight Potion  Cost: 75", "fight1")
+fightp2 = Consumable("Fight Potion", 100, 1, "Name: Fight Potion  Cost: 100", "fight2")
+fightp3 = Consumable("Big Fight Potion", 150, 2, "Name: Big Fight Potion  Cost: 150", "fight3")
 
-defensep1 = Consumable("Small Defense Potion", 75, 1, "", "defense1")
-defensep2 = Consumable("Defense Potion", 100, 1, "", "defense2")
-defensep3 = Consumable("Big Defense Potion", 150, 2, "", "defense3")
+defensep1 = Consumable("Small Defense Potion", 75, 0, "Name: Small Defense Potion  Cost: 75", "defense1")
+defensep2 = Consumable("Defense Potion", 100, 1, "Name: Defense Potion  Cost: 100", "defense2")
+defensep3 = Consumable("Big Defense Potion", 150, 2, "Name: Big Defense Potion  Cost: 150", "defense3")
 
-agilityp1 = Consumable("Small Agility Potion", 75, 0, "", "agility1")
-agilityp2 = Consumable("Agility Potion", 100, 1, "", "agility2")
-agilityp3 = Consumable("Big Agility Potion", 150, 2, "", "agility3")
+agilityp1 = Consumable("Small Agility Potion", 75, 0, "Name: Small Agility Potion  Cost: 75", "agility1")
+agilityp2 = Consumable("Agility Potion", 100, 1, "Name: Agility Potion  Cost: 100", "agility2")
+agilityp3 = Consumable("Big Agility Potion", 150, 2, "Name: Big Agility Potion  Cost: 150", "agility3")
 
-bigp = Consumable("Everything Potion", 200, 2, 'Known in some cultures as "Suicide."', "everything")
+bigp = Consumable("Everything Potion", 200, 2, "Name: Everythin Potion  Cost: 200", "everything")
 
 ## List of items by grade
 grade0Items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1]
 grade1Items = [polished_dagger, red_axe, big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2]
 grade2Items = [sharpened_dagger, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
-items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1, polished_dagger, red_axe,
-         big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2, sharpened_dagger, battle_axe,
-         bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
+items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1, polished_dagger, red_axe, big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2,
+         sharpened_dagger, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]

@@ -2102,7 +2102,7 @@ def shop():
                     print "buy clicked"
                 if sell_rect.collidepoint(pos):
                     print pos
-                    print "buy clicked"
+                    print "sell clicked"
                 if rest_rect.collidepoint(pos):
                     return
 
@@ -2186,34 +2186,7 @@ def gameMap():
         clock.tick(60)  # Limit to 60 fps or something
         pygame.display.update()  # Honestly not sure what this does, but it breaks if I remove it
         Map.update()
-
-
-shop()
-
-enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the", 15, 4, 2, 2, [], [], 1, "Gnoll")
-enemyTest1 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 1, "Slime")
-enemyTest2 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 2, "Slime")
-enemyTest3 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 3, "Slime")
-enemyTest4 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 4, "Slime")
-test = Hero("Valor", [], [
-    [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
-    [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
-    [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
-    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, Weapon("Wooden Sword", 0, 0, "slashes", 1, 1, 90, 2, 5),
-            Armor("Common Clothes", 0, 0, 1, 500000000))
-test1 = Hero("Gallant", [], [
-    [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
-    [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
-    [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
-    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, Weapon("Wooden Sword", 0, 0, "slashes", 1, 1, 90, 2, 5),
-            Armor("Common Clothes", 0, 0, 1, 500000000))
-
-for i in range(7):
-    test.levelUp()
-test.revert()
-test.health = test.maxHealth
-
-Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone()])
-
+        
+menu()
 
 pygame.quit()
