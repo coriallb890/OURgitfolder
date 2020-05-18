@@ -1,4 +1,6 @@
+from time import sleep
 from random import randint
+from math import ceil
 from StatsAndItems import *
 import random
 import pygame
@@ -10,7 +12,7 @@ pygame.display.set_caption("The Tower")
 WIDTH = 716
 HEIGHT = 716
 screen = pygame.display.set_mode([WIDTH, HEIGHT])  # making the window
-Done = False  # variable to keep track if window is open
+Done = False  # variable to keep+ track if window is open
 MAPSIZE = 11  # how many tiles in either direction of grid
 
 TILEWIDTH = 64  # pixel sizes for grid squares
@@ -19,88 +21,11 @@ TILEMARGIN = 1
 
 BLACK = (0, 0, 0)  # fill
 WHITE = (255, 255, 255)  # floor
+GREEN = (0, 255, 0)
+YELLOW = (255, 255, 0)
+ORANGE = (192, 165, 136)
+RED = (255, 0, 0)
 
-## Weapons
-## name // cost // grade // flavor text // fight // range // accuracy // consistency // critRate
-
-dagger = Weapon("Dagger", 10, 0, "Name: Dagger  Attack: 1  Range: 1  Cost: 10", 1, 1, 80, 1, 10)
-polished_dagger = Weapon("Polished Dagger", 20, 1, "Name: Polished Dagger  Attack: 2  Range: 1  Cost: 20", 2, 1, 80, 1, 10)
-sharpened_dagger = Weapon("Sharpened Dagger", 35, 2, "Name: Sharpened Dagger  Attack: 4  Range: 1  Cost: 35", 4, 1, 80, 1, 12)
-
-axe = Weapon("Axe", 35, 0, "Name: Axe  Attack: 4  Range: 2  Cost: 35", 4, 2, 60, 1, 15)
-red_axe = Weapon("Red Axe", 40, 1, "Name: Red Axe  Attack: 6  Range: 2  Cost: 40", 6, 2, 60, 1, 15)
-battle_axe = Weapon("Battle Axe", 50, 2, "Name: Battle Axe  Attack: 8  Range: 2  Cost: 50", 8, 2, 55, 1, 15)
-
-sword = Weapon("Sword", 30, 0, "Name: Sword  Attack: 4  Range: 3  Cost: 30", 4, 3, 70, 1, 15)
-big_sword = Weapon("Big Sword", 40, 1, "Name: Big Sword  Attack: 5  Range: 3  Cost: 40", 5, 3, 70, 1, 15)
-bigger_sword = Weapon("Bigger Sword", 45, 2, "Name: Bigger Sword  Attack: 6  Range: 3  Cost: 45", 6, 3, 70, 1, 15)
-
-glock = Weapon("Glock 18", 100, 100, "yeah i got a glock. the real question is... where am i getting all this ammo?", 100, 3, 100, 1, 100)
-
-## Armor
-## name // cost // grade // flavor text // defense // durability
-
-leather = Armor("Leather Armor", 25, 0, "Name: Leather Armor  Defense: 2  Durability:100  Cost: 25", 2, 100)
-chainmail = Armor("Chainmail Armor", 75, 1, "Name: Chainmail Armor  Defense: 4  Durability: 150  Cost: 75", 4, 150)
-metalA = Armor("Full-metal Armor", 150, 2, "Name: Leather Armor  Defense: 6  Durability: 200  Cost: 150", 6, 200)
-
-tree = Armor("Tree bark Shield", 25, 0, "Name: Tree Bark Shield  Defense: 3  Max Durability: 80  Cost: 25", 3, 80)
-actual = Armor("Actual Shield", 75, 1, "Name: Actual Shield  Defense: 5  Max Durability: 120  Cost: 75", 5, 120)
-metalS = Armor("Metal Shield", 150, 2, "Name: Metal Shield  Defense: 7  Max Durability: 160  Cost: 150", 7, 160)
-
-## Status Effects
-## name // verb // stats // amounts // turns
-
-poison = StatusEffect("Poison", "poisoned", ["health"], [-3], 3)
-strike = StatusEffect("Cheap Strike", "shanked", ["health"], ["F-150"], 1)
-
-health1 = StatusEffect("Small Health", "drank", ["health"], [5], 1)
-health2 = StatusEffect("Health", "drank", ["health"], [10], 1)
-health3 = StatusEffect("Big Health", "drank", ["health"], [15], 1)
-
-aura = StatusEffect("Boost Aura", "boosted", ["health", "fight"], [3, 2], 2)
-
-fight1 = StatusEffect("Small Fight", "drank", ["fight"], [2], 2)
-fight2 = StatusEffect("Fight", "drank", ["fight"], [4], 2)
-fight3 = StatusEffect("Big Fight", "drank", ["fight"], [6], 3)
-
-defense1 = StatusEffect("Small Defense", "drank", ["defense"], [2], 2)
-defense2 = StatusEffect("Defense", "drank", ["defense"], [4], 2)
-defense3 = StatusEffect("Big Defense", "drank", ["defense"], [6], 3)
-
-agility1 = StatusEffect("Small Agility", "drank", ["agility"], [2], 2)
-agility2 = StatusEffect("Agility", "drank", ["agility"], [4], 2)
-agility3 = StatusEffect("Big Agility", "drank", ["agility"], [6], 3)
-
-everything = StatusEffect("Big Everything", "drank", ["health", "fight", "agility", "defense"], [5, 4, 4, 4], 20)
-
-## Consumables
-## name // cost // grade // flavor text // status effect
-
-healthp1 = Consumable("Small Health Potion", 75, 0, "Name: Small Health Potion  Cost: 75", "health1")
-healthp2 = Consumable("Health Potion", 100, 1, "Name: Health Potion  Cost: 100", "health2")
-healthp3 = Consumable("Big Health Potion", 150, 2, "Name: Big Health Potion  Cost: 150", "health3")
-
-fightp1 = Consumable("Small Fight Potion", 75, 0, "Name: Small Fight Potion  Cost: 75", "fight1")
-fightp2 = Consumable("Fight Potion", 100, 1, "Name: Fight Potion  Cost: 100", "fight2")
-fightp3 = Consumable("Big Fight Potion", 150, 2, "Name: Big Fight Potion  Cost: 150", "fight3")
-
-defensep1 = Consumable("Small Defense Potion", 75, 0, "Name: Small Defense Potion  Cost: 75", "defense1")
-defensep2 = Consumable("Defense Potion", 100, 1, "Name: Defense Potion  Cost: 100", "defense2")
-defensep3 = Consumable("Big Defense Potion", 150, 2, "Name: Big Defense Potion  Cost: 150", "defense3")
-
-agilityp1 = Consumable("Small Agility Potion", 75, 0, "Name: Small Agility Potion  Cost: 75", "agility1")
-agilityp2 = Consumable("Agility Potion", 100, 1, "Name: Agility Potion  Cost: 100", "agility2")
-agilityp3 = Consumable("Big Agility Potion", 150, 2, "Name: Big Agility Potion  Cost: 150", "agility3")
-
-bigp = Consumable("Everything Potion", 200, 2, "Name: Everythin Potion  Cost: 200", "everything")
-
-## List of items by grade
-grade0Items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1]
-grade1Items = [polished_dagger, red_axe, big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2]
-grade2Items = [sharpened_dagger, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
-items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1, polished_dagger, red_axe, big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2,
-         sharpened_dagger, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
 
 inventory = []
 gold = 0
@@ -231,7 +156,7 @@ class Player(Special):  # The player
 
     @party.setter
     def party(self, value):
-        if (value == 1 or value == 2):
+        if value == 1 or value == 2:
             party = value
 
     def move(self, direction):  # This function is how a character moves around in a certain direction
@@ -255,9 +180,10 @@ class Player(Special):  # The player
 
         Map.update()
 
-    def collision(self, direction):  # Checks if anything is on top of the grass in the direction that the character wants to move. Used in the move function
+    def collision(self,
+                  direction):  # Checks if anything is on top of the grass in the direction that the character wants to move. Used in the move function
         if direction == "UP":
-            if len(Map.grid[self.column][(self.row) - 1]) > 1:
+            if len(Map.grid[self.column][self.row - 1]) > 1:
                 return True
         elif direction == "LEFT":
             if len(Map.grid[self.column - 1][(self.row)]) > 1:
@@ -266,7 +192,7 @@ class Player(Special):  # The player
             if len(Map.grid[self.column + 1][(self.row)]) > 1:
                 return True
         elif direction == "DOWN":
-            if len(Map.grid[self.column][(self.row) + 1]) > 1:
+            if len(Map.grid[self.column][self.row + 1]) > 1:
                 return True
         return False
 
@@ -281,11 +207,11 @@ class Map(object):  # The main class; where the action happens
 
     hero = Player("Hero", "GameArt\OverworldSprites\PlayerSpriteTemp.gif", 5, 9, 0)
     rowRange = range(1,7) + range(10)
-    
+
     def build(self):
         if len(Map.grid) != 0:
             del Map.grid[:]
-            
+
         for row in range(MAPSIZE):  # Creating grid
             Map.grid.append([])
             for column in range(MAPSIZE):
@@ -304,7 +230,7 @@ class Map(object):  # The main class; where the action happens
 
         row = [1, 2, 3, 4, 5, 6, 7]
         column = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-            
+
         if currentFloor == f2 or currentFloor == f3 or currentFloor == f4 or currentFloor == f6:
             i = 1
             while i <= (currentFloor.hillCount):
@@ -335,7 +261,7 @@ class Map(object):  # The main class; where the action happens
                 tempTile = Special("Flind", "GameArt\OverworldSprites\FlindTemp.png", randColumn, randRow)
                 Map.grid[randColumn][randRow].append(tempTile)
                 i += 1
-                    
+
         if currentFloor == f5:
             tempTile = Special("Healer", "GameArt\OverworldSprites\HealerTemp.png", 3, 6)
             Map.grid[3][6].append(tempTile)
@@ -360,7 +286,7 @@ class Map(object):  # The main class; where the action happens
             tempTile = Special("Boss", "GameArt\OverworldSprites\BossTemp.png", 5, 5)
             Map.grid[5][5].append(tempTile)
 
-    
+
     def draw(self):
         screen.fill(BLACK)
         for row in range(MAPSIZE):  # Drawing grid
@@ -380,9 +306,9 @@ class Map(object):  # The main class; where the action happens
                                       (TILEHEIGHT + TILEMARGIN) * row + TILEMARGIN))
                 else:
                     recta = pygame.draw.rect(screen, color, [(TILEWIDTH + TILEMARGIN) * column + TILEMARGIN,
-                                                         (TILEHEIGHT + TILEMARGIN) * row + TILEMARGIN,
-                                                         TILEWIDTH,
-                                                         TILEHEIGHT])
+                                                             (TILEHEIGHT + TILEMARGIN) * row + TILEMARGIN,
+                                                             TILEWIDTH,
+                                                             TILEHEIGHT])
 
     def update(self):  # Very important function
         # This function goes through the entire grid
@@ -399,6 +325,333 @@ class Map(object):  # The main class; where the action happens
                     elif Map.grid[column][row][i].name == "Hero":
                         Map.grid[column][row].remove(Map.grid[column][row][i])
         Map.grid[int(Map.hero.column)][int(Map.hero.row)].append(Map.hero)
+
+
+class StatusEffect:
+    def __init__(self, name, verb, stats, amounts, turns):
+        self._turns = turns
+        self._name = name
+        self._verb = verb
+        self._stats = stats
+        self._amounts = amounts
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def verb(self):
+        return self.verb
+
+    @verb.setter
+    def verb(self, value):
+        self._verb = value
+
+    @property
+    def stats(self):
+        return self._stats
+
+    @stats.setter
+    def stats(self, value):
+        self._stats = value
+
+    @property
+    def amounts(self):
+        return self._amounts
+
+    @amounts.setter
+    def amounts(self, value):
+        self._amounts = value
+
+    @property
+    def turns(self):
+        return self._turns
+
+    @turns.setter
+    def turns(self, value):
+        self._turns = value
+
+    def doIt(self, who):
+        if self.turns > 0:
+            for x in range(0, len(self.stats)):
+                if self.stats[x] == "health":
+                    who.health += (self.amounts[x])
+                    verb = " loses "
+                    if self.amounts[x] >= 0:
+                        verb = " gains "
+                    plural = "s"
+                    if abs(self.amounts[x]) == 1:
+                        plural = ""
+                    print(who.name + verb + str(
+                        abs(self.amounts[x])) + " hitpoint" + plural + " from the " + self.name + "!")
+                elif self.stats[x].equals("fight"):
+                    who.fight += (self.amounts[x])
+                    verb = ""
+                    if abs(self.amounts[x]) > 4:
+                        verb = "greatly"
+                    elif abs(self.amounts[x]) <= 2:
+                        verb = "slightly"
+                    if self.amounts[x] >= 0:
+                        verb = " is " + verb + " strengthened "
+                    else:
+                        verb = " is " + verb + " weakened "
+                    print(who.name + verb + "by the " + self.name + "!")
+                elif self.stats[x].equals("defense"):
+                    who.changedefense += (self.amounts[x])
+                    verb = ""
+                    if abs(self.amounts[x]) > 4:
+                        verb = "greatly"
+                    elif abs(self.amounts[x]) <= 2:
+                        verb = "slightly"
+                    if self.amounts[x] >= 0:
+                        verb = "'s defenses are " + verb + " reinforced "
+                    else:
+                        verb = "'s defenses are " + verb + " diminished "
+                    print(who.name + verb + "by the " + self.name + "!")
+                elif self.stats[x] == "agility":
+                    who.agility += (self.amounts[x])
+                    verb = ""
+                    if abs(self.amounts[x]) > 4:
+                        verb = "greatly"
+                    elif abs(self.amounts[x]) <= 2:
+                        verb = "slightly"
+                    if self.amounts[x] >= 0:
+                        verb = "'s speed is " + verb + " increased "
+                    else:
+                        verb = "'s speed is " + verb + " decreased "
+                    print(who.name + verb + "by the " + self.name + "!")
+            self.turns -= 1
+        else:
+            who.statusEffects().pop(self)
+
+    def clone(self):
+        return StatusEffect(self.name, self.verb, self.stat, self.amount, self.turns)
+
+
+class Move:
+    def __init__(self, name, target, uses, statusEffects):
+        self._name = name
+        self._target = target
+        self._uses = uses
+        self._left = uses
+        self._statusEffects = statusEffects
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def uses(self):
+        return self._uses
+
+    @uses.setter
+    def uses(self, value):
+        self._uses = value
+
+    @property
+    def left(self):
+        return self._left
+
+    @left.setter
+    def left(self, value):
+        self._left = value
+
+    @property
+    def target(self):
+        return self._target
+
+    @target.setter
+    def target(self, value):
+        self._target = value
+
+    @property
+    def statusEffects(self):
+        return self._statusEffects
+
+    @statusEffects.setter
+    def statusEffects(self, value):
+        self._statusEffects = value
+
+
+class Gender:
+    def __init__(self, name, subj, obj, posAdj, posPro, refl):
+        self._name = name
+        self._subj = subj
+        self._obj = obj
+        self._posAdj = posAdj
+        self._posPro = posPro
+        self._refl = refl
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def subj(self):
+        return self._subj
+
+    @subj.setter
+    def subj(self, value):
+        self._subj = value
+
+    @property
+    def obj(self):
+        return self._obj
+
+    @obj.setter
+    def obj(self, value):
+        self._obj = value
+
+    @property
+    def posAdj(self):
+        return self._posAdj
+
+    @posAdj.setter
+    def posAdj(self, value):
+        self._posAdj = value
+
+    @property
+    def posPro(self):
+        return self._posPro
+
+    @posPro.setter
+    def posPro(self, value):
+        self._posPro = value
+
+    @property
+    def refl(self):
+        return self._refl
+
+    @refl.setter
+    def refl(self, value):
+        self._refl = value
+
+
+class Item(object):
+    def __init__(self, name, cost, grade):
+        self._name = name
+        self._cost = cost
+        self._grade = grade
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def cost(self):
+        return self._cost
+
+    @cost.setter
+    def cost(self, value):
+        self._cost = value
+
+    @property
+    def grade(self):
+        return self._grade
+
+    @grade.setter
+    def grade(self, value):
+        self._grade = value
+
+
+class Weapon(Item):
+    def __init__(self, name, cost, grade, verb, fight, rang, accuracy, consistency, critRate):
+        super(Weapon, self).__init__(name, cost, grade)
+        self._verb = verb
+        self._fight = fight
+        self._range = rang
+        self._accuracy = accuracy
+        self._consistency = consistency
+        self._critRate = critRate
+
+
+    @property
+    def verb(self):
+        return self._verb
+
+    @verb.setter
+    def verb(self, value):
+        self._verb = value
+
+    @property
+    def fight(self):
+        return self._fight
+
+    @fight.setter
+    def fight(self, value):
+        self._fight = value
+
+    @property
+    def range(self):
+        return self._range
+
+    @range.setter
+    def range(self, value):
+        self._range = value
+
+    @property
+    def accuracy(self):
+        return self._accuracy
+
+    @accuracy.setter
+    def accuracy(self, value):
+        self._accuracy = value
+
+    @property
+    def consistency(self):
+        return self._consistency
+
+    @consistency.setter
+    def consistency(self, value):
+        self._consistency = value
+
+    @property
+    def critRate(self):
+        return self._critRate
+
+    @critRate.setter
+    def critRate(self, value):
+        self._critRate = value
+
+
+class Armor(Item):
+    def __init__(self, name, cost, grade, defense, durabillity):
+        super(Armor, self).__init__(name, cost, grade)
+        self._defense = defense
+        self._durabillity = durabillity
+
+    @property
+    def defense(self):
+        return self._defense
+
+    @defense.setter
+    def defense(self, value):
+        self._defense = value
+
+    @property
+    def durabillity(self):
+        return self._durability
+
+    @durabillity.setter
+    def durability(self, value):
+        self._durability = value
+
 
 class Fightable(object):
     def __init__(self, name, fight, defense, agility, health, moves,
@@ -451,6 +704,8 @@ class Fightable(object):
     def defense(self, value):
         if (value > 0):
             self._defense = value
+        else:
+            self._defense = 0
 
     @property
     def maxDefense(self):
@@ -485,8 +740,13 @@ class Fightable(object):
 
     @health.setter
     def health(self, value):
-        if (value > -1):
-            self._health = value
+        if value < self.maxHealth:
+            if value > 0:
+                self._health = value
+            else:
+                self._health = 0
+        else:
+            self._health = self.maxHealth
 
     @property
     def maxHealth(self):
@@ -541,58 +801,58 @@ class Fightable(object):
     def oneAndDone(self, st):
         suffered = ""
         x = 0
-        while x < len(st.stat()):
+        while x < len(st.stats):
             if x != 0:
                 suffered += "\n"
 
-            if st.stat()[x] == "health":
-                self.health += (st.amount()[x])
+            if st.stats[x] == "health":
+                self.health += (st.amounts[x])
                 verb = " loses "
-                if st.amount()[x] >= 0:
+                if st.amounts[x] >= 0:
                     verb = " gains "
                 plural = "s"
-                if abs(st.amount()[x]) == 1:
+                if abs(st.amounts[x]) == 1:
                     plural = ""
-                suffered += self.name + verb + str(abs(st.amount()[x])) + " hitpoint" + plural + "!"
+                suffered += self.name + verb + str(abs(st.amounts[x])) + " hitpoint" + plural + "!"
 
-            elif st.stat()[x] == ("fight"):
-                self.fight += (st.amount()[x])
+            elif st.stats[x] == ("fight"):
+                self.fight += (st.amounts[x])
                 verb = ""
-                if abs(st.amount()[x]) > 4:
+                if abs(st.amounts[x]) > 4:
                     verb = "greatly"
-                elif abs(st.amount()[x]) <= 2:
+                elif abs(st.amounts[x]) <= 2:
                     verb = "slightly"
-                if st.amount()[x] >= 0:
+                if st.amounts[x] >= 0:
                     verb = " is " + verb + " strengthened"
                 else:
                     verb = " is " + verb + " weakened"
                 suffered += self.name + verb + "!"
 
-            elif st.stat()[x] == ("defense"):
-                self.defense += (st.amount()[x])
+            elif st.stats[x] == ("defense"):
+                self.defense += (st.amounts[x])
                 verb = ""
-                if abs(st.amount()[x]) > 4:
+                if abs(st.amounts[x]) > 4:
                     verb = "greatly"
-                elif abs(st.amount()[x]) <= 2:
+                elif abs(st.amounts[x]) <= 2:
                     verb = "slightly"
-                if st.amount()[x] >= 0:
+                if st.amounts[x] >= 0:
                     verb = "'s defenses are " + verb + " reinforced"
                 else:
                     verb = "'s defenses are " + verb + " diminished"
-                suffered += self.name + self.verb + "!"
+                suffered += self.name + verb + "!"
 
-            elif st.stat()[x] == "agility":
-                self.agility += (st.amount()[x])
+            elif st.stats[x] == "agility":
+                self.agility += (st.amounts[x])
                 verb = ""
-                if abs(st.amount()[x]) > 4:
+                if abs(st.amounts[x]) > 4:
                     verb = "greatly"
-                elif abs(st.amount()[x]) <= 2:
+                elif abs(st.amounts[x]) <= 2:
                     verb = "slightly"
-                if st.amount()[x] >= 0:
+                if st.amounts[x] >= 0:
                     verb = "'s speed is " + verb + " increased"
                 else:
                     verb = "'s speed is " + verb + " decreased"
-                suffered += self.name + self.verb + "!"
+                suffered += self.name + verb + "!"
             x += 1
 
         return suffered
@@ -630,336 +890,252 @@ class Fightable(object):
         while x < len(team):
             health += team[x].health
             x += 1
+        print health
         return health
 
     @staticmethod
+    def firstOf(coords):
+        for x in range(len(coords)-1, -1, -1):
+            if coords[x] != -1:
+                return coords[x]
+        return -1
+
+    @staticmethod
     def selectFromCoords(coords, enemies, target):
-        highlight = [-1]
-        highlighted = []
+        screenshot = screen.copy()
+        locations = []
+        img = None
+
+
+        l = 0
+        while Fightable.firstOf(coords[l]) == -1:
+            l += 1
+
+        if target == "Single" or target == "Vert Line":
+            locations = [(185, 300 + 100 * len(coords[0])), (285, 300 + 100 * len(coords[0])),
+                         (390, 300 + 100 * len(coords[0])), (490, 300 + 100 * len(coords[0]))]
+            img = pygame.image.load("GameArt\Buttons\This.png")
+        elif target == "Hori Line":
+            for x in range(0, len(coords[0])):
+                locations.append((300, (x * 100 + 200)))
+            img = pygame.image.load("GameArt\Buttons\This.png")
+        else:
+            locations = [(0, 0)]
+            img = pygame.image.load("GameArt\Buttons\Empty.png")
+
+
+        l = 0
+        screens = []
+        while l < len(locations)+1:
+            screen.blit(screenshot, (0, 0))
+            while l < len(coords) and Fightable.firstOf(coords[l]) == -1:
+                l += 1
+            if l < len(locations):
+                Fightable.printCoords(coords, enemies, Fightable.firstOf(coords[l]))
+                screen.blit(img, locations[l])
+            else:
+                screen.blit(pygame.image.load("GameArt\Buttons\Back.png"), (650, 650))
+            screens.append(screen.copy())
+            l += 1
+        l = 0
+        screen.blit(screens[l], (0, 0))
+
         while True:
-            if target.find("Single") != -1:
-                if len(highlighted) <= len(enemies):
-                    y = 0
-                    x = 0
-                    while y < len(coords[0]) and highlight[0] == -1:
-                        while x < len(coords) and highlight[0] == -1:
-                            if coords[x][y] != -1 and coords[x][y] in highlighted:
-                                highlighted.append(coords[x][y])
-                                highlight = [coords[x][y]]
-                            x += 1
-                        y += 1
-                else:
-                    highlight = [-1]
-            elif target.find("Vert Line") != -1:
-                if len(highlighted) <= len(enemies):
-                    highlight = []
-                    unused = False
-                    x = 0
-                    while x < 4 and not (unused):
-                        y = 0
-                        while y < len(coords[0]) and not (unused):
-                            if coords[x][y] != -1 and not (coords[x][y] in highlighted):
-                                highlighted.append(coords[x][y])
-                                unused = True
-                            y += 1
-                        x += 1
-                    x -= 1
-                    if (unused):
-                        y = 0
-                        while (y < len(coords[0])):
-                            if (coords[x][y] != -1):
-                                if (not ((coords[x][y]) in highlighted)):
-                                    highlighted.append(coords[x][y])
-                                highlight.append(coords[x][y])
-                            y += 1
-                    else:
-                        highlight = [-1]
-                else:
-                    highlight = [-1]
-            elif target.find("Hori Line") != -1:
-                if len(highlighted) <= len(enemies):
-                    highlight = []
-                    unused = False
-                    y = 0
-                    while y < len(coords[0]) and not (unused):
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        l -= 1
+                        if l < 0:
+                            l = len(screens)-1
+                        screen.blit(screens[l], (0, 0))
+                    if event.key == pygame.K_RIGHT:
+                        l += 1
+                        if l >= len(screens):
+                            l = 0
+                        screen.blit(screens[l], (0, 0))
+                    if event.key == pygame.K_RETURN:
+                        if l == len(locations):
+                            return [-1]
                         x = 0
-                        while x < len(coords) and not (unused):
-                            if (coords[x][y] != -1 and not (coords[x][y] in highlighted)):
-                                highlighted.append(coords[x][y])
-                                unused = True
-                            x += 1
-                        y += 1
-                    y -= 1
-                    if (unused):
-                        x = 0
-                        while (x < len(coords)):
-                            if (coords[x][y] != -1):
-                                if (not (coords[x][y] in highlighted)):
-                                    highlighted.append(coords[x][y])
-                                highlight.append(coords[x][y])
-                            x += 1
-                    else:
-                        highlight = [-1]
+                        t = -1
+                        for x in range(4):
+                            if Fightable.firstOf(coords[x]) != -1:
+                                t+=1
+                            if t == l:
+                                return [Fightable.firstOf(coords[x])]
+                        return [-1]
+            pygame.display.update()
+
+    @staticmethod
+    def printHeroes(heroes, highlight=-1, yellow=-1):
+        font = pygame.font.SysFont('Arial', 25)
+        colors = [WHITE, WHITE, WHITE]
+        if yellow != -1:
+            colors[yellow] = RED
+        if highlight == 0:
+            pygame.draw.rect(screen, colors[0], [35, 0, 216, 120])
+            heroes[0].blurtStats(font, (40, 25))
+        else:
+            pygame.draw.rect(screen, colors[0], [35, 0, 216, 100])
+            heroes[0].blurtStats(font, (40, 5))
+        if highlight == 1:
+            pygame.draw.rect(screen, colors[1], [252, 0, 216, 120])
+            if len(heroes) > 1:
+                heroes[1].blurtStats(font, (257, 25))
+        else:
+            pygame.draw.rect(screen, colors[1], [252, 0, 216, 100])
+            if len(heroes) > 1:
+                heroes[1].blurtStats(font, (257, 5))
+        if highlight == 2:
+            pygame.draw.rect(screen, colors[2], [469, 0, 216, 120])
+            if len(heroes) > 2:
+                heroes[2].blurtStats(font, (474, 25))
+        else:
+            pygame.draw.rect(screen, colors[2], [469, 0, 216, 100])
+            if len(heroes) > 2:
+                heroes[2].blurtStats(font, (474, 5))
+
+    @staticmethod
+    def printCoords(coordinates, enemies, highlight=-1, attacking=-1):
+        rects = []
+        for y in range(len(coordinates[0])):
+            rec = []
+            for x in range(4):
+                if coordinates[x][y] == -1:
+                    rec.append(None)
                 else:
-                    highlight = [-1]
+                    color = enemies[coordinates[x][y]].healthColor()
+                    if highlight == coordinates[x][y]:
+                        color = WHITE
+                    rec.append(pygame.draw.rect(screen, color, [160 + (x * 100), 250 + (y * 100), 100, 100]))
+            rects.append(rec)
+
+        for y in range(len(coordinates[0])):
+            for x in range(4):
+                if coordinates[x][y] != -1:
+                    if enemies[coordinates[x][y]].size == 1:
+                        try:
+                            im = pygame.transform.flip(enemies[coordinates[x][y]].generateImage(), attacking==coordinates[x][y], False)
+                            screen.blit(im, (
+                                rects[y][x].x - (im.get_size()[0] / 4), rects[y][x].y - (im.get_size()[1] * 3 / 5)))
+                        except:
+                            screen.blit(pygame.image.load("GameArt\Placeholders\PlaceholderSize1.png"),
+                                        (rects[y][x].x, rects[y][x].y))
+                    elif enemies[coordinates[x][y]].size == 2:
+                        if x == len(coordinates) - 1 or coordinates[x + 1][y] != coordinates[x][y]:
+                            try:
+                                im = pygame.transform.flip(enemies[coordinates[x][y]].generateImage(), attacking==coordinates[x][y], False)
+                                screen.blit(im, (rects[y][x].x - im.get_size()[1], rects[y][x].y - im.get_size()[0]))
+                            except:
+                                screen.blit(pygame.image.load("GameArt\Placeholders\PlaceholderSize2.png"),
+                                            (rects[y][x].x - 100, rects[y][x].y))
+                    elif enemies[coordinates[x][y]].size == 3:
+                        if y == len(coordinates[0]) - 1 or coordinates[x][y + 1] != coordinates[x][y]:
+                            try:
+                                im = pygame.transform.flip(enemies[coordinates[x][y]].generateImage(), attacking==coordinates[x][y], False)
+                                screen.blit(im, (rects[y][x].x - im.get_size()[1], rects[y][x].y - im.get_size()[0]))
+                            except:
+                                screen.blit(pygame.image.load("GameArt\Placeholders\PlaceholderSize3.png"),
+                                            (rects[y][x].x, rects[y][x].y - 100))
+                    else:
+                        if y == len(coordinates[0]) - 1 or coordinates[x][y + 1] != coordinates[x][y]:
+                            if x == len(coordinates) - 1 or coordinates[x + 1][y] != coordinates[x][y]:
+                                try:
+                                    im = pygame.transform.flip(enemies[coordinates[x][y]].generateImage(), attacking==coordinates[x][y], False)
+                                    screen.blit(im,
+                                                (rects[y][x].x - im.get_size()[1], rects[y][x].y - im.get_size()[0]))
+                                except:
+                                    screen.blit(pygame.image.load("GameArt\Placeholders\PlaceholderSize4.png"),
+                                                (rects[y][x].x - 100, rects[y][x].y - 100))
+
+    @staticmethod
+    def flavorText(string):
+        pygame.draw.rect(screen, WHITE, [5, 536, 706, 150])
+        font = pygame.font.SysFont('Arial', 25)
+        x = 0
+        while len(string) > 0:
+            if len(string) >= 60:
+                screen.blit(font.render(string[0:60], True, (255, 0, 0)), (12, 550+(x*30)))
+                string = string[60:]
             else:
-                highlight = [-1]
-            nev = "Back"
-            if (highlight[0] == -1):
-                nev = "\033[0;93mBack\033[0m"
-            print(
-                "Which enemy? (Press enter to scroll through options, type a key and press enter to select)\n{}\n\n{}".format(
-                    Fightable.printCoords(coords, enemies, highlight), nev))
-            if (not (raw_input() == "")):
-                return highlight
-            if (highlight[0] == -1):
-                highlighted = []
-            highlight = [-1]
-            clear()
+                screen.blit(font.render(string, True, (255, 0, 0)), (12, 550+(x*30)))
+                string = ""
+            x += 1
+        pygame.display.update()
 
     @staticmethod
-    def printHeroes(heroes):
-        return Fightable.printHeroes(heroes, -1)
+    def printScreen(coordinates, enemies, heroes, attacking=-1):
+        screen.fill(BLACK)  # 4 sets of 165
+
+        Fightable.printCoords(coordinates, enemies, attacking, attacking)
+        Fightable.printHeroes(heroes)
+
+        pygame.display.update()
 
     @staticmethod
-    def printHeroes(heroes, highlighted):
-        string = " ------------------------------------------------ \n|"
-        for x in range(0, 4):
-            try:
-                string += heroes[x].healthColorT()
-                if (highlighted == x):
-                    string += "\033[1;37m"
-                string += heroes[x].name + "\033[0m"
-                d = 0
-                while (d < 11 - len(heroes[x].name)):
-                    string += " "
-                    d += 1
-                if (x == 2):
-                    string += " "
-                string += "|"
-            except:
-                string += "\033[0m           "
-                if (x == 2):
-                    string += " "
-                string += "|"
-        string += "\n|"
-        for x in range(0, 4):
-            try:
-                stats = str(heroes[x].health) + "/" + str(heroes[x].maxHealth) + " HP"
-                string += heroes[x].healthColorT()
-                if (highlighted == x):
-                    string += "\033[1;37m"
-                string += stats + "\033[0m"
-                d = 0
-                while (d < 11 - len(stats)):
-                    string += " "
-                    d += 1
-                if (x == 2):
-                    string += " "
-                string += "|"
-            except:
-                string += "           "
-                if (x == 2):
-                    string += " "
-                string += "|"
-        string += "\n|           |           |           |            |\n"
-        string += " ------------------------------------------------"
-        return string
-
-    @staticmethod
-    def printCoordsS(coordinates, enemies):
-        return Fightable.printCoords(coordinates, enemies, [-1])
-
-    @staticmethod
-    def printCoords(coordinates, enemies, highlight):
-        printMe = " ------------------------------------------------"
-        for z in range(0, len(coordinates[0])):
-            printMe += "\033[00m"
-            printMe += "\n|"
-            for x in range(0, len(coordinates)):
-                if (coordinates[x][z] != -1):
-                    if (coordinates[x][z] in highlight):
-                        printMe += "\033[0;93m"
-                    else:
-                        printMe += enemies[coordinates[x][z]].healthColor()
-                    printedAName = False
-                    if (x > 0):
-                        if (coordinates[x - 1][z] != coordinates[x][z]):
-                            printMe += "\033[0m"
-                            printMe += "\b|"
-                            if (coordinates[x][z] in highlight):
-                                printMe += "\033[0;93m"
-                            else:
-                                printMe += enemies[coordinates[x][z]].healthColor()
-                        else:
-                            printMe += " "
-                    if ((enemies[coordinates[x][z]]).size == 2):
-                        if (x > 0):
-                            if (coordinates[x - 1][z] != coordinates[x][z]):
-                                printMe += enemies[coordinates[x][z]].name
-                                printedAName = True
-                            else:
-                                printMe += "            "
-                        else:
-                            printMe += enemies[coordinates[x][z]].name
-                            printedAName = True
-                    elif (enemies[coordinates[x][z]].size == 3):
-                        if (z > 0):
-                            if (coordinates[x][z - 1] != coordinates[x][z]):
-                                printMe += enemies[coordinates[x][z]].name
-                                printedAName = True
-                            else:
-                                printMe += "            "
-                        else:
-                            printMe += enemies[coordinates[x][z]].name
-                            printedAName = True
-                    elif (enemies[coordinates[x][z]].size == 4):
-                        if (x > 0 or z > 0):
-                            if ((x < len(coordinates) - 1 and coordinates[x + 1][z] == coordinates[x][z]) and z < len(
-                                    coordinates[0]) - 1 and coordinates[x][z + 1] == coordinates[x][z]):
-                                printMe += enemies[coordinates[x][z]].name
-                                printedAName = True
-                            else:
-                                if (z > 0 and coordinates[x][z] == coordinates[x][z - 1]):
-                                    printMe += "            "
-                                    if (x < len(coordinates) - 2 and coordinates[x][z] == coordinates[x + 1][z]):
-                                        printMe += "\b"
-                                else:
-                                    printMe += "            "
-                                    if (x > 0 and coordinates[x][z] == coordinates[x - 1][z] and x != len(
-                                            coordinates) - 1):
-                                        printMe += "\b"
-                        else:
-                            printMe += enemies[coordinates[x][z]].name
-                            printedAName = True
-                    else:
-                        printMe += enemies[coordinates[x][z]].name
-                        printedAName = True
-                    if (printedAName):
-                        y = 0
-                        while (y < 11 - len(enemies[coordinates[x][z]].name)):
-                            printMe += " "
-                            y += 1
-
-                    if (enemies[coordinates[x][z]].size == 2 or enemies[coordinates[x][z]].size == 4):
-                        if (x == len(coordinates) - 1 or coordinates[x + 1][z] != coordinates[x][z]):
-                            if (enemies[coordinates[x][z]].size == 4 and x > 0 and z > 0 and coordinates[x - 1][z] ==
-                                    coordinates[x][z] and coordinates[x][z - 1] == coordinates[x][z]):
-                                printMe += "\b"
-                            elif (enemies[coordinates[x][z]].size == 2 and x != len(coordinates) - 1):
-                                printMe += "\b"
-                            printMe += "\033[0m"
-                            printMe += "|"
-                            if (coordinates[x][z] in highlight):
-                                printMe += "\033[0;93m"
-                            else:
-                                printMe += enemies[coordinates[x][z]].healthColor()
-                    if (enemies[coordinates[x][z]].size == 3):
-                        if (x == len(coordinates) - 1 or coordinates[x + 1][z] != coordinates[x][z]):
-                            if (x < len(coordinates) - 1 and z > 0 and coordinates[x][z - 1] == coordinates[x][z]):
-                                printMe += "\b"
-                            elif (x == len(coordinates) - 1 and (z == 0 or coordinates[x][z - 1] != coordinates[x][z])):
-                                printMe += " "
-                            printMe += "\033[0m"
-                            printMe += "|"
-                            if (coordinates[x][z] in highlight):
-                                printMe += "\033[0;93m"
-                            else:
-                                printMe += enemies[coordinates[x][z]].healthColor()
-                    elif (enemies[coordinates[x][z]].size == 1):
-                        if (x == len(coordinates) - 1):
-                            printMe += " "
-                        printMe += "\033[0m"
-                        printMe += "|"
-                        if (coordinates[x][z] in highlight):
-                            printMe += "\033[0;93m"
-                        else:
-                            printMe += enemies[coordinates[x][z]].healthColor()
-                    printMe += "\033[0m"
-                else:
-                    printMe += "            "
-            if (coordinates[len(coordinates) - 1][z] == -1):
-                printMe += "|"
-            printMe += "\n|"
-            for x in range(0, len(coordinates)):
-                if (x > 0):
-                    if (coordinates[x - 1][z] != coordinates[x][z]):
-                        printMe += "\033[0m"
-                        printMe += "\b|"
-                if (coordinates[x][z] != -1):
-                    if (coordinates[x][z] in highlight):
-                        printMe += "\033[0;93m"
-                    else:
-                        printMe += enemies[coordinates[x][z]].healthColor()
-                printMe += "            "
-                printMe += "\033[0m"
-                if (x == len(coordinates) - 1 and coordinates[x][z] != -1):
-                    printMe += " "
-                if (coordinates[x][z] != -1 and (
-                        enemies[coordinates[x][z]].size % 2 != 0 or x == len(coordinates) - 1)):
-                    printMe += "\033[0m"
-                    printMe += "\b|"
-            if (coordinates[len(coordinates) - 1][z] == -1):
-                printMe += "|"
-            printMe += "\n"
-            if (z == len(coordinates[0]) - 1):
-                printMe += " ------------------------------------------------"
-            else:
-                printMe += "|"
-                for x in range(0, len(coordinates)):
-                    printMe += "\033[0m"
-                    if (coordinates[x][z] != -1 and not (
-                            (enemies[coordinates[x][z]].size == 3 or enemies[coordinates[x][z]].size == 4))):
-                        printMe += "------------"
-                    elif (z < len(coordinates[0]) - 1 and coordinates[x][z + 1] != -1 and coordinates[x][z] !=
-                          coordinates[x][z + 1]):
-                        printMe += "------------"
-                    elif (coordinates[x][z] != -1 and (
-                            enemies[coordinates[x][z]].size == 3 or enemies[coordinates[x][z]].size == 4) and
-                          coordinates[x][z + 1] == -1):
-                        printMe += "------------"
-                    elif (coordinates[x][z] != -1 and enemies[coordinates[x][z]].size == 3 and coordinates[x][
-                        z + 1] != -1):
-                        printMe += "\033[0m"
-                        printMe += "\b|"
-                        if (coordinates[x][z] in highlight):
-                            printMe += "\033[0;93m"
-                        else:
-                            printMe += enemies[coordinates[x][z]].healthColor()
-                        printMe += "           "
-                        if (x != len(coordinates) - 1):
-                            printMe += "\033[0m"
-                            printMe += "|"
-                            if (coordinates[x][z] in highlight):
-                                printMe += "\033[0;93m"
-                            else:
-                                printMe += enemies[coordinates[x][z]].healthColor()
-                        else:
-                            printMe += " "
-                    elif (coordinates[x][z] != -1 and enemies[coordinates[x][z]].size == 4 and z < len(
-                            coordinates[0]) - 1 and coordinates[x][z + 1] != -1):
-                        if (x > 0 and coordinates[x - 1][z] != coordinates[x][z]):
-                            printMe += "\033[0m"
-                            printMe += "\b|"
-                        if (coordinates[x][z] in highlight):
-                            printMe += "\033[0;93m"
-                        else:
-                            printMe += enemies[coordinates[x][z]].healthColor()
-                        printMe += "           "
-                        if (x != len(coordinates) - 1 and coordinates[x + 1][z] != coordinates[x][z]):
-                            printMe += "\033[0m"
-                            printMe += "|"
-                            if (coordinates[x][z] in highlight):
-                                printMe += "\033[0;93m"
-                            else:
-                                printMe += enemies[coordinates[x][z]].healthColor()
-                        else:
-                            printMe += " "
-                    else:
-                        printMe += "            "
-                printMe += "\033[0m"
-                printMe += "|"
-        return printMe
+    def ask():
+        screenshot = screen.copy()
+        rects = [pygame.image.load("GameArt\Buttons\Fight.png"), pygame.image.load("GameArt\Buttons\Defend.png"),
+                 pygame.image.load("GameArt\Buttons\Special.png"), pygame.image.load("GameArt\Buttons\Item.png")]
+        screen.blit(pygame.transform.scale(rects[0], (rects[0].get_size()[0] * 3 / 2, rects[0].get_size()[1] * 3 / 2)),
+                    (312, 565))
+        screen.blit(rects[2], (257, 618.75))
+        screen.blit(rects[1], (332, 637))
+        screen.blit(rects[3], (410, 618.75))
+        highlighted = rects[0]
+        pygame.display.update()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        highlighted = rects[0]
+                        screen.blit(screenshot, (0, 0))
+                        screen.blit(pygame.transform.scale(rects[0], (
+                            rects[0].get_size()[0] * 3 / 2, rects[0].get_size()[1] * 3 / 2)), (312, 565))
+                        screen.blit(rects[1], (332, 637))
+                        screen.blit(rects[2], (257, 618.75))
+                        screen.blit(rects[3], (410, 618.75))
+                    elif event.key == pygame.K_DOWN:
+                        highlighted = rects[1]
+                        screen.blit(screenshot, (0, 0))
+                        screen.blit(rects[0], (332, 587))
+                        screen.blit(pygame.transform.scale(rects[1], (
+                            rects[1].get_size()[0] * 3 / 2, rects[1].get_size()[1] * 3 / 2)), (312, 650))
+                        screen.blit(rects[2], (257, 618.75))
+                        screen.blit(rects[3], (410, 618.75))
+                    elif event.key == pygame.K_LEFT:
+                        highlighted = rects[2]
+                        screen.blit(screenshot, (0, 0))
+                        screen.blit(rects[0], (332, 587))
+                        screen.blit(rects[1], (332, 637))
+                        screen.blit(pygame.transform.scale(rects[2], (
+                            rects[2].get_size()[0] * 3 / 2, rects[2].get_size()[1] * 3 / 2)), (220, 605))
+                        screen.blit(rects[3], (410, 618.75))
+                    elif event.key == pygame.K_RIGHT:
+                        highlighted = rects[3]
+                        screen.blit(screenshot, (0, 0))
+                        screen.blit(rects[0], (332, 587))
+                        screen.blit(rects[1], (332, 637))
+                        screen.blit(rects[2], (257, 618.75))
+                        screen.blit(pygame.transform.scale(rects[3], (
+                            rects[3].get_size()[0] * 3 / 2, rects[3].get_size()[1] * 3 / 2)), (410, 605))
+                    if event.key == pygame.K_RETURN:
+                        screen.blit(screenshot, (0, 0))
+                        pygame.display.update()
+                        if highlighted == rects[0]:
+                            return "fight"
+                        if highlighted == rects[1]:
+                            return "defend"
+                        if highlighted == rects[2]:
+                            return "special"
+                        return "item"
+            pygame.display.update()
 
     @staticmethod
     def combat(heroes, enemies):
@@ -1046,15 +1222,14 @@ class Fightable(object):
                     y = -1
                     potentials = []
                     for d in range(0, len(coordinates)):
-                        for f in range(0, len(coordinates[0])):
+                        for f in range(0, len(coordinates[0]) - 1):
                             potentials.append([d, f])
-                    while (x == -1 and y == -1 and len(potentials) > 0):
+                    while x == -1 and y == -1 and len(potentials) > 0:
                         attempt = potentials.pop(randint(0, len(potentials) - 1))
-                        if (coordinates[attempt[0]][attempt[1]] == -1 and coordinates[attempt[0]][
-                            attempt[1] + 1] == -1):
+                        if coordinates[attempt[0]][attempt[1]] == -1 and coordinates[attempt[0]][attempt[1] + 1] == -1:
                             x = attempt[0]
                             y = attempt[1]
-                    if (x != -1):
+                    if x != -1:
                         coordinates[x][y] = j
                         coordinates[x][y + 1] = j
                     else:
@@ -1064,7 +1239,7 @@ class Fightable(object):
                                 coordinates[t].append(-1)
                         tries += 1
                         j = -1
-                elif (e.size == 4):
+                elif e.size == 4:
                     x = -1
                     y = -1
                     potentials = []
@@ -1091,77 +1266,45 @@ class Fightable(object):
                         tries += 1
                         j = -1
                 j += 1
-            if (tries == 5000):
+            if tries == 5000:
                 coordinates = None
 
         while Fightable.totalHealth(heroes) > 0 and Fightable.totalHealth(enemies) > 0:
-            while True:
-                screen.fill(BLACK)  # 4 sets of 165
-                starty = 150 - (len(coordinates[0]) - 1) * 35
-                for x in range(0, len(coordinates[0])):
-                    pygame.draw.rect(screen, WHITE,
-                                     [157 + ((x % 2) * 50), ((len(coordinates[0]) - x) * 125) + starty, 400,
-                                      100])
-                font = pygame.font.SysFont('Arial', 25)
-                pygame.draw.rect(screen, WHITE, [35, 0, 216, 100])
-                heroes[0].blurtStats(font, (40, 5))
-                pygame.draw.rect(screen, WHITE, [252, 0, 216, 100])
-                if len(heroes) > 1:
-                    heroes[1].blurtStats(font, (257, 5))
-                pygame.draw.rect(screen, WHITE, [469, 0, 216, 100])
-                if len(heroes) > 2:
-                    heroes[2].blurtStats(font, (474, 5))
-
-                screen.blit(enemies[0].generateImage(), (0, 0))
-
-                pygame.display.update()
-
+            Fightable.printScreen(coordinates, enemies, heroes)
+            screenshot = screen.copy()
             gamePlanH = []
             gamePlanE = []
-            for x in range(0, len(heroes)):
+            for x in range(len(heroes)):
+                Fightable.printHeroes(heroes, x)
+                zoop = screen.copy()
+                pygame.display.update()
                 who = heroes[x]
                 who.sufferEffects()
                 if who.health > 0:
                     for y in range(0, (who.agility / 10) + 1):
                         deciding = True
-                        while (deciding):
-                            times = ""
-                            if (y == 1):
-                                times = " second"
-                            elif (y == 2):
-                                times = " third"
-                            elif (y == 3):
-                                times = " fourth"
-                            elif (y > 0):
-                                times = " next"
-                            what = -1
-                            if (who.gender.subj == "you"):
-                                what = ask([Fightable.printCoordsS(coordinates,
-                                                                   enemies) + "\n\n" + Fightable.printHeroes(heroes,
-                                                                                                             x) + "\n\nWhat should you do on your" + times + " turn?\n",
-                                            "Check stats", "Attack", "Use Technique", "Use Item", "Defend", "Flee"])
-                            else:
-                                what = ask([Fightable.printCoordsS(coordinates,
-                                                                   enemies) + "\n\n" + Fightable.printHeroes(heroes,
-                                                                                                             x) + "\n\nWhat should " + who.name + " do on " + who.gender.posAdj + times + " turn?",
-                                            "Check stats", "Attack", "Use Technique", "Use Item", "Defend"])
-                            clear()
-                            if (what == 1):
-                                print who.toString()
-                                clearI()
-                            elif (what == 2):
+                        while deciding:
+                            screen.blit(zoop, (0, 0))
+                            Fightable.printHeroes(heroes, x)
+                            what = Fightable.ask()
+                            if what == "fight":
                                 w = Fightable.selectFromCoords(coordinates, enemies, "Single")
-                                clear()
-                                if (w[0] != -1):
-                                    gamePlanH.append("H " + x + " Attack " + w[0])
+                                if w[0] != -1:
+                                    gamePlanH.append("H {} Attack {}".format(x, w[0]))
                                     deciding = False
-                            elif (what == 3):
+                            elif what == "defend":
+                                Fightable.flavorText(who.name + " takes a defensive stance!")
+                                sleep(1)
+                                screen.blit(screenshot, (0, 0))
+                                who.oneAndDone(StatusEffect("", "", ["defense"], [int(ceil(who.maxDefense*(2.0/3.0)))], 1))
+                                deciding = False
+                                gamePlanH.append("H {} Defend".format(x))
+                            elif what == "special":
                                 if (len(who.moves) > 0):
                                     choosing = True
                                     while (choosing):
                                         moves = []
-                                        moves.append(Fightable.printCoordsS(coordinates,
-                                                                            enemies) + "\n\n" + Fightable.printHeroes(
+                                        moves.append(Fightable.printHeroes(
                                             heroes, x) + "\n\nWhich technique?")
                                         for m in range(0, len(who.moves)):
                                             moves.append(who.moves[m].name)
@@ -1181,7 +1324,7 @@ class Fightable(object):
                                 else:
                                     print("No known techniques.")
                                     clearI()
-                            elif (what == 4):
+                            elif what == "item":
                                 if (len(who.inventory()) > 0):
                                     inventory = ["Which item?"]
                                     for m in range(0, len(who.inventory())):
@@ -1195,32 +1338,20 @@ class Fightable(object):
                                 else:
                                     print("That inventory is empty.")
                                     clearI()
-                            elif (what == 5):
-                                gamePlanH.append("H " + str(x) + " Defend")
-                                deciding = False
-                            else:
-                                if (ask(["Flee the battle?", "Yes", "No"]) == 1):
-                                    print("You attempt to flee the battle...")
-                                    print("But that isn't implemented yet so you fail.")
-                                    clearI()
-                                    deciding = False
-                                    x = 100
-                                    y = 100
-                                clear()
                 else:
-                    print(Fightable.printCoordsS(coordinates, enemies) + "\n\n" + Fightable.printHeroes(heroes,
-                                                                                                        x) + "\n\n")
-                    print(who.name + " is unconscious!")
-                    clearI()
-            for x in range(0, len(enemies)):
+                    Fightable.flavorText(who.name + " is unconscious!")
+                    sleep(1)
+                    screen.blit(screenshot, (0, 0))
+                screen.blit(screenshot, (0, 0))
+            for x in range(len(enemies)):
                 en = enemies[x]
-                if (en.health > 0):
+                if en.health > 0:
                     who = None
-                    while (who == None):
-                        who = choice(heroes)
-                        if (who.health == 0):
+                    while who is None:
+                        who = random.choice(heroes)
+                        if (who.health <= 0):
                             who = None
-                    if (en.hasMovesLeft() and randint(0, 2) == 1):
+                    if en.hasMovesLeft() and randint(0, 2) == 1:
                         move = -1
                         while (move == -1):
                             move = randint(0, len(en.moves - 1))
@@ -1282,171 +1413,179 @@ class Fightable(object):
                 else:
                     combinedGamePlan.append(gamePlanE.pop(0))
 
+            undefend = []
             for x in range(0, len(combinedGamePlan)):
+                Fightable.printScreen(coordinates, enemies, heroes)
+                pygame.display.update()
+                screenshot = screen.copy()
                 action = combinedGamePlan[x]
                 if action[0:1] == "H":
                     who = heroes[int(action[2:3])]
-                    print(Fightable.printCoordsS(coordinates, enemies) + "\n\n" + Fightable.printHeroes(heroes,
-                                                                                                        heroes.index(
-                                                                                                            who)) + "\n")
+                    Fightable.printHeroes(heroes, int(action[2:3]))
+                    pygame.display.update()
                     who.sufferEffects()
-                    sleep(500)
-                    clear()
                     if who.health > 0:
-                        if (action == ("Attack")):
+                        if("Attack" in action):
                             eWho = enemies[int(action[(action.index("Attack") + 7):])]
                             if (eWho.health > 0):
-                                print(Fightable.printCoordsS(coordinates, enemies) + "\n\n" + Fightable.printHeroes(
-                                    heroes, heroes.index(who)) + "\n")
-                                print(
-                                        who.name + " " + who.weapon.verb + " " + who.gender.posAdj + " " + who.weapon.name + " at " + eWho.title + eWho.name)
-                                sleep(500)
+                                Fightable.printHeroes(heroes, heroes.index(who))
+                                Fightable.flavorText(who.name + " " + who.weapon.verb + " " + who.gender.posAdj + " "
+                                                     + who.weapon.name + " at " + eWho.title + " " + eWho.name)
+                                pygame.display.update()
                                 if (randint(0, 99) < eWho.agility):
-                                    print(eWho.name + " dodges the attack!")
-                                    clearI()
+                                    sleep(1.25)
+                                    Fightable.flavorText(eWho.title.capitalize() + eWho.name + " dodges the attack!")
+                                    pygame.display.update()
+                                    sleep(1.5)
+                                    screen.blit(screenshot, (0, 0))
+                                    pygame.display.update()
                                 else:
-                                    clear()
-                                    for b in range(0, 3):
-                                        if (3 % (b + 1) == 0):
-                                            print(Fightable.printCoords(coordinates, enemies, [
-                                                enemies.index(eWho)]) + "\n\n" + Fightable.printHeroes(heroes,
-                                                                                                       heroes.index(
-                                                                                                           who)) + "\n\n" + who.name + " " + who.weapon.verb + " " + who.gender.posAdj + " " + who.weapon.name + " at " + eWho.title + eWho.name)
-                                        else:
-                                            print(Fightable.printCoordsS(coordinates,
-                                                                         enemies) + "\n\n" + Fightable.printHeroes(
-                                                heroes, heroes.index(
-                                                    who)) + "\n\n" + who.name + " " + who.weapon.verb + " " + who.gender.posAdj + " " + who.weapon.name + " at " + eWho.title + eWho.name)
-                                        sleep(100)
-                                        clear()
-
-                                    amount = who.fight - eWho.defense
+                                    amount = who.fightT() - eWho.defense
                                     if (amount <= 0):
                                         amount = 1
                                     eWho.health += (amount * -1)
+                                    Fightable.printCoords(coordinates, enemies)
+                                    screenshot = screen.copy()
+                                    Fightable.printCoords(coordinates, enemies, enemies.index(eWho))
+                                    other = screen.copy()
+                                    screen.blit(screenshot, (0, 0))
+                                    pygame.display.update()
+                                    for b in range(0, 5):
+                                        if (3 % (b + 1) == 0):
+                                            screen.blit(other, (0, 0))
+                                        else:
+                                            screen.blit(screenshot, (0, 0))
+                                        pygame.display.update()
+                                        sleep(.1)
+
                                     dead = ""
                                     if (eWho.health <= 0):
-                                        dead = ("\n" + eWho.name + " has been defeated!")
+                                        dead = (eWho.title.capitalize() + " " + eWho.name + " has been defeated!")
                                         for e in range(0, len(coordinates)):
                                             for w in range(0, len(coordinates[0])):
                                                 if (coordinates[e][w] == int(action[(action.index("Attack") + 7):])):
                                                     coordinates[e][w] = -1
-                                    print(Fightable.printCoordsS(coordinates, enemies) + "\n\n" + Fightable.printHeroes(
-                                        heroes, heroes.index(who)) + "\n")
-                                    print(eWho.name + " takes " + amount + " damage!" + dead)
-                                    clearI()
+                                    Fightable.flavorText(eWho.title.capitalize() + " " + eWho.name + " takes {} damage! ".format(amount) + dead)
+                                    pygame.display.update()
+                                    sleep(1.5)
+                                    if dead != "":
+                                        sleep(.25)
+                                        for x in coordinates:
+                                            for y in x:
+                                                if y == enemies.index(eWho):
+                                                    y = -1
+                                        Fightable.printCoords(coordinates, enemies)
+                                    Fightable.printScreen(coordinates, enemies, heroes)
+                                    pygame.display.update()
                             else:
-                                print(Fightable.printCoordsS(coordinates, enemies) + "\n\n" + Fightable.printHeroes(
-                                    heroes, heroes.index(who)) + "\n")
-                                print(who.name + "'s target is already dead...")
-                                clearI()
-                        elif (action == ("Move")):
+                                Fightable.flavorText(who.name + "'s target is already dead...")
+                                pygame.display.update()
+                                sleep(1.5)
+                                screen.blit(screenshot, (0, 0))
+                                pygame.display.update()
+                        elif("Move" in action):
                             move = who.moves[int(action[9:10])]
-                            print(Fightable.printCoordsS(coordinates, enemies) + "\n\n" + Fightable.printHeroes(heroes,
-                                                                                                                heroes.index(
-                                                                                                                    who)) + "\n")
-                            print(who.name + " uses " + move.name + "!")
+                            Fightable.flavorText(who.name + " uses " + move.name + "!")
                             targets = action[action.index("[") + 1:len(action) - 1]
                             targs = []
                             happenstances = ""
                             while (len(targets) > 0):
                                 targ = None
-                                if (targets.index(",") != -1):
-                                    targ = enemies[int(targets[0:targets.index(",")])]
-                                    targets = targets[targets.index(" ") + 1:]
+                                if move.statusEffects[0].stats[0] < 0:
+                                    if (targets.index(",") != -1):
+                                        targ = enemies[int(targets[0:targets.index(",")])]
+                                        targets = targets[targets.index(" ") + 1:]
+                                    else:
+                                        targ = enemies[int(targets)]
+                                        targets = ""
+                                    if (targ.health > 0):
+                                        for s in range(0, len(move.statusEffects())):
+                                            st = move.statusEffects()[s]
+                                            happenstances += "\n" + targ.getEffect(move) + "\n"
+                                        if (targ.health <= 0):
+                                            happenstances += (targ.name + " has been defeated!\n\n")
+                                            for e in range(0, len(coordinates)):
+                                                for w in range(0, len(coordinates[0])):
+                                                    if (coordinates[e][w] == enemies.index(targ)):
+                                                        coordinates[e][w] = -1
+                                        targs.append(enemies.index(targ))
+                                        clear()
+                                        print(Fightable.printHeroes(
+                                            heroes) + "\n\n" + who.name + " uses " + move.name + "!\n" + happenstances)
+                                        sleep(200)
+                                        clear()
+                                        print(Fightable.printHeroes(
+                                            heroes) + "\n" + who.name + " uses " + move.name + "!\n\n" + happenstances)
+                                        sleep(200)
                                 else:
-                                    targ = enemies[int(targets)]
-                                    targets = ""
-                                if (targ.health > 0):
-                                    for s in range(0, len(move.statusEffects())):
-                                        st = move.statusEffects()[s]
-                                        happenstances += "\n" + targ.getEffect(move) + "\n"
-                                    if (targ.health <= 0):
-                                        happenstances += (targ.name + " has been defeated!\n\n")
-                                        for e in range(0, len(coordinates)):
-                                            for w in range(0, len(coordinates[0])):
-                                                if (coordinates[e][w] == enemies.index(targ)):
-                                                    coordinates[e][w] = -1
-                                    targs.append(enemies.index(targ))
-                                    clear()
-                                    print(Fightable.printCoords(coordinates, enemies,
-                                                                targs) + "\n\n" + Fightable.printHeroes(heroes,
-                                                                                                        heroes.index(
-                                                                                                            who)) + "\n\n" + who.name + " uses " + move.name + "!\n" + happenstances)
-                                    sleep(200)
-                                    clear()
-                                    print(Fightable.printCoordsS(coordinates, enemies) + "\n\n" + Fightable.printHeroes(
-                                        heroes, heroes.index(
-                                            who)) + "\n" + who.name + " uses " + move.name + "!\n\n" + happenstances)
-                                    sleep(200)
-                            clearI()
-                        elif (action == ("Item")):
+                                    pass
+                        elif("Item" in action):
                             pass
-                        elif (action == ("Defend")):
-                            pass
+                        elif("Defend" in action):
+                            Fightable.flavorText(who.name + " has " + who.gender.posAdj + " guard up!")
+                            undefend.append(who)
+                            sleep(.6)
+                            screen.blit(screenshot, (0, 0))
                     else:
-                        print(Fightable.printCoordsS(coordinates, enemies) + "\n\n" + Fightable.printHeroes(heroes,
-                                                                                                            heroes.index(
-                                                                                                                who)) + "\n")
-                        print(who.name + " has fainted!")
-                        sleep(200)
+                        Fightable.flavorText(who.name() + " is unconscious!")
+                        sleep(1)
+                        screen.blit(screenshot(0, 0))
                 else:
                     who = enemies[(int(action[2:3]))]
-                    print(Fightable.printCoords(coordinates, enemies,
-                                                [enemies.index(who)]) + "\n\n" + Fightable.printHeroes(heroes) + "\n")
+                    screen.blit(screenshot, (0, 0))
                     who.sufferEffects()
-                    sleep(500)
-                    clear()
-                    if (who.health > 0):
-                        if (action == ("Attack")):
-                            hWho = heroes[int(action[(action.index("Attack") + 7):len(action) - 1])]
-                            if (hWho.health > 0):
-                                print(Fightable.printCoords(coordinates, enemies,
-                                                            [enemies.index(who)]) + "\n\n" + Fightable.printHeroes(
-                                    heroes) + "\n")
-                                print(who.name + " " + who.verb + " at " + hWho.name)
-                                sleep(500)
+                    if who.health > 0:
+                        if "Attack" in action:
+                            hWho = heroes[int(action[(action.index("Attack") + 7):])]
+                            if hWho.health > 0:
+                                Fightable.printCoords(coordinates, enemies, [enemies.index(who)])
+                                Fightable.flavorText(who.title.capitalize() + " " + who.name + " " + who.verb + " at " + hWho.name)
+                                pygame.display.update()
+                                sleep(1.5)
+                                screen.blit(screenshot, (0, 0))
+                                pygame.display.update()
+                                sleep(.005)
+                                Fightable.printScreen(coordinates, enemies, heroes, enemies.index(who))
+                                pygame.display.update()
+                                sleep(.1)
+                                screen.blit(screenshot, (0, 0))
+                                pygame.display.update()
                                 if (randint(0, 99) < hWho.agility):
-                                    print(hWho.name + " dodges the attack!")
-                                    clearI()
+                                    Fightable.flavorText(hWho.name + " dodges the attack!")
+                                    pygame.display.update()
                                 else:
-                                    clear()
-                                    for b in range(0, 3):
-                                        if (3 % (b + 1) == 1):
-                                            print(Fightable.printCoords(coordinates, enemies, [
-                                                enemies.index(who)]) + "\n\n" + Fightable.printHeroes(heroes,
-                                                                                                      heroes.index(
-                                                                                                          hWho)) + "\n\n" + who.name + " " + who.verb + " at " + hWho.name)
-                                        else:
-                                            print(Fightable.printCoords(coordinates, enemies, [
-                                                enemies.index(who)]) + "\n\n" + Fightable.printHeroes(
-                                                heroes) + "\n\n" + who.name + " " + who.verb + " at " + hWho.name)
-                                        sleep(100)
-                                        clear()
-                                    amount = who.fight - hWho.defense
+                                    amount = who.fight - hWho.defenseT()
                                     if (amount <= 0):
                                         amount = 1
                                     hWho.health += (amount * -1)
-                                    print(Fightable.printCoords(coordinates, enemies,
-                                                                [enemies.index(who)]) + "\n\n" + Fightable.printHeroes(
-                                        heroes, heroes.index(hWho)) + "\n")
-                                    print(hWho.name + " takes " + amount + " damage!")
+                                    Fightable.printScreen(coordinates, enemies, heroes)
+                                    screenshot = screen.copy()
+                                    for b in range(5):
+                                        if (3 % (b + 1) == 1):
+                                            Fightable.printHeroes(heroes, yellow=heroes.index(hWho))
+                                        else:
+                                            Fightable.printHeroes(heroes)
+                                        pygame.display.update()
+                                        sleep(.1)
+                                    Fightable.flavorText(hWho.name + " takes {} damage!".format(amount))
+                                    pygame.display.update()
+                                    sleep(1.5)
                                     if (hWho.health <= 0):
-                                        print(hWho.name + " has fainted!")
-                                    clearI()
+                                        Fightable.flavorText(hWho.name + " has fainted!")
+                                        pygame.display.update()
+                                        sleep(1.5)
+                                    screen.blit(screenshot, (0, 0))
+                                    pygame.display.update()
                             else:
-                                print(Fightable.printCoords(coordinates, enemies,
-                                                            [enemies.index(who)]) + "\n\n" + Fightable.printHeroes(
-                                    heroes) + "\n")
-                                print(who.name + "'s target is already down...")
-                                clearI()
-                                sleep(200)
-                        elif (action == ("Move")):
+                                Fightable.flavorText(who.name + "'s target is already down...")
+                                sleep(2)
+                        elif "Move" in action:
                             pass
-                        elif (action == ("Defend")):
+                        else:
                             pass
-                        elif (action == ("Flee")):
-                            pass
+
+            for h in undefend:
+                h.defense -= int(ceil(h.maxDefense *(2.0/3.0)))
 
 
 class Hero(Fightable):
@@ -1457,6 +1596,7 @@ class Hero(Fightable):
         self._inventory = []
         self._level = 0
         self.levelUp()
+        self.health = self.maxHealth
         self.setGender(gender)
         self._weapon = weapon
         self._armor = armor
@@ -1525,36 +1665,27 @@ class Hero(Fightable):
     def armor(self, value):
         self._armor = value
 
-    @property
-    def fight(self):
-        return self._fight + self.weapon.fight
+    def fightT(self):
+        return self.fight + self.weapon.fight
 
-    @fight.setter
-    def fight(self, value):
-        self._fight = value
-
-    @property
-    def defense(self):
-        return self._defense + self.armor.defense
-
-    @defense.setter
-    def defense(self, value):
-        self._defense = value
+    def defenseT(self):
+        return self.defense + self.armor.defense
 
     def levelUp(self):
         self.level += 1
-        self.maxHealth = (self.leveling[0][self.level - 1])
-        self.maxFight = (self.leveling[1][self.level - 1])
-        self.maxDefense = (self.leveling[2][self.level - 1])
-        self.maxAgility = (self.leveling[3][self.level - 1])
-        self.health = (self.leveling[0][self.level - 1])
-        self.fight = (self.leveling[1][self.level - 1])
-        self.defense = (self.leveling[2][self.level - 1])
-        self.agility = (self.leveling[3][self.level - 1])
-        if (len(self.learnableMoves) > 0 and (self.level) % (10 / len(self.learnableMoves)) == 0):
+        self.maxHealth += (self.leveling[0][self.level - 1])
+        self.maxFight += (self.leveling[1][self.level - 1])
+        self.maxDefense += (self.leveling[2][self.level - 1])
+        self.maxAgility += (self.leveling[3][self.level - 1])
+        if len(self.learnableMoves) > 0 and self.level % (10 / len(self.learnableMoves)) == 0:
             m = self.learnableMoves[self.level / (10 / len(self.learnableMoves)) - 1]
             print(self.name + " has learned the new skill: " + m.name + ".")
             self.moves.append(m)
+
+    def revert(self):
+        self.fight = self.maxFight
+        self.defense = self.maxDefense
+        self.agility = self.maxAgility
 
     def blurtStats(self, font, coords):
         screen.blit(font.render(self.name + " | " + self.caste, True, (255, 0, 0)), coords)
@@ -1570,22 +1701,23 @@ class Hero(Fightable):
         string += "Level " + str(self.level) + "\n"
         string += "Health: " + str(self.health) + "/" + str(self.maxHealth) + "\n"
         string += "Fight: " + str(self.fight)
-        if (self.fight != self.maxFight):
+        if self.fight != self.maxFight:
             string += "/" + str(self.maxFight)
             string += "\n"
         string += "Defense: " + str(self.defense)
-        if (self.defense != self.maxDefense):
+        if self.defense != self.maxDefense:
             string += "/" + str(self.maxDefense)
         string += "\n"
         string += "Agility: " + str(self.agility)
-        if (self.agility != self.maxAgility):
+        if self.agility != self.maxAgility:
             string += "/" + str(self.maxAgility)
         string += "\n"
         return string
 
 
 class Enemy(Fightable):
-    def __init__(self, name, desc, verb, title, health, fight, defense, agility, moves, drops, size, imageFolder):
+    def __init__(self, name, desc, verb, title, health, fight, defense, agility, moves, drops, size, imageFolder,
+                 appearance=[], gender=Gender("none", "it", "it", "its", "its", "itself")):
         super(Enemy, self).__init__(name, fight, defense, agility, health, moves)
         self._verb = verb
         self._title = title
@@ -1593,6 +1725,8 @@ class Enemy(Fightable):
         self._desc = desc
         self._size = size
         self._imageFolder = imageFolder
+        self.gender = gender
+        self.appearance = appearance
 
     @property
     def verb(self):
@@ -1636,18 +1770,35 @@ class Enemy(Fightable):
 
     def clone(self):
         return Enemy(self.name, self.desc, self.verb, self.title, self.health, self.fight, self.defense, self.agility,
-                     self.moves, self.drops, self.size);
+                     self.moves, self.drops, self.size, self._imageFolder);
 
     def generateImage(self):
         # This code is gonna be horrible
-        if (self.name == "gnoll"):
+        if self.name == "gnoll":
             color = randint(1, 3)
+            goTo = []
+            if self.appearance == []:
+                goTo.append(color)
+            else:
+                color = self.appearance[0]
             image = pygame.image.load("GameArt\Gnoll\Color{} Gnoll\Body.png".format(color))
             image.blit(pygame.image.load("GameArt\Gnoll\Color{} Gnoll\Head1.png".format(color)), (0, 0))
             mane = randint(1, 2)
+            if self.appearance == []:
+                goTo.append(mane)
+            else:
+                mane = self.appearance[1]
             image.blit(pygame.image.load("GameArt\Gnoll\Color{} Gnoll\Mane{}.png".format(color, mane)), (0, 0))
             chin = randint(1, 2)
             chest = randint(1, 2)
+            if self.appearance == []:
+                goTo.append(chin)
+            else:
+                chin = self.appearance[2]
+            if self.appearance == []:
+                goTo.append(chest)
+            else:
+                chest = self.appearance[3]
             if chin == 1:
                 image.blit(pygame.image.load("GameArt\Gnoll\Markings\Head1Chin.png"), (0, 0))
             if chest == 1:
@@ -1655,32 +1806,43 @@ class Enemy(Fightable):
             if chin == 1 and chest == 1:
                 image.blit(pygame.image.load("GameArt\Gnoll\Markings\ChinChestMid.png"), (0, 0))
             spots = randint(1, 2)
+            if self.appearance == []:
+                goTo.append(spots)
+            else:
+                spots = self.appearance[4]
             if spots == 1:
                 image.blit(pygame.image.load("GameArt\Gnoll\Markings\Head1HeadSpots.png"), (0, 0))
             spots = randint(1, 2)
+            if self.appearance == []:
+                goTo.append(spots)
+            else:
+                spots = self.appearance[5]
             if spots == 1:
                 image.blit(pygame.image.load("GameArt\Gnoll\Markings\Spots1.png"), (0, 0))
             else:
                 image.blit(pygame.image.load("GameArt\Gnoll\Markings\Spots2.png"), (0, 0))
 
             image = pygame.transform.scale(image, (175, 280))
+            if self.appearance == []:
+                self.appearance = goTo
             return image
         else:
-            return pygame.image.load(self._imageFolder)
+            # return pygame.image.load(self._imageFolder)
+            return None
 
     def __str__(self):
         string = self.name + "\n" + self.desc + "\n"
         string += "Health: " + str(self.health) + "/" + str(self.maxHealth) + "\n"
         string += "Fight: " + str(self.fight)
-        if (self.fight != self.maxFight):
+        if self.fight != self.maxFight:
             string += "/" + str(self.maxFight)
             string += "\n"
         string += "Defense: " + str(self.defense)
-        if (self.defense != self.maxDefense):
+        if self.defense != self.maxDefense:
             string += "/" + str(self.maxDefense)
             string += "\n"
         string += "Agility: " + str(self.agility)
-        if (self.agility != self.maxAgility):
+        if self.agility != self.maxAgility:
             string += "/" + str(self.maxAgility)
             string += "\n"
         return string
@@ -1688,7 +1850,8 @@ class Enemy(Fightable):
 
 Map = Map()
 
-def menu():    
+
+def menu():
     font1 = pygame.font.SysFont('Arial', 90)
     font2 = pygame.font.SysFont('Arial', 60)
     selected = "start"
@@ -1713,7 +1876,6 @@ def menu():
                         pygame.quit()
                         quit()
 
-
         # Main Menu UI
         screen.blit(bg_img, bg_img.get_rect())
         title = font1.render("The Tower", False, BLACK)
@@ -1730,12 +1892,12 @@ def menu():
         start_rect = text_start.get_rect()
         quit_rect = text_quit.get_rect()
 
-        screen.blit(title, (WIDTH/2 - (title_rect[2]/2), 80))
-        screen.blit(text_start, (WIDTH/2 - (start_rect[2]/2), 300))
-        screen.blit(text_quit, (WIDTH/2 - (quit_rect[2]/2), 360))
+        screen.blit(title, (WIDTH / 2 - (title_rect[2] / 2), 80))
+        screen.blit(text_start, (WIDTH / 2 - (start_rect[2] / 2), 300))
+        screen.blit(text_quit, (WIDTH / 2 - (quit_rect[2] / 2), 360))
         pygame.display.update()
         clock.tick(60)
-        
+
 
 def popup():
     font1 = pygame.font.SysFont('Arial', 75)
@@ -1743,7 +1905,7 @@ def popup():
     selected = 1
     bg_img = pygame.image.load("GameArt\Extra\menu.gif")
     pop = True
-    
+
     while pop:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -1796,19 +1958,20 @@ def popup():
                 if selected == 2:
                     opt2 = font2.render("Rouge", False, WHITE)
                 else:
-                    opt2 = font2.render("Rouge", False, BLACK)                
+                    opt2 = font2.render("Rouge", False, BLACK)
 
         title1_rect = title1.get_rect()
         title2_rect = title2.get_rect()
         start_rect = opt1.get_rect()
         quit_rect = opt1.get_rect()
 
-        screen.blit(title1, (WIDTH/2 - (title1_rect[2]/2), 80))
-        screen.blit(title2, (WIDTH/2 - (title2_rect[2]/2), 160))
-        screen.blit(opt1, (WIDTH/2 - (start_rect[2]/2), 300))
-        screen.blit(opt2, (WIDTH/2 - (quit_rect[2]/2), 360))
+        screen.blit(title1, (WIDTH / 2 - (title1_rect[2] / 2), 80))
+        screen.blit(title2, (WIDTH / 2 - (title2_rect[2] / 2), 160))
+        screen.blit(opt1, (WIDTH / 2 - (start_rect[2] / 2), 300))
+        screen.blit(opt2, (WIDTH / 2 - (quit_rect[2] / 2), 360))
         pygame.display.update()
         clock.tick(60)
+
 
 def merchText():
     talk = True
@@ -1887,22 +2050,23 @@ def merchText():
                     popup()
                     changeFloor()
                     return
-                    
-                    
+
         screen.fill(WHITE)
         screen.blit(background, background.get_rect())
-        screen.blit(merchant, (WIDTH/2 - (merch_rect[2]/2), 50))
+        screen.blit(merchant, (WIDTH / 2 - (merch_rect[2] / 2), 50))
         screen.blit(box, (0, 475))
         screen.blit(text1, (10, 505))
         screen.blit(text2, (10, 540))
         screen.blit(text3, (10, 575))
         screen.blit(text4, (10, 610))
         pygame.display.update()
-        
+
+
 def shop():
-    shop = True
+    shopping = True
     global currentFloor
-    
+    global items
+
     font1 = pygame.font.SysFont('Arial', 50)
     font2 = pygame.font.SysFont('Arial', 13)
     background = pygame.image.load("GameArt\Extra\Background.png")
@@ -1913,21 +2077,23 @@ def shop():
     rest_rect = rest.get_rect(center=(125, 655))
     buy_rect = pygame.Rect(290, 215, 400, 87)
     sell_rect = pygame.Rect(290, 390, 400, 300)
-    
+
     if currentFloor == f2 or currentFloor == f3 or currentFloor == f4:
         shop = random.sample(grade0Items, 6)
     elif currentFloor == f5 or currentFloor == f6 or currentFloor == f7 or currentFloor == f8:
         shop = random.sample(grade1Items, 6)
     elif currentFloor == f9 or currentFloor == f10 or currentFloor == f11 or currentFloor == f12:
         shop = random.sample(grade2Items, 6)
+    else:
+        shop = []
 
     inventory = random.sample(items, 20)
 
-    while shop:
+    while shopping:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
+                pygame.quit()
+                quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if buy_rect.collidepoint(pos):
@@ -1945,11 +2111,11 @@ def shop():
 
         screen.fill(WHITE)
         screen.blit(background, background.get_rect())
-        screen.blit(merchant, (0,130))
+        screen.blit(merchant, (0, 130))
         screen.blit(sign, (0, 0))
         screen.blit(button, (283, 130))
         screen.blit(rest, rest_rect)
-        screen.blit(title, (150,45))
+        screen.blit(title, (150, 45))
         screen.blit(done, (55, 625))
         screen.blit(buy, (310, 140))
 
@@ -1957,70 +2123,97 @@ def shop():
 
         for i in shop:
             sell = font2.render(i.flavor, False, BLACK)
-            screen.blit(sell,(290, 215 + (j*15)))
+            screen.blit(sell, (290, 215 + (j * 15)))
             j += 1
         for i in inventory:
             sell = font2.render(i.flavor, False, BLACK)
-            screen.blit(sell,(290, 300 + (j*15)))
+            screen.blit(sell, (290, 300 + (j * 15)))
             j += 1
-        
+
         pygame.display.update()
 
+
 def changeFloor():
-    global currentFloor    
+    global currentFloor
     currentFloor = currentFloor.nextFloor
     Map.hero.column = 5
     Map.hero.row = 9
     Map.build()
     return
-        
-   
+
+
 def gameMap():
     bg_img = pygame.image.load("GameArt\Extra\menu.gif")
     font = pygame.font.SysFont('Arial', 75)
     gameMap = True
     Map.build()
-    
+
     while gameMap:
         Map.draw()
 
         if currentFloor == None:
             screen.blit(bg_img, bg_img.get_rect())
-            
-        for event in pygame.event.get():        #catching events
+
+        for event in pygame.event.get():  # catching events
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-                
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 Pos = pygame.mouse.get_pos()
                 print Pos
-                
+
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     Map.hero.move("LEFT")
-                    
+
                 if event.key == pygame.K_RIGHT:
                     Map.hero.move("RIGHT")
-                    
+
                 if event.key == pygame.K_UP:
                     Map.hero.move("UP")
-                    
+
                 if event.key == pygame.K_DOWN:
                     Map.hero.move("DOWN")
-                    
+
                 if event.key == pygame.K_RETURN:
                     shop()
                 if event.key == pygame.K_a:
                     changeFloor()
                 if event.key == pygame.K_b:
                     merchText()
-                        
- 
-                    
-        clock.tick(60)      #Limit to 60 fps or something
-        pygame.display.update()     #Honestly not sure what this does, but it breaks if I remove it
+
+        clock.tick(60)  # Limit to 60 fps or something
+        pygame.display.update()  # Honestly not sure what this does, but it breaks if I remove it
         Map.update()
-        
-menu()
+
+
+shop()
+
+enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the", 15, 4, 2, 2, [], [], 1, "Gnoll")
+enemyTest1 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 1, "Slime")
+enemyTest2 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 2, "Slime")
+enemyTest3 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 3, "Slime")
+enemyTest4 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 4, "Slime")
+test = Hero("Valor", [], [
+    [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
+    [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
+    [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
+    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, Weapon("Wooden Sword", 0, 0, "slashes", 1, 1, 90, 2, 5),
+            Armor("Common Clothes", 0, 0, 1, 500000000))
+test1 = Hero("Gallant", [], [
+    [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
+    [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
+    [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
+    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, Weapon("Wooden Sword", 0, 0, "slashes", 1, 1, 90, 2, 5),
+            Armor("Common Clothes", 0, 0, 1, 500000000))
+
+for i in range(7):
+    test.levelUp()
+test.revert()
+test.health = test.maxHealth
+
+Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone()])
+
+
 pygame.quit()
