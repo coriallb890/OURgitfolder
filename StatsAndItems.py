@@ -428,3 +428,6 @@ bigp = Consumable("Everything Potion", 200, 2, 'Known in some cultures as "Suici
 grade0Items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1]
 grade1Items = [polished_dagger, red_axe, big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2]
 grade2Items = [sharpened_dagger, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
+items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1, polished_dagger, red_axe,
+         big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2, sharpened_dagger, battle_axe,
+         bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
