@@ -249,9 +249,6 @@ class Item(object):
     def flavor(self, value):
         self._flavor = value
 
-    def __str__(self):
-        return self.flavor
-
 
 class Weapon(Item):
     def __init__(self, name, cost, grade, flavor, fight, rang, accuracy, consistency, critRate):
@@ -302,9 +299,6 @@ class Weapon(Item):
     def critRate(self, value):
         self._critRate = value
 
-    def __str__(self):
-        return Item.__str__(self)
-
 
 class Armor(Item):
     def __init__(self, name, cost, grade, flavor, defense, durabillity):
@@ -328,9 +322,6 @@ class Armor(Item):
     def durability(self, value):
         self._durability = value
 
-    def __str__(self):
-        return Item.__str__(self)
-
 
 class Consumable(Item):
     def __init__(self, name, cost, grade, flavor, statusEffect):
@@ -345,6 +336,98 @@ class Consumable(Item):
     def statusEffect(self, value):
         self._statusEffect = value
 
-    def __str__(self):
-        return Item.__str__(self)
 
+## Weapons
+## name // cost // grade // flavor text // fight // range // accuracy // consistency // critRate
+
+
+dagger = Weapon("Dagger", 10, 0, "You can't get more rogue-like than fighting with a dagger. It's nice and light, but "
+                                 "not exactly the sharpest.", 1, 1, 80, 1, 10)
+polished_dagger = Weapon("Polished Dagger", 20, 1, "Somehow, you found yourself a nice shiny dagger in this decrepit "
+                                                   "tower. It feels the same as your older dagger, but man... look how "
+                                                   "shiny it is!", 2, 1, 80, 1, 10)
+sharpened_dagger = Weapon("Sharpened Dagger", 35, 2, "A beautiful dagger with a sharp, honed edge. It looks pretty "
+                                                     "dope, gotta say.", 4, 1, 80, 1, 12)
+
+axe = Weapon("Axe", 35, 0, "It's more hefty than your original dagger, but it certainly packs a much larger punch. "
+                           "Er... cut?", 5, 3, 60, 1, 15)
+red_axe = Weapon("Red Axe", 35, 1, "It's a nice, shiny red axe. You're not sure why, but something about it feels a bit"
+                                   " anachronistic.", 6, 2, 60, 1, 15)
+battle_axe = Weapon("Battle Axe", 40, 2, "It's a large, black battle axe, towering even over you. It's super sharp, "
+                                         "super nice, and SUPER HEAVY.", 8, 2, 55, 1, 15)
+
+sword = Weapon("Sword", 30, 0, "Yeah, it's a sword. What are you gonna do about it? You gotta carry a sword if you "
+                               "wanna fight monsters. It's the law.", 4, 3, 70, 1, 15)
+big_sword = Weapon("Big Sword", 40, 1, "A wise man once asked, \"What's better than a regular-sized sword?\" Now you "
+                                       "know the answer.", 5, 3, 70, 1, 15)
+bigger_sword = Weapon("Bigger Sword", 45, 2, "Now, this is just ridiculous. Do you really NEED a sword THIS BIG?!? "
+                                             "Yes you do.", 6, 3, 70, 1, 15)
+
+glock = Weapon("Glock 18", 100, 100, "yeah i got a glock. the real question is... where am i getting all this ammo?",
+               100, 3, 100, 1, 100)
+
+## Armor
+## name // cost // grade // flavor text // defense // durability
+
+leather = Armor("Leather Armor", 25, 0, "Some loose pieces of leather carelessly sewn together", 2, 100)
+chainmail = Armor("Chainmail Armor", 75, 1, "An actual piece of armor. Better than nothing I suppose.", 4, 150)
+metalA = Armor("Full-metal Armor", 150, 2, "A full on suit of armor. Now you can feel protected", 6, 200)
+
+tree = Armor("Tree bark Shield", 25, 0, "Just a big piece of tree bark... Maybe it can help?", 3, 80)
+actual = Armor("Actual Shield", 75, 1, "A wooden shield with an actual handle. Now we're getting somewhere.", 5, 120)
+metalS = Armor("Metal Shield", 150, 2, "A sturdy metal shield that can protect you big time.", 7, 160)
+
+## Status Effects
+## name // verb // stats // amounts // turns
+
+poison = StatusEffect("Poison", "poisoned", ["health"], [-3], 3)
+strike = StatusEffect("Cheap Strike", "shanked", ["health"], ["F-150"], 0)
+
+health1 = StatusEffect("Small Health", "drank", ["health"], [5], 0)
+health2 = StatusEffect("Health", "drank", ["health"], [10], 0)
+health3 = StatusEffect("Big Health", "drank", ["health"], [15], 0)
+
+aura = StatusEffect("Boost Aura", "boosted", ["health", "fight"], [3, 2], 2)
+
+fight1 = StatusEffect("Small Fight", "drank", ["fight"], [2], 2)
+fight2 = StatusEffect("Fight", "drank", ["fight"], [4], 2)
+fight3 = StatusEffect("Big Fight", "drank", ["fight"], [6], 3)
+
+defense1 = StatusEffect("Small Defense", "drank", ["defense"], [2], 2)
+defense2 = StatusEffect("Defense", "drank", ["defense"], [4], 2)
+defense3 = StatusEffect("Big Defense", "drank", ["defense"], [6], 3)
+
+agility1 = StatusEffect("Small Agility", "drank", ["agility"], [2], 2)
+agility2 = StatusEffect("Agility", "drank", ["agility"], [4], 2)
+agility3 = StatusEffect("Big Agility", "drank", ["agility"], [6], 3)
+
+everything = StatusEffect("Big Everything", "drank", ["health", "fight", "agility", "defense"], [5, 4, 4, 4], 20)
+
+## Consumables
+## name // cost // grade // flavor text // status effect
+
+healthp1 = Consumable("Small Health Potion", 75, 0, "\"Artifically Flavored.\" Comforting.", "health1")
+healthp2 = Consumable("Health Potion", 100, 1, "", "health2")
+healthp3 = Consumable("Big Health Potion", 150, 2, "", "health3")
+
+fightp1 = Consumable("Small Fight Potion", 75, 0, "It's what's the plants crave.", "fight1")
+fightp2 = Consumable("Fight Potion", 100, 2, "", "fight2")
+fightp3 = Consumable("Big Fight Potion", 150, 2, "", "fight3")
+
+defensep1 = Consumable("Small Defense Potion", 75, 1, "", "defense1")
+defensep2 = Consumable("Defense Potion", 100, 1, "", "defense2")
+defensep3 = Consumable("Big Defense Potion", 150, 2, "", "defense3")
+
+agilityp1 = Consumable("Small Agility Potion", 75, 0, "", "agility1")
+agilityp2 = Consumable("Agility Potion", 100, 1, "", "agility2")
+agilityp3 = Consumable("Big Agility Potion", 150, 2, "", "agility3")
+
+bigp = Consumable("Everything Potion", 200, 2, 'Known in some cultures as "Suicide."', "everything")
+
+## List of items by grade
+grade0Items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1]
+grade1Items = [polished_dagger, red_axe, big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2]
+grade2Items = [sharpened_dagger, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
+items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1, polished_dagger, red_axe,
+         big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2, sharpened_dagger, battle_axe,
+         bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
