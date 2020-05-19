@@ -27,8 +27,10 @@ ORANGE = (192, 165, 136)
 RED = (255, 0, 0)
 
 
-inventory = items
-gold = 0
+inventory = random.sample(items, 15)
+goldCoins = 5000
+playerMoves = []
+partyMember = []
 
 def checkList(inventory):
     original = screen.copy()
@@ -1878,6 +1880,7 @@ def shop():
     shopping = True
     global currentFloor
     global items
+    global goldCoins
 
     font1 = pygame.font.SysFont('Arial', 50)
     font2 = pygame.font.SysFont('Arial', 13)
@@ -1886,6 +1889,7 @@ def shop():
     sign = pygame.image.load("GameArt\Extra\Sign.png")
     button = pygame.image.load("GameArt\Extra\Buttonfull.png")
     rest = pygame.image.load("GameArt\Extra\Rest.png")
+    gold = pygame.image.load("GameArt\Extra\Gold.png")
     rest_rect = rest.get_rect(center=(125, 655))
     buy_rect = pygame.Rect(290, 215, 400, 87)
     sell_rect = pygame.Rect(290, 390, 400, 300)
@@ -1899,47 +1903,66 @@ def shop():
     else:
         shop = []
 
-    inventory = random.sample(items, 20)
-
     while shopping:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 pos = pygame.mouse.get_pos()
                 if buy_rect.collidepoint(pos):
-                    print pos
-                    print "buy clicked"
+                    j = 0
+                    for i in shop:
+                        item_rect = pygame.Rect(290, 215 + (j * 14.5), 400, 14.5)
+                        if item_rect.collidepoint(pos):
+                            if len(inventory) < 20 and goldCoins - i.cost != 0:
+                                goldCoins -= i.cost
+                                shop.remove(i)
+                                inventory.append(i)
+                        j += 1
+                        
                 if sell_rect.collidepoint(pos):
                     print pos
-                    print "sell clicked"
+                    j = 0
+                    for i in inventory:
+                        item_rect = pygame.Rect(290, 390 + (j * 14.5), 400, 14.5)
+                        if item_rect.collidepoint(pos):
+                            goldCoins += (i.cost/2)
+                            inventory.remove(i)
+                        j += 1
+                        
                 if rest_rect.collidepoint(pos):
                     return
 
         title = font1.render("Merchant's Shop", False, BLACK)
         done = font1.render("DONE", False, BLACK)
         buy = font1.render("Click Item to Buy", False, BLACK)
+        sell = font1.render("Sell for 1/2 Cost", False, BLACK)
+        goldNum = font2.render("Gold: {}".format(goldCoins), False, BLACK)
 
         screen.fill(WHITE)
         screen.blit(background, background.get_rect())
         screen.blit(merchant, (0, 130))
         screen.blit(sign, (0, 0))
         screen.blit(button, (283, 130))
+        screen.blit(gold, (283, 110))
         screen.blit(rest, rest_rect)
         screen.blit(title, (150, 45))
         screen.blit(done, (55, 625))
         screen.blit(buy, (310, 140))
+        screen.blit(sell, (310, 320))
+        screen.blit(goldNum, (290, 113))
 
         j = 0
-
         for i in shop:
-            sell = font2.render(i.flavor, False, BLACK)
-            screen.blit(sell, (290, 215 + (j * 15)))
+            item = font2.render(i.flavor, False, BLACK)
+            screen.blit(item, (290, 215 + (j * 15)))
             j += 1
+
+        j = 0
         for i in inventory:
-            sell = font2.render(i.flavor, False, BLACK)
-            screen.blit(sell, (290, 300 + (j * 15)))
+            item = font2.render(i.flavor, False, BLACK)
+            screen.blit(item, (290, 390 + (j * 15)))
             j += 1
 
         pygame.display.update()
