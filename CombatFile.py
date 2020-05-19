@@ -23,7 +23,7 @@ BLACK = (0, 0, 0)  # fill
 WHITE = (255, 255, 255)  # floor
 GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
-ORANGE = (192, 165, 136)
+ORANGE = (255, 97, 3)
 RED = (255, 0, 0)
 
 
@@ -160,6 +160,18 @@ def useItem(item, who):
     elif isinstance(item, Armor):
         pass
     return True
+
+
+def fadeToBlack(time=.01):
+    original = screen.copy()
+    screen.fill(BLACK)
+    black = screen.copy()
+    screen.blit(original, (0, 0))
+    for i in range(50):
+        black.set_alpha(i)
+        screen.blit(black, (0, 0))
+        pygame.display.update()
+        sleep(time)
 
 
 class Floor(object):
@@ -452,6 +464,16 @@ class Map(object):  # The main class; where the action happens
         if currentFloor == f1:
             tempTile = Special("Merchant", "GameArt\OverworldSprites\MerchSprite.gif", 5, 5)
             Map.grid[5][5].append(tempTile)
+
+            pygame.mixer.music.stop()
+            pygame.mixer.music.set_volume(.8)
+            song = pygame.mixer.music.load("GameMusic\MerchIntro.wav")
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy():
+                pass
+            pygame.mixer.music.stop()
+            song = pygame.mixer.music.load("GameMusic\MerchTheme.wav")
+            pygame.mixer.music.play(-1)
 
         if currentFloor == f13:
             tempTile = Special("Boss", "GameArt\OverworldSprites\BossTemp.png", 5, 5)
@@ -1287,7 +1309,7 @@ class Fightable(object):
                             if (eWho.health > 0):
                                 Fightable.printHeroes(heroes, heroes.index(who))
                                 Fightable.flavorText(who.name + " " + who.weapon.verb + " " + who.gender.posAdj + " "
-                                                     + who.weapon.name + " at " + eWho.title + " " + eWho.name)
+                                                     + who.weapon.name + " at " + eWho.title + eWho.name)
                                 pygame.display.update()
                                 if (randint(0, 99) < eWho.agility):
                                     sleep(1.25)
@@ -1318,12 +1340,12 @@ class Fightable(object):
                                     dead = ""
                                     print eWho.health
                                     if (eWho.health <= 0):
-                                        dead = (eWho.title.capitalize() + " " + eWho.name + " has been defeated!")
+                                        dead = (eWho.title.capitalize() + eWho.name + " has been defeated!")
                                         for e in range(0, len(coordinates)):
                                             for w in range(0, len(coordinates[0])):
                                                 if (coordinates[e][w] == int(action[(action.index("Attack") + 7):])):
                                                     coordinates[e][w] = -1
-                                    Fightable.flavorText(eWho.title.capitalize() + " " + eWho.name + " takes {} damage! ".format(amount) + dead)
+                                    Fightable.flavorText(eWho.title.capitalize() + eWho.name + " takes {} damage! ".format(amount) + dead)
                                     pygame.display.update()
                                     sleep(1.5)
                                     if dead != "":
@@ -1383,9 +1405,9 @@ class Fightable(object):
                             sleep(.6)
                             screen.blit(screenshot, (0, 0))
                     else:
-                        Fightable.flavorText(who.name() + " is unconscious!")
+                        Fightable.flavorText(who.name + " is unconscious!")
                         sleep(1)
-                        screen.blit(screenshot(0, 0))
+                        screen.blit(screenshot, (0, 0))
                 else:
                     who = enemies[(int(action[2:3]))]
                     screen.blit(screenshot, (0, 0))
@@ -1395,7 +1417,7 @@ class Fightable(object):
                             hWho = heroes[int(action[(action.index("Attack") + 7):])]
                             if hWho.health > 0:
                                 Fightable.printCoords(coordinates, enemies, [enemies.index(who)])
-                                Fightable.flavorText(who.title.capitalize() + " " + who.name + " " + who.verb + " at " + hWho.name)
+                                Fightable.flavorText(who.title.capitalize() + who.name + " " + who.verb + " at " + hWho.name)
                                 pygame.display.update()
                                 sleep(1.5)
                                 screen.blit(screenshot, (0, 0))
@@ -1433,7 +1455,7 @@ class Fightable(object):
                                     screen.blit(screenshot, (0, 0))
                                     pygame.display.update()
                             else:
-                                Fightable.flavorText(who.name + "'s target is already down...")
+                                Fightable.flavorText(who.title.capitalize() + who.name + "'s target is already down...")
                                 sleep(2)
                         elif "Move" in action:
                             pass
@@ -1442,6 +1464,20 @@ class Fightable(object):
 
             for h in undefend:
                 h.defense -= int(ceil(h.maxDefense *(2.0/3.0)))
+
+        if Fightable.totalHealth(heroes) <= 0:
+            fadeToBlack()
+            pygame.mixer.music.fadeout(800)
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load("GameMusic\GameOver.wav")
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy():
+                pass
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load("GameMusic\GameOverIdle.wav")
+            pygame.mixer.music.play(-1)
+            return False
+
 
 
 class Hero(Fightable):
@@ -1714,6 +1750,11 @@ def menu():
     bg_img = pygame.image.load("GameArt\Extra\menu.gif")
     men = True
 
+    song = pygame.mixer.music.load("GameMusic\MainMenu.wav")
+    pygame.mixer.music.play(-1)
+
+    select = pygame.mixer.Sound("SoundFX\Select.wav")
+    select.set_volume(.25)
     while men:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -1721,16 +1762,22 @@ def menu():
                 quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
+                    pygame.mixer.Sound.play(select)
                     selected = "start"
                 elif event.key == pygame.K_DOWN:
+                    pygame.mixer.Sound.play(select)
                     selected = "quit"
                 if event.key == pygame.K_RETURN:
+                    pygame.mixer.Sound.play(select)
                     if selected == "start":
+                        pygame.mixer.music.fadeout(1000)
+                        fadeToBlack()
                         gameMap()
                         return
                     if selected == "quit":
                         pygame.quit()
                         quit()
+
 
         # Main Menu UI
         screen.blit(bg_img, bg_img.get_rect())
@@ -2026,6 +2073,7 @@ def gameMap():
     bg_img = pygame.image.load("GameArt\Extra\menu.gif")
     gameMap = True
     Map.build()
+    pygame.display.update()
 
     while gameMap:
         Map.draw()
@@ -2117,7 +2165,8 @@ def combatTest():
     test.health = test.maxHealth
 
     Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone()])
-       
+
+
 menu()
 
 
