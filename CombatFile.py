@@ -1997,8 +1997,7 @@ def gameMap():
         clock.tick(60)  # Limit to 60 fps or something
         pygame.display.update()  # Honestly not sure what this does, but it breaks if I remove it
         Map.update()
-        
-menu()
+
 
 
 enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the", 15, 4, 2, 2, [], [], 1, "Gnoll")
@@ -2023,6 +2022,8 @@ test.revert()
 test.health = test.maxHealth
 
 Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone()])
+
+menu()
 
 
 pygame.quit()

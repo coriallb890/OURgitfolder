@@ -99,7 +99,7 @@ class StatusEffect:
             self.turns -= 1
             return blurb
         else:
-            who.statusEffects().pop(self)
+            who.statusEffects.pop(self)
 
     def clone(self):
         return StatusEffect(self.name, self.verb, self.stats, self.amounts, self.turns)
@@ -401,23 +401,23 @@ everything = StatusEffect("Big Everything", "drank", ["health", "fight", "agilit
 ## Consumables
 ## name // cost // grade // flavor text // status effect
 
-healthp1 = Consumable("Small Health Potion", 75, 0, "Name: Small Health Potion  Cost: 75", "health1")
-healthp2 = Consumable("Health Potion", 100, 1, "Name: Health Potion  Cost: 100", "health2")
-healthp3 = Consumable("Big Health Potion", 150, 2, "Name: Big Health Potion  Cost: 150", "health3")
+healthp1 = Consumable("Small Health Potion", 75, 0, "Name: Small Health Potion  Cost: 75", health1)
+healthp2 = Consumable("Health Potion", 100, 1, "Name: Health Potion  Cost: 100", health2)
+healthp3 = Consumable("Big Health Potion", 150, 2, "Name: Big Health Potion  Cost: 150", health3)
 
-fightp1 = Consumable("Small Fight Potion", 75, 0, "Name: Small Fight Potion  Cost: 75", "fight1")
-fightp2 = Consumable("Fight Potion", 100, 1, "Name: Fight Potion  Cost: 100", "fight2")
-fightp3 = Consumable("Big Fight Potion", 150, 2, "Name: Big Fight Potion  Cost: 150", "fight3")
+fightp1 = Consumable("Small Fight Potion", 75, 0, "Name: Small Fight Potion  Cost: 75", fight1)
+fightp2 = Consumable("Fight Potion", 100, 1, "Name: Fight Potion  Cost: 100", fight2)
+fightp3 = Consumable("Big Fight Potion", 150, 2, "Name: Big Fight Potion  Cost: 150", fight3)
 
-defensep1 = Consumable("Small Defense Potion", 75, 0, "Name: Small Defense Potion  Cost: 75", "defense1")
-defensep2 = Consumable("Defense Potion", 100, 1, "Name: Defense Potion  Cost: 100", "defense2")
-defensep3 = Consumable("Big Defense Potion", 150, 2, "Name: Big Defense Potion  Cost: 150", "defense3")
+defensep1 = Consumable("Small Defense Potion", 75, 0, "Name: Small Defense Potion  Cost: 75", defense1)
+defensep2 = Consumable("Defense Potion", 100, 1, "Name: Defense Potion  Cost: 100", defense2)
+defensep3 = Consumable("Big Defense Potion", 150, 2, "Name: Big Defense Potion  Cost: 150", defense3)
 
-agilityp1 = Consumable("Small Agility Potion", 75, 0, "Name: Small Agility Potion  Cost: 75", "agility1")
-agilityp2 = Consumable("Agility Potion", 100, 1, "Name: Agility Potion  Cost: 100", "agility2")
-agilityp3 = Consumable("Big Agility Potion", 150, 2, "Name: Big Agility Potion  Cost: 150", "agility3")
+agilityp1 = Consumable("Small Agility Potion", 75, 0, "Name: Small Agility Potion  Cost: 75", agility1)
+agilityp2 = Consumable("Agility Potion", 100, 1, "Name: Agility Potion  Cost: 100", agility2)
+agilityp3 = Consumable("Big Agility Potion", 150, 2, "Name: Big Agility Potion  Cost: 150", agility3)
 
-bigp = Consumable("Everything Potion", 200, 2, "Name: Everythin Potion  Cost: 200", "everything")
+bigp = Consumable("Everything Potion", 200, 2, "Name: Everythin Potion  Cost: 200", everything)
 
 ## List of items by grade
 grade0Items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1]
