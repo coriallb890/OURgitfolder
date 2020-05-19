@@ -2031,7 +2031,7 @@ def merchText():
 def bossText():
     talk = True
     background = pygame.image.load("GameArt\Extra\Background.png")
-    merchant = pygame.image.load("GameArt\Extra\Merch.gif")
+    merchant = pygame.image.load("GameArt\Merchant\Stand.png")
     box = pygame.image.load("GameArt\Extra\Text.png")
     merch_rect = merchant.get_rect()
     font = pygame.font.SysFont('Arial', 30)
