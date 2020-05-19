@@ -27,10 +27,11 @@ ORANGE = (192, 165, 136)
 RED = (255, 0, 0)
 
 
-inventory = random.sample(items, 15)
-goldCoins = 5000
+inventory = []
+goldCoins = 0
 playerMoves = []
 partyMember = []
+block = 10
 
 def checkList(inventory):
     original = screen.copy()
@@ -48,7 +49,7 @@ def checkList(inventory):
         screen.blit(font.render(inventory[i].name, True, BLACK), (180, 175+(i*30)))
     screen.blit(font.render("Back", True, BLACK), (315, 505))
     screenshot = screen.copy()
-    screen.blit(font.render(inventory[0].name, True, BLACK, WHITE), (180, 175))
+    screen.blit(font.render(inventory[0].name, True, WHITE), (180, 175)) #
     pygame.display.update()
     while True:
         for event in pygame.event.get():
@@ -61,7 +62,7 @@ def checkList(inventory):
                         if cursor > 0:
                             screen.blit(screenshot, (0, 0))
                             cursor -= 1
-                            screen.blit(font.render(inventory[place].name, True, BLACK, WHITE), (180, 175+(cursor*30)))
+                            screen.blit(font.render(inventory[place].name, True, WHITE), (180, 175+(cursor*30)))#
                         else:
                             screen.blit(justScroll, (0, 0))
                             count = 0
@@ -72,18 +73,18 @@ def checkList(inventory):
                                 count += 1
                             screen.blit(font.render("Back", True, BLACK), (315, 505))
                             screenshot = screen.copy()
-                            screen.blit(font.render(inventory[place].name, True, BLACK, WHITE), (180, 175))
+                            screen.blit(font.render(inventory[place].name, True, WHITE), (180, 175)) #
 
                     if (event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN) and place < maxi:
                         place += 1
                         if cursor < 10:
                             screen.blit(screenshot, (0, 0))
                             cursor += 1
-                            screen.blit(font.render(inventory[place].name, True, BLACK, WHITE), (180, 175+(cursor*30)))
+                            screen.blit(font.render(inventory[place].name, True, WHITE), (180, 175+(cursor*30))) #
                         elif place == maxi:
                             screen.blit(screenshot, (0, 0))
                             cursor += 1
-                            screen.blit(font.render("Back", True, BLACK, WHITE), (315, 505))
+                            screen.blit(font.render("Back", True, WHITE), (315, 505)) #
                         else:
                             screen.blit(justScroll, (0, 0))
                             count = 0
@@ -94,7 +95,7 @@ def checkList(inventory):
                                 count+=1
                             screen.blit(font.render("Back", True, BLACK), (315, 505))
                             screenshot = screen.copy()
-                            screen.blit(font.render(inventory[place].name, True, BLACK, WHITE), (180, 175+(10*30)))
+                            screen.blit(font.render(inventory[place].name, True, WHITE), (180, 175+(10*30))) #
                     if event.key == pygame.K_RETURN:
                         try:
                             screen.blit(original, (0, 0))
@@ -275,6 +276,11 @@ f3 = FightFloor("Floor 3", 5, f4, 5, 0, 0)
 f2 = FightFloor("Floor 2", 3, f3, 3, 0, 0)
 f1 = SpecialFloor("Floor 1", 1, f2, 0, 1)
 
+currentFloor = f1
+
+enemyName = ["","Giant", "Gnoll", "Flind", "Mini1", "Mini2"]
+ignoreName = ["Wall", "Fighter", "Rouge", "Mage", "Healer"]
+
 class Player(Special):  # The player
     def __init__(self, name, image, column, row, party):
         Special.__init__(self, name, image, column, row)
@@ -290,46 +296,81 @@ class Player(Special):  # The player
             party = value
 
     def move(self, direction):  # This function is how a character moves around in a certain direction
+        if self.collision(direction) == False:
+            if direction == "UP" and self.row > 0:  # If within boundaries of grid
+                self.row -= 1  # Go ahead and move
 
-        if self.collision(direction):
-            return
-        if direction == "UP" and self.row > 0:  # If within boundaries of grid
-            self.row -= 1  # Go ahead and move
+            elif direction == "LEFT" and self.column > 0:
+                self.column -= 1
 
-        elif direction == "LEFT" and self.column > 0:
-            self.column -= 1
+            elif direction == "RIGHT" and self.column < (MAPSIZE - 1):
+                self.column += 1
 
-        elif direction == "RIGHT" and self.column < (MAPSIZE - 1):
-            self.column += 1
-
-        elif direction == "DOWN" and self.row < (MAPSIZE - 1):
-            self.row += 1
-
-        else:
-            return -9
-
+            elif direction == "DOWN" and self.row < (MAPSIZE - 1):
+                self.row += 1
         Map.update()
 
-    def collision(self,
-                  direction):  # Checks if anything is on top of the grass in the direction that the character wants to move. Used in the move function
+    def collision(self, direction):  # Checks if anything is on top of the grass in the direction that the character wants to move. Used in the move function
         if direction == "UP":
             if len(Map.grid[self.column][self.row - 1]) > 1:
-                return True
+                for i in range(0, len(Map.grid)):
+                    name = Map.grid[self.column][self.row - 1][i].name
+                    if name in enemyName:
+                        global block
+                        block = enemyName.index(name)
+                        return block
+                    elif name == "Merchant":
+                        return 8
+                    elif name in ignoreName:
+                        return 20
+            else:
+                return False
+
         elif direction == "LEFT":
-            if len(Map.grid[self.column - 1][(self.row)]) > 1:
-                return True
+            if len(Map.grid[self.column - 1][self.row]) > 1:
+                for i in range(0, len(Map.grid)):
+                    name = Map.grid[self.column - 1][self.row][i].name
+                    if name in enemyName:
+                        global block
+                        block = enemyName.index(name)
+                        return block
+                    elif name == "Merchant":
+                        return 8
+                    elif name in ignoreName:
+                        return 20
+            else:
+                return False
         elif direction == "RIGHT":
-            if len(Map.grid[self.column + 1][(self.row)]) > 1:
-                return True
+            if len(Map.grid[self.column + 1][self.row]) > 1:
+                for i in range(0, len(Map.grid)):
+                    name = Map.grid[self.column + 1][self.row][i].name
+                    if name in enemyName:
+                        global block
+                        block = enemyName.index(name)
+                        return block
+                    elif name == "Merchant":
+                        return 8
+                    elif name in ignoreName:
+                        return 20
+            else:
+                return False
         elif direction == "DOWN":
             if len(Map.grid[self.column][self.row + 1]) > 1:
-                return True
-        return False
+                for i in range(0, len(Map.grid)):
+                    name = Map.grid[self.column][self.row + 1][i].name
+                    if name in enemyName:
+                        global block
+                        block = enemyName.index(name)
+                        return block
+                    elif name == "Merchant":
+                        return 8
+                    elif name in ignoreName:
+                        return 20
+            else:
+                return False
 
     def location(self):
         print("Coordinates: " + str(self.column) + ", " + str(self.row))
-
-currentFloor = f1
 
 class Map(object):  # The main class; where the action happens
 
@@ -368,7 +409,7 @@ class Map(object):  # The main class; where the action happens
                 row.remove(randRow)
                 randColumn = random.choice(column)
                 column.remove(randColumn)
-                tempTile = Special("Hill Giant", "GameArt\OverworldSprites\GiantSpriteTemp.gif", randColumn, randRow)
+                tempTile = Special("Giant", "GameArt\OverworldSprites\GiantSpriteTemp.gif", randColumn, randRow)
                 Map.grid[randColumn][randRow].append(tempTile)
                 i += 1
         if currentFloor == f4 or currentFloor == f6 or currentFloor == f7 or currentFloor == f8 or currentFloor == f10:
@@ -1811,8 +1852,8 @@ def merchText():
                     text1 = font.render("Well, the villagers are here, but they're not the ", False, BLACK)
                     text2 = font.render("same as they were before. Yeenoghu, the beast", False, BLACK)
                     text3 = font.render("responsible for this tower, has already turned them", False, BLACK)
-                    i += 1
                     text4 = font.render("into the monsters that now live in this tower.", False, BLACK)
+                    i += 1
                 elif i == 1:
                     text1 = font.render("He's been doing this for centuries now. He uses", False, BLACK)
                     text2 = font.render("magic to move the tower around so he never runs", False, BLACK)
@@ -1824,6 +1865,7 @@ def merchText():
                     text2 = font.render("as well. There's flind fur starting to grow on", False, BLACK)
                     text3 = font.render("your arms. Don't worry, there's still a chance", False, BLACK)
                     text4 = font.render("you can go back to normal. Won't be easy though.", False, BLACK)
+                    i += 1
                 elif i == 3:
                     i += 1
                     text1 = font.render("Only way to break the curse is to kill Yennughu,", False, BLACK)
@@ -1840,12 +1882,12 @@ def merchText():
                 elif i == 5:
                     text1 = font.render("I'll also open up my shop for you. You'll ", False, BLACK)
                     text2 = font.render("probably find some valueables after your fights", False, BLACK)
-                    text3 = font.render("that I'll gladly take them off your hands.", False, BLACK)
+                    text3 = font.render("and I'll gladly take them off your hands.", False, BLACK)
                     text4 = font.render("", False, BLACK)
                     i += 1
                 elif i == 6:
                     text1 = font.render("I'll only open it after you finish clearing out", False, BLACK)
-                    text2 = font.render("mall the enemies on a floor. Those monsters", False, BLACK)
+                    text2 = font.render("all the enemies on a floor. Those monsters", False, BLACK)
                     text3 = font.render("are dangerous and I'm not gonna risk my life.", False, BLACK)
                     text4 = font.render("", False, BLACK)
                     i += 1
@@ -1858,8 +1900,8 @@ def merchText():
                 elif i == 8:
                     text1 = font.render("Hopefully.", False, BLACK)
                     text2 = font.render("", False, BLACK)
-                    text4 = font.render("", False, BLACK)
                     text3 = font.render("", False, BLACK)
+                    text4 = font.render("", False, BLACK)
                     i += 1
                 elif i == 9:
                     popup()
@@ -1872,6 +1914,7 @@ def merchText():
         screen.blit(box, (0, 475))
         screen.blit(text1, (10, 505))
         screen.blit(text2, (10, 540))
+        screen.blit(text3, (10, 575))
         screen.blit(text4, (10, 610))
         pygame.display.update()
 
@@ -1932,6 +1975,7 @@ def shop():
                         j += 1
                         
                 if rest_rect.collidepoint(pos):
+                    changeFloor()
                     return
 
         title = font1.render("Merchant's Shop", False, BLACK)
@@ -1978,6 +2022,7 @@ def changeFloor():
 
 
 def gameMap():
+    global block
     bg_img = pygame.image.load("GameArt\Extra\menu.gif")
     gameMap = True
     Map.build()
@@ -2000,22 +2045,46 @@ def gameMap():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     Map.hero.move("LEFT")
+                    if Map.hero.collision("LEFT") == 8:
+                        merchText()
+                    elif Map.hero.collision("LEFT") == block:
+                        print block
+                    elif Map.hero.collision("LEFT") == 20:
+                        print ""
 
                 if event.key == pygame.K_RIGHT:
                     Map.hero.move("RIGHT")
+                    if Map.hero.collision("RIGHT") == 8:
+                        merchText()
+                    elif Map.hero.collision("RIGHT") == block:
+                        print block
+                    elif Map.hero.collision("RIGHT") == 20:
+                        print ""
 
                 if event.key == pygame.K_UP:
                     Map.hero.move("UP")
+                    if Map.hero.collision("UP") == 8:
+                        merchText()
+                    elif Map.hero.collision("UP") == block:
+                        print block
+                    elif Map.hero.collision("UP") == 20:
+                        print ""
 
                 if event.key == pygame.K_DOWN:
                     Map.hero.move("DOWN")
+                    if Map.hero.collision("DOWN") == 8:
+                        merchText()
+                    elif Map.hero.collision("DOWN") == block:
+                        print block
+                    elif Map.hero.collision("DOWN") == 20:
+                        print ""
 
                 if event.key == pygame.K_RETURN:
-                    shop()
-                if event.key == pygame.K_a:
                     changeFloor()
+                if event.key == pygame.K_a:
+                    combatTest()
                 if event.key == pygame.K_b:
-                    merchText()
+                    checkList(inventory)
 
         clock.tick(60)  # Limit to 60 fps or something
         pygame.display.update()  # Honestly not sure what this does, but it breaks if I remove it
@@ -2023,29 +2092,30 @@ def gameMap():
 
 
 
-enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the", 15, 4, 2, 2, [], [], 1, "Gnoll")
-enemyTest1 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 1, "Slime")
-enemyTest2 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 2, "Slime")
-enemyTest3 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 3, "Slime")
-enemyTest4 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 4, "Slime")
-test = Hero("Valor", [], [
-    [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
-    [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
-    [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
-    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, battle_axe, leather)
-test1 = Hero("Gallant", [], [
-    [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
-    [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
-    [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
-    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, bigger_sword, leather)
+def combatTest():
+    enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the", 15, 4, 2, 2, [], [], 1, "Gnoll")
+    enemyTest1 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 1, "Slime")
+    enemyTest2 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 2, "Slime")
+    enemyTest3 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 3, "Slime")
+    enemyTest4 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 4, "Slime")
+    test = Hero("Valor", [], [
+        [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
+        [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
+        [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
+        [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, battle_axe, leather)
+    test1 = Hero("Gallant", [], [
+        [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
+        [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
+        [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
+        [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, bigger_sword, leather)
 
-for i in range(7):
-    test.levelUp()
-test.revert()
-test.health = test.maxHealth
+    for i in range(7):
+        test.levelUp()
+    test.revert()
+    test.health = test.maxHealth
 
-Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone()])
-
+    Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone()])
+       
 menu()
 
 
