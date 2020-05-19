@@ -27,8 +27,137 @@ ORANGE = (192, 165, 136)
 RED = (255, 0, 0)
 
 
-inventory = []
+inventory = items
 gold = 0
+
+def checkList(inventory):
+    original = screen.copy()
+    font = pygame.font.SysFont('Arial', 25)
+    scroll = pygame.image.load("GameArt\Extra\scroll.png")
+    scroll = pygame.transform.scale(scroll, (scroll.get_size()[0] * 9 / 4, scroll.get_size()[1] * 2))
+    screen.blit(scroll, (125, 100))
+    justScroll = screen.copy()
+    maxi = len(inventory)
+    place = 0
+    cursor = 0
+    for i in range(11):
+        if i >= len(inventory):
+            break
+        screen.blit(font.render(inventory[i].name, True, BLACK), (180, 175+(i*30)))
+    screen.blit(font.render("Back", True, BLACK), (315, 505))
+    screenshot = screen.copy()
+    screen.blit(font.render(inventory[0].name, True, BLACK, WHITE), (180, 175))
+    pygame.display.update()
+    while True:
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if (event.key == pygame.K_LEFT or event.key == pygame.K_UP) and place > 0:
+                        place -= 1
+                        if cursor > 0:
+                            screen.blit(screenshot, (0, 0))
+                            cursor -= 1
+                            screen.blit(font.render(inventory[place].name, True, BLACK, WHITE), (180, 175+(cursor*30)))
+                        else:
+                            screen.blit(justScroll, (0, 0))
+                            count = 0
+                            for i in range(place, place+11):
+                                if i >= len(inventory):
+                                    break
+                                screen.blit(font.render(inventory[i].name, True, BLACK), (180, 175+(count*30)))
+                                count += 1
+                            screen.blit(font.render("Back", True, BLACK), (315, 505))
+                            screenshot = screen.copy()
+                            screen.blit(font.render(inventory[place].name, True, BLACK, WHITE), (180, 175))
+
+                    if (event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN) and place < maxi:
+                        place += 1
+                        if cursor < 10:
+                            screen.blit(screenshot, (0, 0))
+                            cursor += 1
+                            screen.blit(font.render(inventory[place].name, True, BLACK, WHITE), (180, 175+(cursor*30)))
+                        elif place == maxi:
+                            screen.blit(screenshot, (0, 0))
+                            cursor += 1
+                            screen.blit(font.render("Back", True, BLACK, WHITE), (315, 505))
+                        else:
+                            screen.blit(justScroll, (0, 0))
+                            count = 0
+                            for i in range(place-10, place+1):
+                                if i >= len(inventory):
+                                    break
+                                screen.blit(font.render(inventory[i].name, True, BLACK), (180, 175+(count*30)))
+                                count+=1
+                            screen.blit(font.render("Back", True, BLACK), (315, 505))
+                            screenshot = screen.copy()
+                            screen.blit(font.render(inventory[place].name, True, BLACK, WHITE), (180, 175+(10*30)))
+                    if event.key == pygame.K_RETURN:
+                        try:
+                            screen.blit(original, (0, 0))
+                            return inventory[place]
+                        except:
+                            screen.blit(original, (0, 0))
+                            pygame.display.update()
+                            return None
+        pygame.display.update()
+
+
+def useItem(item, who):
+    original = screen.copy()
+    font = pygame.font.SysFont('Arial', 22)
+    scroll = pygame.image.load("GameArt\Extra\scroll.png")
+    scroll = pygame.transform.scale(scroll, (int(scroll.get_size()[0] * 1.5), int(scroll.get_size()[1] * .75)))
+    screen.blit(scroll, ((WIDTH/2) - (scroll.get_size()[0]/2), 260))
+
+    verb = "Equip"
+    if isinstance(item, Consumable):
+        verb = "Use"
+    size = font.size("{} the".format(verb))[0]
+    screen.blit(font.render("{} the".format(verb), True, BLACK), ((WIDTH/2)-(size/2), 290))
+    size = font.size(item.name + "?")[0]
+    screen.blit(font.render(item.name + "?", True, BLACK), ((WIDTH/2)-(size/2), 320))
+    screen.blit(font.render("Yes", True, BLACK), (275, 370))
+    screen.blit(font.render("No", True, BLACK), (405, 370))
+    screenshot = screen.copy()
+    screen.blit(font.render("No", True, BLACK, WHITE), (405, 370))
+    pygame.display.update()
+    which = 1
+
+    while which != -99:
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        if which == 1:
+                            which = 0
+                            screen.blit(screenshot, (0, 0))
+                            screen.blit(font.render("Yes", True, BLACK, WHITE), (275, 370))
+                    elif event.key == pygame.K_RIGHT:
+                        if which == 0:
+                            which = 1
+                            screen.blit(screenshot, (0, 0))
+                            screen.blit(font.render("No", True, BLACK, WHITE), (405, 370))
+                    elif event.key == pygame.K_RETURN:
+                        if which == 1:
+                            return False
+                        which = -99
+        pygame.display.update()
+    screen.blit(original, (0, 0))
+    if isinstance(item, Consumable):
+        Fightable.flavorText(who.name + " " + item.statusEffect.verb + " the " + item.name + "!")
+        sleep(1.25)
+        who.getEffect(item.statusEffect)
+        screen.blit(original, (0, 0))
+    elif isinstance(item, Weapon):
+        pass
+    elif isinstance(item, Armor):
+        pass
+    return True
+
 
 class Floor(object):
     def __init__(self, name, enemyCount, nextFloor):
@@ -143,7 +272,6 @@ f4 = FightFloor("Floor 3", 5, f5, 3, 2, 0)
 f3 = FightFloor("Floor 3", 5, f4, 5, 0, 0)
 f2 = FightFloor("Floor 2", 3, f3, 3, 0, 0)
 f1 = SpecialFloor("Floor 1", 1, f2, 0, 1)
-
 
 class Player(Special):  # The player
     def __init__(self, name, image, column, row, party):
@@ -327,332 +455,6 @@ class Map(object):  # The main class; where the action happens
         Map.grid[int(Map.hero.column)][int(Map.hero.row)].append(Map.hero)
 
 
-class StatusEffect:
-    def __init__(self, name, verb, stats, amounts, turns):
-        self._turns = turns
-        self._name = name
-        self._verb = verb
-        self._stats = stats
-        self._amounts = amounts
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def verb(self):
-        return self.verb
-
-    @verb.setter
-    def verb(self, value):
-        self._verb = value
-
-    @property
-    def stats(self):
-        return self._stats
-
-    @stats.setter
-    def stats(self, value):
-        self._stats = value
-
-    @property
-    def amounts(self):
-        return self._amounts
-
-    @amounts.setter
-    def amounts(self, value):
-        self._amounts = value
-
-    @property
-    def turns(self):
-        return self._turns
-
-    @turns.setter
-    def turns(self, value):
-        self._turns = value
-
-    def doIt(self, who):
-        if self.turns > 0:
-            for x in range(0, len(self.stats)):
-                if self.stats[x] == "health":
-                    who.health += (self.amounts[x])
-                    verb = " loses "
-                    if self.amounts[x] >= 0:
-                        verb = " gains "
-                    plural = "s"
-                    if abs(self.amounts[x]) == 1:
-                        plural = ""
-                    print(who.name + verb + str(
-                        abs(self.amounts[x])) + " hitpoint" + plural + " from the " + self.name + "!")
-                elif self.stats[x].equals("fight"):
-                    who.fight += (self.amounts[x])
-                    verb = ""
-                    if abs(self.amounts[x]) > 4:
-                        verb = "greatly"
-                    elif abs(self.amounts[x]) <= 2:
-                        verb = "slightly"
-                    if self.amounts[x] >= 0:
-                        verb = " is " + verb + " strengthened "
-                    else:
-                        verb = " is " + verb + " weakened "
-                    print(who.name + verb + "by the " + self.name + "!")
-                elif self.stats[x].equals("defense"):
-                    who.changedefense += (self.amounts[x])
-                    verb = ""
-                    if abs(self.amounts[x]) > 4:
-                        verb = "greatly"
-                    elif abs(self.amounts[x]) <= 2:
-                        verb = "slightly"
-                    if self.amounts[x] >= 0:
-                        verb = "'s defenses are " + verb + " reinforced "
-                    else:
-                        verb = "'s defenses are " + verb + " diminished "
-                    print(who.name + verb + "by the " + self.name + "!")
-                elif self.stats[x] == "agility":
-                    who.agility += (self.amounts[x])
-                    verb = ""
-                    if abs(self.amounts[x]) > 4:
-                        verb = "greatly"
-                    elif abs(self.amounts[x]) <= 2:
-                        verb = "slightly"
-                    if self.amounts[x] >= 0:
-                        verb = "'s speed is " + verb + " increased "
-                    else:
-                        verb = "'s speed is " + verb + " decreased "
-                    print(who.name + verb + "by the " + self.name + "!")
-            self.turns -= 1
-        else:
-            who.statusEffects().pop(self)
-
-    def clone(self):
-        return StatusEffect(self.name, self.verb, self.stat, self.amount, self.turns)
-
-
-class Move:
-    def __init__(self, name, target, uses, statusEffects):
-        self._name = name
-        self._target = target
-        self._uses = uses
-        self._left = uses
-        self._statusEffects = statusEffects
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def uses(self):
-        return self._uses
-
-    @uses.setter
-    def uses(self, value):
-        self._uses = value
-
-    @property
-    def left(self):
-        return self._left
-
-    @left.setter
-    def left(self, value):
-        self._left = value
-
-    @property
-    def target(self):
-        return self._target
-
-    @target.setter
-    def target(self, value):
-        self._target = value
-
-    @property
-    def statusEffects(self):
-        return self._statusEffects
-
-    @statusEffects.setter
-    def statusEffects(self, value):
-        self._statusEffects = value
-
-
-class Gender:
-    def __init__(self, name, subj, obj, posAdj, posPro, refl):
-        self._name = name
-        self._subj = subj
-        self._obj = obj
-        self._posAdj = posAdj
-        self._posPro = posPro
-        self._refl = refl
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def subj(self):
-        return self._subj
-
-    @subj.setter
-    def subj(self, value):
-        self._subj = value
-
-    @property
-    def obj(self):
-        return self._obj
-
-    @obj.setter
-    def obj(self, value):
-        self._obj = value
-
-    @property
-    def posAdj(self):
-        return self._posAdj
-
-    @posAdj.setter
-    def posAdj(self, value):
-        self._posAdj = value
-
-    @property
-    def posPro(self):
-        return self._posPro
-
-    @posPro.setter
-    def posPro(self, value):
-        self._posPro = value
-
-    @property
-    def refl(self):
-        return self._refl
-
-    @refl.setter
-    def refl(self, value):
-        self._refl = value
-
-
-class Item(object):
-    def __init__(self, name, cost, grade):
-        self._name = name
-        self._cost = cost
-        self._grade = grade
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def cost(self):
-        return self._cost
-
-    @cost.setter
-    def cost(self, value):
-        self._cost = value
-
-    @property
-    def grade(self):
-        return self._grade
-
-    @grade.setter
-    def grade(self, value):
-        self._grade = value
-
-
-class Weapon(Item):
-    def __init__(self, name, cost, grade, verb, fight, rang, accuracy, consistency, critRate):
-        super(Weapon, self).__init__(name, cost, grade)
-        self._verb = verb
-        self._fight = fight
-        self._range = rang
-        self._accuracy = accuracy
-        self._consistency = consistency
-        self._critRate = critRate
-
-
-    @property
-    def verb(self):
-        return self._verb
-
-    @verb.setter
-    def verb(self, value):
-        self._verb = value
-
-    @property
-    def fight(self):
-        return self._fight
-
-    @fight.setter
-    def fight(self, value):
-        self._fight = value
-
-    @property
-    def range(self):
-        return self._range
-
-    @range.setter
-    def range(self, value):
-        self._range = value
-
-    @property
-    def accuracy(self):
-        return self._accuracy
-
-    @accuracy.setter
-    def accuracy(self, value):
-        self._accuracy = value
-
-    @property
-    def consistency(self):
-        return self._consistency
-
-    @consistency.setter
-    def consistency(self, value):
-        self._consistency = value
-
-    @property
-    def critRate(self):
-        return self._critRate
-
-    @critRate.setter
-    def critRate(self, value):
-        self._critRate = value
-
-
-class Armor(Item):
-    def __init__(self, name, cost, grade, defense, durabillity):
-        super(Armor, self).__init__(name, cost, grade)
-        self._defense = defense
-        self._durabillity = durabillity
-
-    @property
-    def defense(self):
-        return self._defense
-
-    @defense.setter
-    def defense(self, value):
-        self._defense = value
-
-    @property
-    def durabillity(self):
-        return self._durability
-
-    @durabillity.setter
-    def durability(self, value):
-        self._durability = value
-
-
 class Fightable(object):
     def __init__(self, name, fight, defense, agility, health, moves,
                  gender=Gender("it", "it", "it", "its", "its", "itself")):
@@ -787,16 +589,20 @@ class Fightable(object):
         return RED
 
     def getEffect(self, m):
-        blurb = ""
-        x = 0
-        while x < len(m.statusEffects()):
-            x += 1
-            if m.statusEffects()[x].turns() > 0:
-                self.statusEffects.append(m.statusEffects()[x].clone())
-                blurb += "{} has been {}".format(self.name, m.statusEffects()[x].verb)
+        if isinstance(m, Move):
+            x = 0
+            while x < len(m.statusEffects()):
+                x += 1
+                if m.statusEffects()[x].turns > 0:
+                    self.statusEffects.append(m.statusEffects[x].clone())
+                    Fightable.flavorText("{} has been {}".format(self.name, m.statusEffects[x].verb))
+                else:
+                    self.oneAndDone(m.statusEffects[x])
+        else:
+            if m.turns > 0:
+                self.statusEffects.append(m.clone())
             else:
-                blurb += (self.oneAndDone(m.statusEffects()[x]))
-        return blurb
+                self.oneAndDone(m)
 
     def oneAndDone(self, st):
         suffered = ""
@@ -855,13 +661,16 @@ class Fightable(object):
                 suffered += self.name + verb + "!"
             x += 1
 
-        return suffered
+        Fightable.flavorText(suffered)
+        sleep(1)
 
     def sufferEffects(self):
         x = 0
+        things = []
         while x < len(self.statusEffects):
-            self.statusEffects[x].doIt(self)
+            things.append(self.statusEffects[x].doIt(self))
             x += 1
+        return things
 
     def hasMovesLeft(self):
         x = 0
@@ -1139,6 +948,7 @@ class Fightable(object):
 
     @staticmethod
     def combat(heroes, enemies):
+        global inventory
         trySize = 0
         while (trySize + 1) * 4 < Fightable.area(enemies):
             trySize += 1
@@ -1279,7 +1089,6 @@ class Fightable(object):
                 zoop = screen.copy()
                 pygame.display.update()
                 who = heroes[x]
-                who.sufferEffects()
                 if who.health > 0:
                     for y in range(0, (who.agility / 10) + 1):
                         deciding = True
@@ -1325,23 +1134,28 @@ class Fightable(object):
                                     print("No known techniques.")
                                     clearI()
                             elif what == "item":
-                                if (len(who.inventory()) > 0):
-                                    inventory = ["Which item?"]
-                                    for m in range(0, len(who.inventory())):
-                                        inventory.append(who.inventory()[m].name)
-                                    inventory.append("Nevermind")
-                                    item = ask(inventory)
-                                    clear()
-                                    if item != len(inventory):
-                                        gamePlanH.append("H " + str(x) + " Item " + item)
-                                        deciding = False
+                                if (len(inventory) > 0):
+                                    item = checkList(inventory)
+                                    screen.blit(screenshot, (0, 0))
+                                    if item != None:
+                                        deciding = not(useItem(item, who))
+                                        if not deciding:
+                                            inventory.remove(item)
                                 else:
-                                    print("That inventory is empty.")
-                                    clearI()
+                                    Fightable.flavorText("Inventory is empty.")
+                                    sleep(1)
                 else:
                     Fightable.flavorText(who.name + " is unconscious!")
                     sleep(1)
                     screen.blit(screenshot, (0, 0))
+                screen.blit(screenshot, (0, 0))
+                pygame.display.update()
+                strings = who.sufferEffects()
+                print strings
+                for s in strings:
+                    for t in s:
+                        Fightable.flavorText(t)
+                        sleep(1.5)
                 screen.blit(screenshot, (0, 0))
             for x in range(len(enemies)):
                 en = enemies[x]
@@ -1423,7 +1237,6 @@ class Fightable(object):
                     who = heroes[int(action[2:3])]
                     Fightable.printHeroes(heroes, int(action[2:3]))
                     pygame.display.update()
-                    who.sufferEffects()
                     if who.health > 0:
                         if("Attack" in action):
                             eWho = enemies[int(action[(action.index("Attack") + 7):])]
@@ -1519,8 +1332,6 @@ class Fightable(object):
                                         sleep(200)
                                 else:
                                     pass
-                        elif("Item" in action):
-                            pass
                         elif("Defend" in action):
                             Fightable.flavorText(who.name + " has " + who.gender.posAdj + " guard up!")
                             undefend.append(who)
@@ -2188,8 +1999,6 @@ def gameMap():
         Map.update()
 
 
-shop()
-
 enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the", 15, 4, 2, 2, [], [], 1, "Gnoll")
 enemyTest1 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 1, "Slime")
 enemyTest2 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 2, "Slime")
@@ -2199,14 +2008,12 @@ test = Hero("Valor", [], [
     [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
     [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
     [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
-    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, Weapon("Wooden Sword", 0, 0, "slashes", 1, 1, 90, 2, 5),
-            Armor("Common Clothes", 0, 0, 1, 500000000))
+    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, battle_axe, leather)
 test1 = Hero("Gallant", [], [
     [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
     [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
     [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
-    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, Weapon("Wooden Sword", 0, 0, "slashes", 1, 1, 90, 2, 5),
-            Armor("Common Clothes", 0, 0, 1, 500000000))
+    [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, bigger_sword, leather)
 
 for i in range(7):
     test.levelUp()

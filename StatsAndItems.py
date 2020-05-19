@@ -47,6 +47,7 @@ class StatusEffect:
         self._turns = value
 
     def doIt(self, who):
+        blurb = []
         if (self.turns > 0):
             for x in range(0, len(self.stats)):
                 if (self.stats[x] == "health"):
@@ -57,9 +58,9 @@ class StatusEffect:
                     plural = "s"
                     if (abs(self.amounts[x]) == 1):
                         plural = ""
-                    print(who.name + verb + str(
+                    blurb.append(who.name + verb + str(
                         abs(self.amounts[x])) + " hitpoint" + plural + " from the " + self.name + "!")
-                elif (self.stats[x].equals("fight")):
+                elif (self.stats[x] == ("fight")):
                     who.fight += (self.amounts[x])
                     verb = ""
                     if (abs(self.amounts[x]) > 4):
@@ -70,9 +71,9 @@ class StatusEffect:
                         verb = " is " + verb + " strengthened "
                     else:
                         verb = " is " + verb + " weakened "
-                    print(who.name + verb + "by the " + self.name + "!")
-                elif (self.stats[x].equals("defense")):
-                    who.changedefense += (self.amounts[x])
+                    blurb.append(who.name + verb + "by the " + self.name + "!")
+                elif self.stats[x] == "defense":
+                    who.defense += (self.amounts[x])
                     verb = ""
                     if (abs(self.amounts[x]) > 4):
                         verb = "greatly"
@@ -82,7 +83,7 @@ class StatusEffect:
                         verb = "'s defenses are " + verb + " reinforced "
                     else:
                         verb = "'s defenses are " + verb + " diminished "
-                    print(who.name + verb + "by the " + self.name + "!")
+                    blurb.append(who.name + verb + "by the " + self.name + "!")
                 elif (self.stats[x] == "agility"):
                     who.agility += (self.amounts[x])
                     verb = ""
@@ -94,8 +95,9 @@ class StatusEffect:
                         verb = "'s speed is " + verb + " increased "
                     else:
                         verb = "'s speed is " + verb + " decreased "
-                    print(who.name + verb + "by the " + self.name + "!")
+                    blurb.append(who.name + verb + "by the " + self.name + "!")
             self.turns -= 1
+            return blurb
         else:
             who.statusEffects().pop(self)
 
@@ -251,9 +253,10 @@ class Item(object):
 
 
 class Weapon(Item):
-    def __init__(self, name, cost, grade, flavor, fight, rang, accuracy, consistency, critRate):
+    def __init__(self, name, verb, cost, grade, flavor, fight, rang, accuracy, consistency, critRate):
         super(Weapon, self).__init__(name, cost, grade, flavor)
         self._fight = fight
+        self.verb = verb
         self._range = rang
         self._accuracy = accuracy
         self._consistency = consistency
@@ -341,30 +344,30 @@ class Consumable(Item):
 ## name // cost // grade // flavor text // fight // range // accuracy // consistency // critRate
 
 
-dagger = Weapon("Dagger", 10, 0, "You can't get more rogue-like than fighting with a dagger. It's nice and light, but "
+dagger = Weapon("Dagger", "stabs", 10, 0, "You can't get more rogue-like than fighting with a dagger. It's nice and light, but "
                                  "not exactly the sharpest.", 1, 1, 80, 1, 10)
-polished_dagger = Weapon("Polished Dagger", 20, 1, "Somehow, you found yourself a nice shiny dagger in this decrepit "
+polished_dagger = Weapon("Polished Dagger", "stabs", 20, 1, "Somehow, you found yourself a nice shiny dagger in this decrepit "
                                                    "tower. It feels the same as your older dagger, but man... look how "
                                                    "shiny it is!", 2, 1, 80, 1, 10)
-sharpened_dagger = Weapon("Sharpened Dagger", 35, 2, "A beautiful dagger with a sharp, honed edge. It looks pretty "
+sharpened_dagger = Weapon("Sharpened Dagger", "stabs", 35, 2, "A beautiful dagger with a sharp, honed edge. It looks pretty "
                                                      "dope, gotta say.", 4, 1, 80, 1, 12)
 
-axe = Weapon("Axe", 35, 0, "It's more hefty than your original dagger, but it certainly packs a much larger punch. "
+axe = Weapon("Axe", "swings", 35, 0, "It's more hefty than your original dagger, but it certainly packs a much larger punch. "
                            "Er... cut?", 5, 3, 60, 1, 15)
-red_axe = Weapon("Red Axe", 35, 1, "It's a nice, shiny red axe. You're not sure why, but something about it feels a bit"
+red_axe = Weapon("Red Axe", "swings", 35, 1, "It's a nice, shiny red axe. You're not sure why, but something about it feels a bit"
                                    " anachronistic.", 6, 2, 60, 1, 15)
-battle_axe = Weapon("Battle Axe", 40, 2, "It's a large, black battle axe, towering even over you. It's super sharp, "
+battle_axe = Weapon("Battle Axe", "swings", 40, 2, "It's a large, black battle axe, towering even over you. It's super sharp, "
                                          "super nice, and SUPER HEAVY.", 8, 2, 55, 1, 15)
 
-sword = Weapon("Sword", 30, 0, "Yeah, it's a sword. What are you gonna do about it? You gotta carry a sword if you "
+sword = Weapon("Sword", "slashes", 30, 0, "Yeah, it's a sword. What are you gonna do about it? You gotta carry a sword if you "
                                "wanna fight monsters. It's the law.", 4, 3, 70, 1, 15)
-big_sword = Weapon("Big Sword", 40, 1, "A wise man once asked, \"What's better than a regular-sized sword?\" Now you "
+big_sword = Weapon("Big Sword", "slashes", 40, 1, "A wise man once asked, \"What's better than a regular-sized sword?\" Now you "
                                        "know the answer.", 5, 3, 70, 1, 15)
-bigger_sword = Weapon("Bigger Sword", 45, 2, "Now, this is just ridiculous. Do you really NEED a sword THIS BIG?!? "
+bigger_sword = Weapon("Bigger Sword", "slashes", 45, 2, "Now, this is just ridiculous. Do you really NEED a sword THIS BIG?!? "
                                              "Yes you do.", 6, 3, 70, 1, 15)
 
-glock = Weapon("Glock 18", 100, 100, "yeah i got a glock. the real question is... where am i getting all this ammo?",
-               100, 3, 100, 1, 100)
+glock = Weapon("Glock 18", "shoots", 100, 100, "yeah i got a glock. the real question is... where am i getting all this"
+                                               " ammo?", 100, 3, 100, 1, 100)
 
 ## Armor
 ## name // cost // grade // flavor text // defense // durability
@@ -406,23 +409,23 @@ everything = StatusEffect("Big Everything", "drank", ["health", "fight", "agilit
 ## Consumables
 ## name // cost // grade // flavor text // status effect
 
-healthp1 = Consumable("Small Health Potion", 75, 0, "\"Artifically Flavored.\" Comforting.", "health1")
-healthp2 = Consumable("Health Potion", 100, 1, "", "health2")
-healthp3 = Consumable("Big Health Potion", 150, 2, "", "health3")
+healthp1 = Consumable("Small Health Potion", 75, 0, "\"Artifically Flavored.\" Comforting.", health1)
+healthp2 = Consumable("Health Potion", 100, 1, "", health2)
+healthp3 = Consumable("Big Health Potion", 150, 2, "", health3)
 
-fightp1 = Consumable("Small Fight Potion", 75, 0, "It's what's the plants crave.", "fight1")
-fightp2 = Consumable("Fight Potion", 100, 2, "", "fight2")
-fightp3 = Consumable("Big Fight Potion", 150, 2, "", "fight3")
+fightp1 = Consumable("Small Fight Potion", 75, 0, "It's what's the plants crave.", fight1)
+fightp2 = Consumable("Fight Potion", 100, 2, "", fight2)
+fightp3 = Consumable("Big Fight Potion", 150, 2, "", fight3)
 
-defensep1 = Consumable("Small Defense Potion", 75, 1, "", "defense1")
-defensep2 = Consumable("Defense Potion", 100, 1, "", "defense2")
-defensep3 = Consumable("Big Defense Potion", 150, 2, "", "defense3")
+defensep1 = Consumable("Small Defense Potion", 75, 1, "", defense1)
+defensep2 = Consumable("Defense Potion", 100, 1, "", defense2)
+defensep3 = Consumable("Big Defense Potion", 150, 2, "", defense3)
 
-agilityp1 = Consumable("Small Agility Potion", 75, 0, "", "agility1")
-agilityp2 = Consumable("Agility Potion", 100, 1, "", "agility2")
-agilityp3 = Consumable("Big Agility Potion", 150, 2, "", "agility3")
+agilityp1 = Consumable("Small Agility Potion", 75, 0, "", agility1)
+agilityp2 = Consumable("Agility Potion", 100, 1, "", agility2)
+agilityp3 = Consumable("Big Agility Potion", 150, 2, "", agility3)
 
-bigp = Consumable("Everything Potion", 200, 2, 'Known in some cultures as "Suicide."', "everything")
+bigp = Consumable("Everything Potion", 200, 2, 'Known in some cultures as "Suicide."', everything)
 
 ## List of items by grade
 grade0Items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1]
