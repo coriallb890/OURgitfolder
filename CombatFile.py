@@ -1958,7 +1958,7 @@ def shop():
                     for i in shop:
                         item_rect = pygame.Rect(290, 215 + (j * 14.5), 400, 14.5)
                         if item_rect.collidepoint(pos):
-                            if len(inventory) < 20 and goldCoins - i.cost != 0:
+                            if len(inventory) < 20 and (goldCoins - i.cost) >= 0:
                                 goldCoins -= i.cost
                                 shop.remove(i)
                                 inventory.append(i)
@@ -2083,8 +2083,10 @@ def gameMap():
                     changeFloor()
                 if event.key == pygame.K_a:
                     combatTest()
-                if event.key == pygame.K_b:
+                if event.key == pygame.K_i:
                     checkList(inventory)
+                if event.key == pygame.K_b:
+                    shop()
 
         clock.tick(60)  # Limit to 60 fps or something
         pygame.display.update()  # Honestly not sure what this does, but it breaks if I remove it
