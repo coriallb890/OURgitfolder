@@ -27,7 +27,7 @@ ORANGE = (255, 97, 3)
 RED = (255, 0, 0)
 
 
-inventory = []
+inventory = random.sample(items, 5)
 goldCoins = 0
 playerMoves = []
 partyMember = []
@@ -333,6 +333,8 @@ class Player(Special):  # The player
                         return block
                     elif name == "Merchant":
                         return 8
+                    elif name == "Boss":
+                        return 15
                     elif name in ignoreName:
                         return 20
             else:
@@ -343,11 +345,12 @@ class Player(Special):  # The player
                 for i in range(0, len(Map.grid)):
                     name = Map.grid[self.column - 1][self.row][i].name
                     if name in enemyName:
-                        global block
                         block = enemyName.index(name)
                         return block
                     elif name == "Merchant":
                         return 8
+                    elif name == "Boss":
+                        return 15
                     elif name in ignoreName:
                         return 20
             else:
@@ -357,11 +360,12 @@ class Player(Special):  # The player
                 for i in range(0, len(Map.grid)):
                     name = Map.grid[self.column + 1][self.row][i].name
                     if name in enemyName:
-                        global block
                         block = enemyName.index(name)
                         return block
                     elif name == "Merchant":
                         return 8
+                    elif name == "Boss":
+                        return 15
                     elif name in ignoreName:
                         return 20
             else:
@@ -371,11 +375,12 @@ class Player(Special):  # The player
                 for i in range(0, len(Map.grid)):
                     name = Map.grid[self.column][self.row + 1][i].name
                     if name in enemyName:
-                        global block
                         block = enemyName.index(name)
                         return block
                     elif name == "Merchant":
                         return 8
+                    elif name == "Boss":
+                        return 15
                     elif name in ignoreName:
                         return 20
             else:
@@ -1965,6 +1970,55 @@ def merchText():
         screen.blit(text4, (10, 610))
         pygame.display.update()
 
+def bossText():
+    talk = True
+    background = pygame.image.load("GameArt\Extra\Background.png")
+    merchant = pygame.image.load("GameArt\Extra\Merch.gif")
+    box = pygame.image.load("GameArt\Extra\Text.png")
+    merch_rect = merchant.get_rect()
+    font = pygame.font.SysFont('Arial', 30)
+    text1 = font.render("What do you want you lowly flinds? I didn't ask for", False, BLACK)
+    text2 = font.render("you to come up! ", False, BLACK)
+    text4 = font.render("", False, BLACK)
+    text3 = font.render("", False, BLACK)
+    i = 0
+    global currentFloor
+    while talk:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.KEYDOWN:
+                if i == 0:
+                    text1 = font.render("Wait a minute... That look in your eyes... You", False, BLACK)
+                    text2 = font.render("aren't fully changed yet. But judging by the look of", False, BLACK)
+                    text3 = font.render("you, it won't be much longer.", False, BLACK)
+                    text4 = font.render("", False, BLACK)
+                    i += 1
+                elif i == 1:
+                    text1 = font.render("Oh, so you're still gonna try and fight? It's", False, BLACK)
+                    text2 = font.render("futile, there's no way you'll be able to defeat", False, BLACK)
+                    text3 = font.render("me.", False, BLACK)
+                    text4 = font.render("", False, BLACK)
+                    i += 1
+                elif i == 2:
+                    text1 = font.render("Still gonna try? Well bring it on! I could use", False, BLACK)
+                    text2 = font.render("the practice.", False, BLACK)
+                    text3 = font.render("", False, BLACK)
+                    text4 = font.render("", False, BLACK)
+                    i += 1
+                elif i == 3:
+                    # boss fight
+                    return
+
+        screen.fill(WHITE)
+        screen.blit(background, background.get_rect())
+        screen.blit(merchant, (WIDTH / 2 - (merch_rect[2] / 2), 50))
+        screen.blit(box, (0, 475))
+        screen.blit(text1, (10, 505))
+        screen.blit(text2, (10, 540))
+        screen.blit(text3, (10, 575))
+        pygame.display.update()
 
 def shop():
     shopping = True
@@ -2095,6 +2149,8 @@ def gameMap():
                     Map.hero.move("LEFT")
                     if Map.hero.collision("LEFT") == 8:
                         merchText()
+                    elif Map.hero.collision("UP") == 15:
+                        bossText()
                     elif Map.hero.collision("LEFT") == block:
                         print block
                     elif Map.hero.collision("LEFT") == 20:
@@ -2104,6 +2160,8 @@ def gameMap():
                     Map.hero.move("RIGHT")
                     if Map.hero.collision("RIGHT") == 8:
                         merchText()
+                    elif Map.hero.collision("UP") == 15:
+                        bossText()
                     elif Map.hero.collision("RIGHT") == block:
                         print block
                     elif Map.hero.collision("RIGHT") == 20:
@@ -2113,6 +2171,8 @@ def gameMap():
                     Map.hero.move("UP")
                     if Map.hero.collision("UP") == 8:
                         merchText()
+                    elif Map.hero.collision("UP") == 15:
+                        bossText()
                     elif Map.hero.collision("UP") == block:
                         print block
                     elif Map.hero.collision("UP") == 20:
@@ -2122,6 +2182,8 @@ def gameMap():
                     Map.hero.move("DOWN")
                     if Map.hero.collision("DOWN") == 8:
                         merchText()
+                    elif Map.hero.collision("UP") == 15:
+                        bossText()
                     elif Map.hero.collision("DOWN") == block:
                         print block
                     elif Map.hero.collision("DOWN") == 20:
@@ -2130,7 +2192,7 @@ def gameMap():
                 if event.key == pygame.K_RETURN:
                     changeFloor()
                 if event.key == pygame.K_a:
-                    combatTest()
+                    bossText()
                 if event.key == pygame.K_i:
                     checkList(inventory)
                 if event.key == pygame.K_b:
