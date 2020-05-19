@@ -1233,6 +1233,7 @@ class Fightable(object):
                 pygame.display.update()
                 screenshot = screen.copy()
                 action = combinedGamePlan[x]
+                print action
                 if action[0:1] == "H":
                     who = heroes[int(action[2:3])]
                     Fightable.printHeroes(heroes, int(action[2:3]))
@@ -1272,6 +1273,7 @@ class Fightable(object):
                                         sleep(.1)
 
                                     dead = ""
+                                    print eWho.health
                                     if (eWho.health <= 0):
                                         dead = (eWho.title.capitalize() + " " + eWho.name + " has been defeated!")
                                         for e in range(0, len(coordinates)):
@@ -1667,9 +1669,9 @@ def menu():
     font2 = pygame.font.SysFont('Arial', 60)
     selected = "start"
     bg_img = pygame.image.load("GameArt\Extra\menu.gif")
-    menu = True
+    men = True
 
-    while menu:
+    while men:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -1760,7 +1762,7 @@ def popup():
                 if selected == 2:
                     opt2 = font2.render("Mage", False, WHITE)
                 else:
-                    opt2 = font2.render("Mage", False, BLACK)
+                    opt1 = font2.render("Mage", False, BLACK)
             if currentFloor == f9:
                 if selected == 1:
                     opt1 = font2.render("Fighter", False, WHITE)
@@ -1793,8 +1795,8 @@ def merchText():
     font = pygame.font.SysFont('Arial', 30)
     text1 = font.render("Why, hello there stranger! Let me guess, you're here", False, BLACK)
     text2 = font.render("about the missing villager, right? I can tell. You", False, BLACK)
-    text3 = font.render("have that same look in your eyes all the other", False, BLACK)
     text4 = font.render("wannabe heros had.", False, BLACK)
+    text3 = font.render("have that same look in your eyes all the other", False, BLACK)
     i = 0
     global currentFloor
     while talk:
@@ -1805,10 +1807,10 @@ def merchText():
             elif event.type == pygame.KEYDOWN:
                 if i == 0:
                     text1 = font.render("Well, the villagers are here, but they're not the ", False, BLACK)
-                    text2 = font.render("same as they were before. Yennughu, the beast", False, BLACK)
+                    text2 = font.render("same as they were before. Yeenoghu, the beast", False, BLACK)
                     text3 = font.render("responsible for this tower, has already turned them", False, BLACK)
-                    text4 = font.render("into the monsters that now live in this tower.", False, BLACK)
                     i += 1
+                    text4 = font.render("into the monsters that now live in this tower.", False, BLACK)
                 elif i == 1:
                     text1 = font.render("He's been doing this for centuries now. He uses", False, BLACK)
                     text2 = font.render("magic to move the tower around so he never runs", False, BLACK)
@@ -1820,8 +1822,8 @@ def merchText():
                     text2 = font.render("as well. There's flind fur starting to grow on", False, BLACK)
                     text3 = font.render("your arms. Don't worry, there's still a chance", False, BLACK)
                     text4 = font.render("you can go back to normal. Won't be easy though.", False, BLACK)
-                    i += 1
                 elif i == 3:
+                    i += 1
                     text1 = font.render("Only way to break the curse is to kill Yennughu,", False, BLACK)
                     text2 = font.render("the creator the curse. But you have to fight your", False, BLACK)
                     text3 = font.render("way up for even the chance to fight him. If you want", False, BLACK)
@@ -1848,14 +1850,14 @@ def merchText():
                 elif i == 7:
                     text1 = font.render("That's all the help I can offer though. Don't", False, BLACK)
                     text2 = font.render("worry though, I'm sure you'll be able to pull", False, BLACK)
-                    text3 = font.render("oit off.", False, BLACK)
+                    text3 = font.render("it off.", False, BLACK)
                     text4 = font.render("", False, BLACK)
                     i += 1
                 elif i == 8:
                     text1 = font.render("Hopefully.", False, BLACK)
                     text2 = font.render("", False, BLACK)
-                    text3 = font.render("", False, BLACK)
                     text4 = font.render("", False, BLACK)
+                    text3 = font.render("", False, BLACK)
                     i += 1
                 elif i == 9:
                     popup()
@@ -1868,7 +1870,6 @@ def merchText():
         screen.blit(box, (0, 475))
         screen.blit(text1, (10, 505))
         screen.blit(text2, (10, 540))
-        screen.blit(text3, (10, 575))
         screen.blit(text4, (10, 610))
         pygame.display.update()
 
@@ -1912,7 +1913,7 @@ def shop():
                     print "buy clicked"
                 if sell_rect.collidepoint(pos):
                     print pos
-                    print "buy clicked"
+                    print "sell clicked"
                 if rest_rect.collidepoint(pos):
                     return
 
@@ -1955,7 +1956,6 @@ def changeFloor():
 
 def gameMap():
     bg_img = pygame.image.load("GameArt\Extra\menu.gif")
-    font = pygame.font.SysFont('Arial', 75)
     gameMap = True
     Map.build()
 
@@ -1997,6 +1997,8 @@ def gameMap():
         clock.tick(60)  # Limit to 60 fps or something
         pygame.display.update()  # Honestly not sure what this does, but it breaks if I remove it
         Map.update()
+        
+menu()
 
 
 enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the", 15, 4, 2, 2, [], [], 1, "Gnoll")
