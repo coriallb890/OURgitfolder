@@ -2333,6 +2333,7 @@ def gameMap():
         clock.tick(60)  # Limit to 60 fps or something
         pygame.display.update()  # Honestly not sure what this does, but it breaks if I remove it
         Map.update()
+        saveGame()
 
 def combatTest():
     enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the", 15, 4, 2, 2, [], [], 1, "Gnoll")
@@ -2340,16 +2341,33 @@ def combatTest():
     enemyTest2 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 2, "Slime")
     enemyTest3 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 3, "Slime")
     enemyTest4 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 4, "Slime")
-    test = Hero("Valor", [], [
-        [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
-        [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
-        [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
-        [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, battle_axe, leather)
-    test1 = Hero("Gallant", [], [
-        [10, 2, 2, 2, 2, 1, 3, 1, 3, 2, 4],
-        [2, 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
-        [1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
-        [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, bigger_sword, leather)
+    gallant = Hero("Gallant", [], [
+        [15, 1, 1, 1, 1, 1, 3, 1, 3, 2, 4],
+        [3, 1, 2, 1, 2, 0, 0, 2, 2, 3, 4],
+        [5, 1, 1, 1, 2, 1, 1, 1, 1, 2, 3],
+        [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, bigger_sword, chainmail
+    )
+
+    throureum = Hero("Throurem", [], [
+        [12, 2, 1, 1, 1, 1, 1, 1, 1, 2, 3],
+        [4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3],
+        [2, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4],
+        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]], "Mage", 2, fortified_staff, leather
+    )
+
+    knithen = Hero("Knithen", [], [
+        [10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+        [3, 0, 0, 0, 0, 3, 0, 0, 0, 3, 4],
+        [2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 2],
+        [3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3]], "Rogue", 69, dagger, leather
+    )
+
+    frethen = Hero("Frethen", [], [
+        [20, 0, 0, 0, 5, 0, 0, 0, 5, 0, 10],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [2, 1, 0, 1, 1, 0, 1, 1, 0, 1, 5],
+        [1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 5]], "Healer", 2, cross, robes
+    )
 
     for i in range(7):
         test.levelUp()

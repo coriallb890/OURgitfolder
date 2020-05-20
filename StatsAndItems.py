@@ -309,10 +309,10 @@ class Weapon(Item):
 
 
 class Armor(Item):
-    def __init__(self, name, cost, grade, flavor, defense, durabillity):
+    def __init__(self, name, cost, grade, flavor, defense, durability):
         super(Armor, self).__init__(name, cost, grade, flavor)
         self._defense = defense
-        self._durabillity = durabillity
+        self._durability = durability
 
     @property
     def defense(self):
@@ -323,15 +323,15 @@ class Armor(Item):
         self._defense = value
 
     @property
-    def durabillity(self):
+    def durability(self):
         return self._durability
 
-    @durabillity.setter
+    @durability.setter
     def durability(self, value):
         self._durability = value
 
     def clone(self):
-        return Armor(self.name, self.cost, self.grade, self.flavor, self.defense, self.durabillity)
+        return Armor(self.name, self.cost, self.grade, self.flavor, self.defense, self.durability)
 
 
 class Consumable(Item):
@@ -374,7 +374,9 @@ glock = Weapon("Glock 18", "shoots", 100, 100, "GLOCK.", 100, 3, 100, 1, 100)
 ## Armor
 ## name // cost // grade // flavor text // defense // durability
 
-leather = Armor("Leather Armor", 25, 0, "Name: Leather Armor  Defense: 2  Durability:100  Cost: 25", 2, 100)
+robes = Armor("Holy Robes", 10, 1, "Name: Holy Robes  Defense: 2  Durability: 50  Cost: 10", 2, 50)
+
+leather = Armor("Leather Armor", 25, 0, "Name: Leather Armor  Defense: 2  Durability: 100  Cost: 25", 2, 100)
 chainmail = Armor("Chainmail Armor", 75, 1, "Name: Chainmail Armor  Defense: 4  Durability: 150  Cost: 75", 4, 150)
 metalA = Armor("Full-metal Armor", 150, 2, "Name: Leather Armor  Defense: 6  Durability: 200  Cost: 150", 6, 200)
 
@@ -506,3 +508,31 @@ grade1Items = [polished_dagger, fortified_staff, red_axe, big_sword, chainmail, 
 grade2Items = [sharpened_dagger, obsidian_staff, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
 items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1, polished_dagger, red_axe, big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2,
          sharpened_dagger, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
+
+gallant = Hero("Gallant", [], [
+        [15, 1, 1, 1, 1, 1, 3, 1, 3, 2, 4],
+        [2 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
+        [5, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
+        [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, bigger_sword, chainmail
+)
+
+throureum = Hero("Throurem", [], [
+    [12, 2, 1, 1, 1, 1, 1, 1, 1, 2, 3],
+    [4, 2, 2, 0, 0, 0, 1, 2, 3, 2, 3],
+    [2, 1, 1, 1, 1, 0, 2, 3, 2, 3, 4],
+    [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]], "Mage", 2, fortified_staff, leather
+)
+
+knithen = Hero("Knithen", [], [
+    [10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+    [3, 0, 0, 0, 0, 3, 0, 0, 0, 3, 4],
+    [2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 2],
+    [3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3]], "Rogue", 69, dagger, leather
+)
+
+frethen = Hero("Frethen", [], [
+    [],
+    [],
+    [],
+    []], "Healer", 2, cross, robes
+])
