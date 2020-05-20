@@ -32,11 +32,10 @@ RED = (255, 0, 0)
 inventory = []
 goldCoins = 0
 playerMoves = []
-partyMember = []
 block = 10
 experience = 0
 
-party = []
+party = [player]
 
 def checkList(inventory):
     original = screen.copy()
@@ -648,9 +647,9 @@ def menu():
         else:
             text_start = font2.render("NEW GAME", False, BLACK)
         if selected == "load":
-            text_load = font2.render("LOAD SAVE", False, WHITE)
+            text_load = font2.render("LOAD", False, WHITE)
         else:
-            text_load = font2.render("LOAD SAVE", False, BLACK)
+            text_load = font2.render("LOAD", False, BLACK)
         if selected == "quit":
             text_quit = font2.render("QUIT", False, WHITE)
         else:
@@ -742,9 +741,29 @@ def popup():
                 if event.key == pygame.K_RETURN:
                     pygame.mixer.Sound.play(select)
                     if selected == 1:
-                        return
+                        if currentFloor == f1:
+                            player.moves.append(charge)
+                            return
+                        if currentFloor == f5:
+                            party.append(frethenei)
+                            player.moves.append(plague)
+                            return
+                        if currentFloor == f9:
+                            party.append(gallant)
+                            player.moves.append(backstab)
+                            return
                     if selected == 2:
-                        return
+                        if currentFloor == f1:
+                            player.moves.append(burn)
+                            return
+                        if currentFloor == f5:
+                            party.append(throureum)
+                            player.moves.append(auraHeal)
+                            return
+                        if currentFloor == f9:
+                            party.append(knithenpf)
+                            player.moves.append(wideSlice)
+                            return
 
         # Pop Up UI
         if currentFloor == f1:
@@ -752,9 +771,9 @@ def popup():
             title1 = font1.render("What move do you", False, BLACK)
             title2 = font1.render("want to learn?", False, BLACK)
             if selected == 1:
-                opt1 = font2.render("Healing Move", False, WHITE)
+                opt1 = font2.render("Melee Move", False, WHITE)
             else:
-                opt1 = font2.render("Healing Move", False, BLACK)
+                opt1 = font2.render("Melee Move", False, BLACK)
             if selected == 2:
                 opt2 = font2.render("Spell Move", False, WHITE)
             else:
@@ -776,9 +795,9 @@ def popup():
                     opt1 = font2.render("Mage", False, BLACK)
             if currentFloor == f9:
                 if selected == 1:
-                    opt1 = font2.render("Fighter", False, WHITE)
+                    opt1 = font2.render("Knight", False, WHITE)
                 else:
-                    opt1 = font2.render("Fighter", False, BLACK)
+                    opt1 = font2.render("Knight", False, BLACK)
                 if selected == 2:
                     opt2 = font2.render("Rouge", False, WHITE)
                 else:
@@ -909,6 +928,7 @@ def bossText():
     talk = True
     background = pygame.image.load("GameArt\Extra\Background.png")
     merchant = pygame.image.load("GameArt\Merchant\Stand.png")
+    merchant = pygame.transform.scale(merchant, (int(merchant.get_size()[0]*.255), int(merchant.get_size()[1]*.255)))
     box = pygame.image.load("GameArt\Extra\Text.png")
     merch_rect = merchant.get_rect()
     font = pygame.font.SysFont('Arial', 30)
@@ -944,6 +964,8 @@ def bossText():
                     i += 1
                 elif i == 3:
                     # boss fight
+                    # boss fight
+                    # boss fight
                     return
 
         screen.fill(WHITE)
@@ -965,7 +987,7 @@ def shop():
     font1 = pygame.font.SysFont('Arial', 50)
     font2 = pygame.font.SysFont('Arial', 13)
     background = pygame.image.load("GameArt\Extra\Background.png")
-    merchant = pygame.image.load("GameArt\Merchant\Stand.png")
+    merchant = pygame.image.load("GameArt\Merchant\Store.gif")
     sign = pygame.image.load("GameArt\Extra\Sign.png")
     button = pygame.image.load("GameArt\Extra\Buttonfull.png")
     rest = pygame.image.load("GameArt\Extra\Rest.png")
@@ -1012,6 +1034,8 @@ def shop():
                         j += 1
                         
                 if rest_rect.collidepoint(pos):
+                    for i in party:
+                        i.health = i.maxHealth
                     changeFloor()
                     return
 
@@ -1023,7 +1047,7 @@ def shop():
 
         screen.fill(WHITE)
         screen.blit(background, background.get_rect())
-        screen.blit(merchant, (0, 130))
+        screen.blit(merchant, (0, 120))
         screen.blit(sign, (0, 0))
         screen.blit(button, (283, 130))
         screen.blit(gold, (283, 110))
@@ -1048,6 +1072,80 @@ def shop():
 
         pygame.display.update()
 
+def makeCombat(x):
+    count = []
+    i = 1
+    if x == 1:
+        num = random.randint(1, 3)
+        if currentFloor == f2:
+            for i in range(num):
+                count.append(f1hill_giant.clone())
+            Fightable.combat(party, count, screen, inventory)
+        elif currentFloor == f3:
+            for i in range(num):
+                count.append(f2hill_giant.clone())
+            Fightable.combat(party, count, screen, inventory)
+        elif currentFloor == f4:
+            for i in range(num):
+                count.append(f3hill_giant.clone())
+            Fightable.combat(party, count, screen, inventory)
+        elif currentFloor == f6:
+            for i in range(num):
+                count.append(f5hill_giant.clone())
+            Fightable.combat(party, count, screen, inventory)
+            
+    elif x == 2:
+        num = random.randint(2, 5)
+        if currentFloor == f4:
+            for i in range(num):
+                count.append(f2gnoll.clone())
+            Fightable.combat(party, count, screen, inventory)
+        elif currentFloor == f6:
+            for i in range(num):
+                count.append(f5gnoll.clone())
+            Fightable.combat(party, count, screen, inventory)
+        elif currentFloor == f7:
+            for i in range(num):
+                count.append(f6gnoll.clone())
+            Fightable.combat(party, count, screen, inventory)
+        elif currentFloor == f8:
+            for i in range(num):
+                count.append(f7gnoll.clone())
+            Fightable.combat(party, count, screen, inventory)
+        elif currentFloor == f10:
+            for i in range(num):
+                count.append(f9gnoll.clone())
+            Fightable.combat(party, count, screen, inventory)
+        
+    elif x == 3:
+        num = random.randint(2, 3)
+        if currentFloor == f8:
+            for i in range(num):
+                count.append(f7flind.clone())
+            Fightable.combat(party, count, screen, inventory)
+        elif currentFloor == f10:
+            for i in range(num):
+                count.append(f9flind.clone())
+            Fightable.combat(party, count, screen, inventory)
+        elif currentFloor == f11:
+            for i in range(num):
+                count.append(f10flind.clone())
+            Fightable.combat(party, count, screen, inventory)
+            
+        elif currentFloor == f12:
+            for i in range(num):
+                count.append(f11flind.clone())
+            Fightable.combat(party, count, screen, inventory)
+
+    elif x == 4:
+        Fightable.combat(party, [miniboss1], screen, inventory)
+    elif x == 5:
+        Fightable.combat(party, [miniboss3], screen, inventory)
+    for i in party:
+        i.revert()
+    return
+        
+        
 
 def changeFloor():
     global currentFloor
@@ -1087,7 +1185,7 @@ def gameMap():
                     elif Map.hero.collision("UP") == 15:
                         bossText()
                     elif Map.hero.collision("LEFT") == block:
-                        print block
+                        makeCombat(block)
                     elif Map.hero.collision("LEFT") == 20:
                         print ""
 
@@ -1098,7 +1196,7 @@ def gameMap():
                     elif Map.hero.collision("UP") == 15:
                         bossText()
                     elif Map.hero.collision("RIGHT") == block:
-                        print block
+                        makeCombat(block)
                     elif Map.hero.collision("RIGHT") == 20:
                         print ""
 
@@ -1109,7 +1207,7 @@ def gameMap():
                     elif Map.hero.collision("UP") == 15:
                         bossText()
                     elif Map.hero.collision("UP") == block:
-                        print block
+                        makeCombat(block)
                     elif Map.hero.collision("UP") == 20:
                         print ""
 
@@ -1120,7 +1218,7 @@ def gameMap():
                     elif Map.hero.collision("UP") == 15:
                         bossText()
                     elif Map.hero.collision("DOWN") == block:
-                        print block
+                        makeCombat(block)
                     elif Map.hero.collision("DOWN") == 20:
                         print ""
 

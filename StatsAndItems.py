@@ -436,7 +436,7 @@ rejuvHeal = Move("Rejuvinating Heal", "Single", 5, [boostAura])
 # Knight-type deals
 swing = Move("Swing", "Single", 5, [swung])
 inspire = Move("Inspiration", "Single", 3, [inspired])
-### charge = Move("Charge", "Single", 3, [charged])
+charge = Move("Charge", "Single", 3, [charged])
 skewer = Move("Skewer", "Vert Line", 3, [skewered])
 wideSlice = Move("Wide Slice", "Hori Line", 3, [wideSliced])
 
