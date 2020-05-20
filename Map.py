@@ -1,7 +1,6 @@
 from time import sleep
 from random import randint
 import random
-from math import ceil
 from StatsAndItems import *
 from Combat import *
 import pygame
@@ -956,6 +955,7 @@ def bossText():
         screen.blit(text3, (10, 575))
         pygame.display.update()
 
+
 def shop():
     shopping = True
     global currentFloor
@@ -1056,7 +1056,6 @@ def changeFloor():
     Map.hero.row = 9
     Map.build()
     return
-
 
 def gameMap():
     global block
