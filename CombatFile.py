@@ -1532,10 +1532,6 @@ class Fightable(object):
             pygame.mixer.music.play(-1)
             return False
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 560dd4fcf461eb651e83a68d121457aa615373b8
 class Hero(Fightable):
     def __init__(self, name, moves, leveling, caste, gender, weapon, armor):
         super(Hero, self).__init__(name, 0, 0, 0, 0, moves)
@@ -2340,7 +2336,6 @@ def gameMap():
         clock.tick(60)  # Limit to 60 fps or something
         pygame.display.update()  # Honestly not sure what this does, but it breaks if I remove it
         Map.update()
-        saveGame()
 
 
 
