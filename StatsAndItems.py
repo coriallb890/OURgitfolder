@@ -153,6 +153,9 @@ class Move:
     def statusEffects(self, value):
         self._statusEffects = value
 
+    def clone(self):
+        return Move(self.name, self.target, self.uses, self.statusEffects)
+
 
 class Gender:
     def __init__(self, name, subj, obj, posAdj, posPro, refl):
@@ -210,48 +213,6 @@ class Gender:
     @refl.setter
     def refl(self, value):
         self._refl = value
-
-class Move(object):
-    def __init__(self, name, target, uses, statusEffects):
-        self._name = name
-        self._target = target
-        self._uses = uses
-        self._statusEffects = statusEffects
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def target(self):
-        return self._target
-
-    @target.setter
-    def target(self, value):
-        self._target = value
-
-    @property
-    def uses(self):
-        return self._uses
-
-    @uses.setter
-    def uses(self, value):
-        self._uses = value
-
-    @property
-    def statusEffect(self):
-        return self._statusEffect
-
-    @statusEffects.setter
-    def statusEffects(self, value):
-        self._statusEffects = value
-
-    def clone(self):
-        return Move(self.name, self.target, self.uses, self.statusEffect)
 
 class Item(object):
     def __init__(self, name, cost, grade, flavor):
@@ -483,7 +444,7 @@ inspire = Move("Inspiration", "Single", 3, [adren])
 
 
 cheapStrike = Move("Cheap Strike", "Single", 5, [strike])
-shank = Move("Shank", "Single", 5, [shank])
+skirt = Move("Skirt", "Single", 5, [skirt])
 
 infectStrike = Move("Infected Bite", "Single", 2, [bite, poison])
 scratch = Move("Scratch", "Hori Line", 2, [skirt, minorBleed])

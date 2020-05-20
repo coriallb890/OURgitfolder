@@ -14,6 +14,7 @@ HEIGHT = 716
 screen = pygame.display.set_mode([WIDTH, HEIGHT])  # making the window
 Done = False  # variable to keep+ track if window is open
 MAPSIZE = 11  # how many tiles in either direction of grid
+VOLUME = .1
 
 TILEWIDTH = 64  # pixel sizes for grid squares
 TILEHEIGHT = 64
@@ -40,6 +41,20 @@ def checkList(inventory):
     scroll = pygame.transform.scale(scroll, (scroll.get_size()[0] * 9 / 4, scroll.get_size()[1] * 2))
     screen.blit(scroll, (125, 100))
     justScroll = screen.copy()
+
+    if len(inventory) == 0:
+        screen.blit(font.render("Inventory is empty.", True, BLACK), (180, 175))
+        screen.blit(font.render("Back", True, WHITE), (315, 505))
+        pygame.display.update()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        return None
+
     maxi = len(inventory)
     place = 0
     cursor = 0
@@ -49,7 +64,7 @@ def checkList(inventory):
         screen.blit(font.render(inventory[i].name, True, BLACK), (180, 175+(i*30)))
     screen.blit(font.render("Back", True, BLACK), (315, 505))
     screenshot = screen.copy()
-    screen.blit(font.render(inventory[0].name, True, WHITE), (180, 175)) #
+    screen.blit(font.render(inventory[0].name, True, WHITE), (180, 175))
     pygame.display.update()
     while True:
         for event in pygame.event.get():
@@ -160,6 +175,29 @@ def useItem(item, who):
     elif isinstance(item, Armor):
         pass
     return True
+
+
+def userWarning(string):
+    original = screen.copy()
+    font = pygame.font.SysFont('Arial', 20)
+    scroll = pygame.image.load("GameArt\Extra\scroll.png")
+    scroll = pygame.transform.scale(scroll, (int(scroll.get_size()[0] * 1.5), int(scroll.get_size()[1] * .75)))
+    screen.blit(scroll, ((WIDTH/2) - (scroll.get_size()[0]/2), 260))
+    size = font.size(string)[0]
+    screen.blit(font.render(string, True, BLACK), ((WIDTH/2)-(size/2), 290))
+    size = font.size("Press Enter To Continue")[0]
+    screen.blit(font.render("Press Enter To Continue", True, BLACK), ((WIDTH/2)-(size/2), 370))
+    pygame.display.update()
+    while True:
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        screen.blit(original, (0, 0))
+                        pygame.display.update()
+                        return
 
 
 def fadeToBlack(time=.01):
@@ -398,6 +436,7 @@ class Player(Special):  # The player
     def location(self):
         print("Coordinates: " + str(self.column) + ", " + str(self.row))
 
+
 class Map(object):  # The main class; where the action happens
 
     grid = []
@@ -480,7 +519,7 @@ class Map(object):  # The main class; where the action happens
             Map.grid[5][5].append(tempTile)
 
             pygame.mixer.music.stop()
-            pygame.mixer.music.set_volume(.8)
+            pygame.mixer.music.set_volume(.8*VOLUME)
             song = pygame.mixer.music.load("GameMusic\MerchIntro.wav")
             pygame.mixer.music.play()
             while pygame.mixer.music.get_busy():
@@ -898,7 +937,7 @@ class Fightable(object):
                     color = enemies[coordinates[x][y]].healthColor()
                     if highlight == coordinates[x][y]:
                         color = WHITE
-                    rec.append(pygame.draw.rect(screen, color, [160 + (x * 100), 250 + (y * 100), 100, 100]))
+                    rec.append(pygame.draw.rect(screen, color, [160 + (x * 100), 270 + (y * 100), 100, 100]))
             rects.append(rec)
 
         for y in range(len(coordinates[0])):
@@ -956,7 +995,8 @@ class Fightable(object):
 
     @staticmethod
     def printScreen(coordinates, enemies, heroes, attacking=-1):
-        screen.fill(BLACK)  # 4 sets of 165
+        bg = pygame.image.load("GameArt\Extra\combat_bg.png")
+        screen.blit(bg, (0, 0))
 
         Fightable.printCoords(coordinates, enemies, attacking, attacking)
         Fightable.printHeroes(heroes)
@@ -1492,6 +1532,10 @@ class Fightable(object):
             pygame.mixer.music.play(-1)
             return False
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 560dd4fcf461eb651e83a68d121457aa615373b8
 class Hero(Fightable):
     def __init__(self, name, moves, leveling, caste, gender, weapon, armor):
         super(Hero, self).__init__(name, 0, 0, 0, 0, moves)
@@ -1764,13 +1808,13 @@ def menu():
     selected = "start"
     bg_img = pygame.image.load("GameArt\Extra\menu.gif")
     men = True
-
+    pygame.mixer.music.set_volume(VOLUME)
     song = pygame.mixer.music.load("GameMusic\MainMenu.wav")
     pygame.mixer.music.set_volume(1)
     pygame.mixer.music.play(-1)
 
     select = pygame.mixer.Sound("SoundFX\Select.wav")
-    select.set_volume(.25)
+    select.set_volume(.25*VOLUME)
     while men:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -1960,7 +2004,9 @@ def popup():
 def merchText():
     talk = True
     background = pygame.image.load("GameArt\Extra\Background.png")
-    merchant = pygame.image.load("GameArt\Extra\Merch.gif")
+    merchant = pygame.image.load("GameArt\Merchant\Happy.png")
+    merchant = pygame.transform.scale(merchant, (int(merchant.get_size()[0]*.255), int(merchant.get_size()[1]*.255)))
+    noMerch = screen.copy()
     box = pygame.image.load("GameArt\Extra\Text.png")
     merch_rect = merchant.get_rect()
     font = pygame.font.SysFont('Arial', 30)
@@ -1969,6 +2015,8 @@ def merchText():
     text4 = font.render("wannabe heros had.", False, BLACK)
     text3 = font.render("have that same look in your eyes all the other", False, BLACK)
     i = 0
+    click = pygame.mixer.Sound("SoundFX\Click.wav")
+    click.set_volume(VOLUME)
     global currentFloor
     while talk:
         for event in pygame.event.get():
@@ -1976,13 +2024,18 @@ def merchText():
                 pygame.quit()
                 quit()
             elif event.type == pygame.KEYDOWN:
+                pygame.mixer.Sound.play(click)
                 if i == 0:
+                    screen.blit(noMerch, (0, 0))
+                    merchant = pygame.transform.scale(pygame.image.load("GameArt\Merchant\Stand.png"), (int(merchant.get_size()[0]), int(merchant.get_size()[1])))
                     text1 = font.render("Well, the villagers are here, but they're not the ", False, BLACK)
                     text2 = font.render("same as they were before. Yeenoghu, the beast", False, BLACK)
                     text3 = font.render("responsible for this tower, has already turned them", False, BLACK)
                     text4 = font.render("into the monsters that now live in this tower.", False, BLACK)
                     i += 1
                 elif i == 1:
+                    screen.blit(noMerch, (0, 0))
+                    merchant = pygame.transform.scale(pygame.image.load("GameArt\Merchant\Sad.png"), (int(merchant.get_size()[0]), int(merchant.get_size()[1])))
                     text1 = font.render("He's been doing this for centuries now. He uses", False, BLACK)
                     text2 = font.render("magic to move the tower around so he never runs", False, BLACK)
                     text3 = font.render("out of victims to put under his curse.", False, BLACK)
@@ -1995,6 +2048,8 @@ def merchText():
                     text4 = font.render("you can go back to normal. Won't be easy though.", False, BLACK)
                     i += 1
                 elif i == 3:
+                    screen.blit(noMerch, (0, 0))
+                    merchant = pygame.transform.scale(pygame.image.load("GameArt\Merchant\Stand.png"), (int(merchant.get_size()[0]), int(merchant.get_size()[1])))
                     i += 1
                     text1 = font.render("Only way to break the curse is to kill Yennughu,", False, BLACK)
                     text2 = font.render("the creator the curse. But you have to fight your", False, BLACK)
@@ -2002,12 +2057,16 @@ def merchText():
                     text4 = font.render("some help though I may be of some assistance.", False, BLACK)
                     i += 1
                 elif i == 4:
+                    screen.blit(noMerch, (0, 0))
+                    merchant = pygame.transform.scale(pygame.image.load("GameArt\Merchant\Happy.png"), (int(merchant.get_size()[0]), int(merchant.get_size()[1])))
                     text1 = font.render("I may be rusty, but I still know some powerful", False, BLACK)
                     text2 = font.render("fighting techniques. I only have time to teach", False, BLACK)
                     text3 = font.render("you one though.", False, BLACK)
                     text4 = font.render("", False, BLACK)
                     i += 1
                 elif i == 5:
+                    screen.blit(noMerch, (0, 0))
+                    merchant = pygame.transform.scale(pygame.image.load("GameArt\Merchant\Stand.png"), (int(merchant.get_size()[0]), int(merchant.get_size()[1])))
                     text1 = font.render("I'll also open up my shop for you. You'll ", False, BLACK)
                     text2 = font.render("probably find some valueables after your fights", False, BLACK)
                     text3 = font.render("and I'll gladly take them off your hands.", False, BLACK)
@@ -2020,12 +2079,16 @@ def merchText():
                     text4 = font.render("", False, BLACK)
                     i += 1
                 elif i == 7:
+                    screen.blit(noMerch, (0, 0))
+                    merchant = pygame.transform.scale(pygame.image.load("GameArt\Merchant\Congrats.png"), (int(merchant.get_size()[0]), int(merchant.get_size()[1])))
                     text1 = font.render("That's all the help I can offer though. Don't", False, BLACK)
                     text2 = font.render("worry though, I'm sure you'll be able to pull", False, BLACK)
                     text3 = font.render("it off.", False, BLACK)
                     text4 = font.render("", False, BLACK)
                     i += 1
                 elif i == 8:
+                    screen.blit(noMerch, (0, 0))
+                    merchant = pygame.transform.scale(pygame.image.load("GameArt\Merchant\Stand.png"), (int(merchant.get_size()[0]), int(merchant.get_size()[1])))
                     text1 = font.render("Hopefully.", False, BLACK)
                     text2 = font.render("", False, BLACK)
                     text3 = font.render("", False, BLACK)
@@ -2049,7 +2112,7 @@ def merchText():
 def bossText():
     talk = True
     background = pygame.image.load("GameArt\Extra\Background.png")
-    merchant = pygame.image.load("GameArt\Extra\Merch.gif")
+    merchant = pygame.image.load("GameArt\Merchant\Stand.png")
     box = pygame.image.load("GameArt\Extra\Text.png")
     merch_rect = merchant.get_rect()
     font = pygame.font.SysFont('Arial', 30)
@@ -2303,10 +2366,10 @@ def combatTest():
     test.revert()
     test.health = test.maxHealth
 
-    Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone()])
-
+    Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone()])
 
 menu()
+combatTest()
 
 
 pygame.quit()
