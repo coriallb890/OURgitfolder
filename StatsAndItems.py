@@ -211,6 +211,47 @@ class Gender:
     def refl(self, value):
         self._refl = value
 
+class Move(object):
+    def __init__(self, name, target, uses, statusEffects):
+        self._name = name
+        self._target = target
+        self._uses = uses
+        self._statusEffects = statusEffects
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def target(self):
+        return self._target
+
+    @target.setter
+    def target(self, value):
+        self._target = value
+
+    @property
+    def uses(self):
+        return self._uses
+
+    @uses.setter
+    def uses(self, value):
+        self._uses = value
+
+    @property
+    def statusEffect(self):
+        return self._statusEffect
+
+    @statusEffects.setter
+    def statusEffects(self, value):
+        self._statusEffects = value
+
+    def clone(self):
+        return Move(self.name, self.target, self.uses, self.statusEffect)
 
 class Item(object):
     def __init__(self, name, cost, grade, flavor):
@@ -253,11 +294,11 @@ class Item(object):
 
 
 class Weapon(Item):
-    def __init__(self, name, verb, cost, grade, flavor, fight, rang, accuracy, consistency, critRate):
+    def __init__(self, name, verb, cost, grade, flavor, fight, range, accuracy, consistency, critRate):
         super(Weapon, self).__init__(name, cost, grade, flavor)
         self._fight = fight
         self.verb = verb
-        self._range = rang
+        self._range = range
         self._accuracy = accuracy
         self._consistency = consistency
         self._critRate = critRate
@@ -302,6 +343,9 @@ class Weapon(Item):
     def critRate(self, value):
         self._critRate = value
 
+    def clone(self):
+        return Weapon(self.name, self.verb, self.cost, self.grade, self.flavor, self.fight, self.range, self.accuracy, self.consistency, self.critRate)
+
 
 class Armor(Item):
     def __init__(self, name, cost, grade, flavor, defense, durabillity):
@@ -325,6 +369,9 @@ class Armor(Item):
     def durability(self, value):
         self._durability = value
 
+    def clone(self):
+        return Armor(self.name, self.cost, self.grade, self.flavor, self.defense, self.durabillity)
+
 
 class Consumable(Item):
     def __init__(self, name, cost, grade, flavor, statusEffect):
@@ -339,10 +386,8 @@ class Consumable(Item):
     def statusEffect(self, value):
         self._statusEffect = value
 
-
-## Weapons
-## name // cost // grade // flavor text // fight // range // accuracy // consistency // critRate
-
+    def clone(self):
+        return Consumable(self.name, self.cost, self.grade, self.flavor, self.statusEffect)
 
 ## Weapons
 ## name // cost // grade // flavor text // fight // range // accuracy // consistency // critRate
@@ -359,7 +404,7 @@ sword = Weapon("Sword", "slashes", 30, 0, "Name: Sword  Attack: 4  Range: 3  Cos
 big_sword = Weapon("Big Sword", "slashes", 40, 1, "Name: Big Sword  Attack: 5  Range: 3  Cost: 40", 5, 3, 70, 1, 15)
 bigger_sword = Weapon("Bigger Sword", "slashes", 45, 2, "Name: Bigger Sword  Attack: 6  Range: 3  Cost: 45", 6, 3, 70, 1, 15)
 
-glock = Weapon("Glock 18", "shoots", 100, 100, "yeah i got a glock. the real question is... where am i getting all this ammo?", 100, 3, 100, 1, 100)
+glock = Weapon("Glock 18", "shoots", 100, 100, "GLOCK.", 100, 3, 100, 1, 100)
 
 ## Armor
 ## name // cost // grade // flavor text // defense // durability
@@ -375,13 +420,20 @@ metalS = Armor("Metal Shield", 150, 2, "Name: Metal Shield  Defense: 7  Max Dura
 ## Status Effects
 ## name // verb // stats // amounts // turns
 
+minorBleed = StatusEffect("Minor Bleeding", "bled", ["health"], [-1], 3)
+bleed = StatusEffect("Bleeding", "hemorrhaged", ["health"], [-2], 4)
 poison = StatusEffect("Poison", "poisoned", ["health"], [-3], 3)
+
 strike = StatusEffect("Cheap Strike", "shanked", ["health"], ["F-150"], 1)
+stab = StatusEffect("Stab", "stabbed", ["health"], [-3], 1)
+bite = StatusEffect("Bite", "bit", ["health"], [-3], 1)
+skirt = StatusEffect("Skirt", "skirted", ["health"], [-2], 1
 
 health1 = StatusEffect("Small Health", "drank", ["health"], [5], 1)
 health2 = StatusEffect("Health", "drank", ["health"], [10], 1)
 health3 = StatusEffect("Big Health", "drank", ["health"], [15], 1)
 
+healAura = StatusEffect("Healing Aura", "healed", ["health"], [2], 3)
 aura = StatusEffect("Boost Aura", "boosted", ["health", "fight"], [3, 2], 2)
 
 fight1 = StatusEffect("Small Fight", "drank", ["fight"], [2], 2)
@@ -417,7 +469,21 @@ agilityp1 = Consumable("Small Agility Potion", 75, 0, "Name: Small Agility Potio
 agilityp2 = Consumable("Agility Potion", 100, 1, "Name: Agility Potion  Cost: 100", agility2)
 agilityp3 = Consumable("Big Agility Potion", 150, 2, "Name: Big Agility Potion  Cost: 150", agility3)
 
-bigp = Consumable("Everything Potion", 200, 2, "Name: Everythin Potion  Cost: 200", everything)
+bigp = Consumable("Everything Potion", 200, 2, "Name: The Everythin' Potion  Cost: 200", everything)
+
+## Moves
+## name // target // uses // status effect
+rejuvHeal = Move("Rejuvinating Heal", "Single", 5, [aura])
+auraHeal = Move("Healing Aura", "All", 2, [healAura])
+
+cheapStrike = Move("Cheap Strike", "Single", 5, [strike])
+shank = Move("Shank", "Single", 5, [shank])
+
+infectStrike = Move("Infected Bite", "Single", 2, [bite, poison])
+scratch = Move("Scratch", "Hori Line", 2, [skirt, minorBleed])
+score = Move("Score", "Single", 3, [stab, minorBleed])
+deepCut = Move("Deep Cut", "Single", 4, [stab, bleed])
+
 
 ## List of items by grade
 grade0Items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1]

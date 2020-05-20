@@ -236,12 +236,18 @@ class FightFloor(Floor):
     def flindCount(self, value):
         self._flindCount = value
 
+    def clone():
+        return FightFloor(self.name, self.enemyCount, self.nextFloor, self.hillCount, self.gnollCount, self.flindCount)
+
 
 class MiniFloor(Floor):
     def __init__(self, name, enemyCount, nextFloor, mini, partyMem):
         Floor.__init__(self, name, enemyCount, nextFloor)
         self.mini = mini
         self.party = partyMem
+
+    def clone():
+        return MiniFloor(self.name, self.enemyCount, self.nextFloor, self.mini, self.partyMem)
 
 
 class SpecialFloor(Floor):
@@ -265,6 +271,9 @@ class SpecialFloor(Floor):
     @merchant.setter
     def merchant(self, value):
         self._merchant = value
+
+    def clone():
+        return SpecialFloor(self.name, self.enemyCount, self.nextFloor, self.boss, self.merchant)
 
 
 class Special(object):  # The main class for stationary things that inhabit the grid ... grass, trees, rocks and stuff.
@@ -1483,8 +1492,6 @@ class Fightable(object):
             pygame.mixer.music.play(-1)
             return False
 
-
-
 class Hero(Fightable):
     def __init__(self, name, moves, leveling, caste, gender, weapon, armor):
         super(Hero, self).__init__(name, 0, 0, 0, 0, moves)
@@ -1593,6 +1600,9 @@ class Hero(Fightable):
             string += x.name[0]
         screen.blit(font.render(string, True, (255, 0, 0)), (coords[0], coords[1] + 60))
 
+    def clone(self):
+        return Hero(self.name, self.moves, self.leveling, self.caste, self.gender, self.weapon, self.armor)
+
     def __str__(self):
         string = self.name + ", " + self.caste + "\n"
         string += "Level " + str(self.level) + "\n"
@@ -1667,7 +1677,7 @@ class Enemy(Fightable):
 
     def clone(self):
         return Enemy(self.name, self.desc, self.verb, self.title, self.health, self.fight, self.defense, self.agility,
-                     self.moves, self.drops, self.size, self._imageFolder);
+                     self.moves, self.drops, self.size, self._imageFolder)
 
     def generateImage(self):
         # This code is gonna be horrible
@@ -1756,6 +1766,7 @@ def menu():
     men = True
 
     song = pygame.mixer.music.load("GameMusic\MainMenu.wav")
+    pygame.mixer.music.set_volume(1)
     pygame.mixer.music.play(-1)
 
     select = pygame.mixer.Sound("SoundFX\Select.wav")
@@ -1768,10 +1779,16 @@ def menu():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     pygame.mixer.Sound.play(select)
-                    selected = "start"
+                    if selected == "quit":
+                        selected = "load"
+                    else:
+                        selected = "start"
                 elif event.key == pygame.K_DOWN:
                     pygame.mixer.Sound.play(select)
-                    selected = "quit"
+                    if selected == "start":
+                        selected = "load"
+                    else:
+                        selected = "quit"
                 if event.key == pygame.K_RETURN:
                     pygame.mixer.Sound.play(select)
                     if selected == "start":
@@ -1779,6 +1796,8 @@ def menu():
                         fadeToBlack()
                         gameMap()
                         return
+                    if selected == "load":
+                        loadGame()
                     if selected == "quit":
                         pygame.quit()
                         quit()
@@ -1788,9 +1807,13 @@ def menu():
         screen.blit(bg_img, bg_img.get_rect())
         title = font1.render("The Tower", False, BLACK)
         if selected == "start":
-            text_start = font2.render("START", False, WHITE)
+            text_start = font2.render("NEW GAME", False, WHITE)
         else:
-            text_start = font2.render("START", False, BLACK)
+            text_start = font2.render("NEW GAME", False, BLACK)
+        if selected == "load":
+            text_load = font2.render("LOAD SAVE", False, WHITE)
+        else:
+            text_load = font2.render("LOAD SAVE", False, BLACK)
         if selected == "quit":
             text_quit = font2.render("QUIT", False, WHITE)
         else:
@@ -1798,14 +1821,67 @@ def menu():
 
         title_rect = title.get_rect()
         start_rect = text_start.get_rect()
+        load_rect = text_load.get_rect()
         quit_rect = text_quit.get_rect()
 
         screen.blit(title, (WIDTH / 2 - (title_rect[2] / 2), 80))
         screen.blit(text_start, (WIDTH / 2 - (start_rect[2] / 2), 300))
-        screen.blit(text_quit, (WIDTH / 2 - (quit_rect[2] / 2), 360))
+        screen.blit(text_load, (WIDTH / 2 - (load_rect[2] / 2), 360))
+        screen.blit(text_quit, (WIDTH / 2 - (quit_rect[2] / 2), 420))
         pygame.display.update()
         clock.tick(60)
 
+############################
+# Save File Format:
+# [floor, level, party members, inventory, gold, moves]
+# e.g. [1, 3, ["Healer"], [dagger, health1], 69, [fight, die]]
+############################
+
+def saveGame():
+    try:
+        save = open("savefile.txt", "wt")
+        inven = []
+        pMoves = []
+        pMember = []
+        for i in range(len(inventory)):
+            inven.append(inventory[i].clone())
+        for i in range(len(partyMember)):
+            pMember.append(partyMember[i].clone())
+        for i in range(len(playerMoves)):
+            pMoves.append(playerMoves[i].clone())
+        saveText = [currentFloor.clone(), int(player.level), pMember, inven, goldCoins, pMoves]
+        save.write(str(saveText))
+        save.close()
+    except IOError:
+        print "Failed to save game!"
+
+def loadGame():
+    try:
+        save = eval(open("savefile.txt", "rt").read())
+        print "Found a save file!"
+        if (len(save) != 0):
+            try:
+                currentFloor = save[0]
+
+                hero.level = save[1]
+
+                partyMember = save[2]
+
+                inventory = []
+                for i in range(len(save[3])):
+                    inventory.append(eval(str(p[i])))
+
+                goldCoins = save[4]
+                playerMoves = save[5]
+                pygame.mixer.music.fadeout(1000)
+                fadeToBlack()
+                gameMap()
+            except:
+                print "Save file is corrupted!"
+        else:
+            print "Save file is empty!"
+    except:
+        print "Unable to find or load save file!"
 
 def popup():
     font1 = pygame.font.SysFont('Arial', 75)
@@ -2201,6 +2277,7 @@ def gameMap():
         clock.tick(60)  # Limit to 60 fps or something
         pygame.display.update()  # Honestly not sure what this does, but it breaks if I remove it
         Map.update()
+        saveGame()
 
 
 

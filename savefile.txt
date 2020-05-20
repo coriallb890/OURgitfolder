@@ -1,0 +1,1 @@
+['<__main__.SpecialFloor object at 0x0000000003364160>', '<property object at 0x0000000003421778>', [], ['defensep3', 'polished_dagger', 'sword', 'metalA', 'dagger'], 0, []]
