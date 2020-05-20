@@ -1280,7 +1280,7 @@ def gameMap():
                         bossText()
                     elif Map.hero.collision("UP") == block:
                         tempTile = Special("Ground", "GameArt\Extra\Ground.png", Map.hero.column, Map.hero.row-1)
-                        Map.grid[Map.hero.column][Map.hero.row+1] = [tempTile]
+                        Map.grid[Map.hero.column][Map.hero.row-1] = [tempTile]
                         makeCombat(block)
                     elif Map.hero.collision("UP") == 20:
                         print ""
@@ -1293,7 +1293,7 @@ def gameMap():
                         bossText()
                     elif Map.hero.collision("DOWN") == block:
                         tempTile = Special("Ground", "GameArt\Extra\Ground.png", Map.hero.column, Map.hero.row+1)
-                        Map.grid[Map.hero.column][Map.hero.row-1] = [tempTile]
+                        Map.grid[Map.hero.column][Map.hero.row+1] = [tempTile]
                         makeCombat(block)
                     elif Map.hero.collision("DOWN") == 20:
                         print ""
