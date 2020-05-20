@@ -427,7 +427,10 @@ poison = StatusEffect("Poison", "poisoned", ["health"], [-3], 3)
 strike = StatusEffect("Cheap Strike", "shanked", ["health"], ["F-150"], 1)
 stab = StatusEffect("Stab", "stabbed", ["health"], [-3], 1)
 bite = StatusEffect("Bite", "bit", ["health"], [-3], 1)
-skirt = StatusEffect("Skirt", "skirted", ["health"], [-2], 1
+skirt = StatusEffect("Skirt", "skirted", ["health"], [-2], 1)
+
+adren = StatusEffect("Adrenaline", "pumped up", ["fight", "agility"], [3, 3], 2)
+inspired = StatusEffect("Inspiration", "was inspired", ["fight", "defense"], [3, 2], 2)
 
 health1 = StatusEffect("Small Health", "drank", ["health"], [5], 1)
 health2 = StatusEffect("Health", "drank", ["health"], [10], 1)
@@ -475,6 +478,9 @@ bigp = Consumable("Everything Potion", 200, 2, "Name: The Everythin' Potion  Cos
 ## name // target // uses // status effect
 rejuvHeal = Move("Rejuvinating Heal", "Single", 5, [aura])
 auraHeal = Move("Healing Aura", "All", 2, [healAura])
+
+inspire = Move("Inspiration", "Single", 3, [adren])
+
 
 cheapStrike = Move("Cheap Strike", "Single", 5, [strike])
 shank = Move("Shank", "Single", 5, [shank])
