@@ -181,7 +181,7 @@ def userWarning(string):
     original = screen.copy()
     font = pygame.font.SysFont('Arial', 20)
     scroll = pygame.image.load("GameArt\Extra\scroll.png")
-    scroll = pygame.transform.scale(scroll, (int(scroll.get_size()[0] * 1.5), int(scroll.get_size()[1] * .75)))
+    scroll = pygame.transform.scale(scroll, (int(scroll.get_size()[0] * 2), int(scroll.get_size()[1] * 0.75)))
     screen.blit(scroll, ((WIDTH/2) - (scroll.get_size()[0]/2), 260))
     size = font.size(string)[0]
     screen.blit(font.render(string, True, BLACK), ((WIDTH/2)-(size/2), 290))
@@ -436,11 +436,9 @@ class Player(Special):  # The player
     def location(self):
         print("Coordinates: " + str(self.column) + ", " + str(self.row))
 
-
 class Map(object):  # The main class; where the action happens
 
     grid = []
-
     hero = Player("Hero", "GameArt\OverworldSprites\PlayerSpriteTemp.gif", 5, 9, 0)
     rowRange = range(1,7) + range(10)
 
@@ -1806,7 +1804,6 @@ def menu():
     men = True
     pygame.mixer.music.set_volume(VOLUME)
     song = pygame.mixer.music.load("GameMusic\MainMenu.wav")
-    pygame.mixer.music.set_volume(1)
     pygame.mixer.music.play(-1)
 
     select = pygame.mixer.Sound("SoundFX\Select.wav")
@@ -1885,15 +1882,15 @@ def saveGame():
         pMember = []
         for i in range(len(inventory)):
             inven.append(inventory[i].clone())
-        for i in range(len(partyMember)):
-            pMember.append(partyMember[i].clone())
-        for i in range(len(playerMoves)):
-            pMoves.append(playerMoves[i].clone())
-        saveText = [currentFloor.clone(), int(player.level), pMember, inven, goldCoins, pMoves]
+        for i in range(len(hero.party)):
+            pMember.append(hero.party[i].clone())
+        for i in range(len(hero.move)):
+            pMoves.append(hero.move[i].clone())
+        saveText = [currentFloor.clone(), int(hero.level), pMember, inven, goldCoins, pMoves]
         save.write(str(saveText))
         save.close()
     except IOError:
-        print "Failed to save game!"
+        userWarning("Failed to save game!")
 
 def loadGame():
     try:
@@ -1917,11 +1914,11 @@ def loadGame():
                 fadeToBlack()
                 gameMap()
             except:
-                print "Save file is corrupted!"
+                userWarning("Save file is corrupted!")
         else:
-            print "Save file is empty!"
+            userWarning("Save file is empty!")
     except:
-        print "Unable to find or load save file!"
+        userWarning("Unable to find or load save file!")
 
 def popup():
     font1 = pygame.font.SysFont('Arial', 75)
@@ -2336,8 +2333,6 @@ def gameMap():
         clock.tick(60)  # Limit to 60 fps or something
         pygame.display.update()  # Honestly not sure what this does, but it breaks if I remove it
         Map.update()
-
-
 
 def combatTest():
     enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the", 15, 4, 2, 2, [], [], 1, "Gnoll")
