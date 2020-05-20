@@ -35,6 +35,11 @@ partyMember = []
 block = 10
 experience = 0
 
+# Hello Josh. Please put all moves, enemies, and heroes in StatsAndItems
+# Also, this is the global variable that will hold the party
+party = []
+
+
 def checkList(inventory):
     original = screen.copy()
     font = pygame.font.SysFont('Arial', 25)
