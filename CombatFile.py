@@ -186,6 +186,9 @@ def useItem(item, who):
 
 
 def userWarning(string):
+    nope = pygame.mixer.Sound("SoundFX\Error.wav")
+    nope.set_volume(VOLUME)
+    nope.play()
     original = screen.copy()
     font = pygame.font.SysFont('Arial', 20)
     scroll = pygame.image.load("GameArt\Extra\scroll.png")
@@ -203,6 +206,9 @@ def userWarning(string):
                     quit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
+                        nope = pygame.mixer.Sound("SoundFX\Click.wav")
+                        nope.set_volume(VOLUME)
+                        nope.play()
                         screen.blit(original, (0, 0))
                         pygame.display.update()
                         return
@@ -290,7 +296,7 @@ class MiniFloor(Floor):
     def __init__(self, name, enemyCount, nextFloor, mini, partyMem):
         Floor.__init__(self, name, enemyCount, nextFloor)
         self.mini = mini
-        self.party = partyMem
+        self.partyMem = partyMem
 
     def clone(self):
         return MiniFloor(self.name, self.enemyCount, self.nextFloor, self.mini, self.partyMem)
@@ -880,7 +886,7 @@ class Fightable(object):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
                         l -= 1
-                        while locations[l] == None or l < 0:
+                        while l < 0 or locations[l] == None:
                             l -= 1
                             if l < 0:
                                 l = len(locations)
@@ -892,8 +898,13 @@ class Fightable(object):
                             screen.blit(pygame.image.load("GameArt\Buttons\Back.png"), (650, 650))
                     if event.key == pygame.K_RIGHT:
                         l += 1
-                        if l > len(locations):
-                            l = 0
+                        while l > len(locations) or (l != len(locations) and locations[l] == None):
+                            l += 1
+                            if l > len(locations):
+                                l = 0
+                                while Fightable.firstOf(coords[l]) == -1:
+                                    l+=1
+                                break
                         screen.blit(screenshot, (0, 0))
                         print l
                         if l < len(locations):
@@ -903,14 +914,7 @@ class Fightable(object):
                     if event.key == pygame.K_RETURN:
                         if l == len(locations):
                             return [-1]
-                        x = 0
-                        t = -1
-                        for x in range(4):
-                            if Fightable.firstOf(coords[x]) != -1:
-                                t+=1
-                            if t == l:
-                                return [Fightable.firstOf(coords[x])]
-                        return [-1]
+                        return [Fightable.firstOf(coords[l])]
             pygame.display.update()
 
     @staticmethod
@@ -1362,7 +1366,8 @@ class Fightable(object):
                         if("Attack" in action):
                             eWho = enemies[int(action[(action.index("Attack") + 7):])]
                             if (eWho.health > 0):
-                                Fightable.printHeroes(heroes, heroes.index(who))
+                                Fightable.printCoords(coordinates, enemies, enemies.index(eWho))
+                                screenshot = screen.copy()
                                 Fightable.flavorText(who.name + " " + who.weapon.verb + " " + who.gender.posAdj + " "
                                                      + who.weapon.name + " at " + eWho.title + eWho.name)
                                 pygame.display.update()
@@ -1375,20 +1380,18 @@ class Fightable(object):
                                     if (amount <= 0):
                                         amount = 1
                                     eWho.health += (amount * -1)
+                                    screen.blit(screenshot, (0, 0))
                                     Fightable.printCoords(coordinates, enemies)
-                                    screenshot = screen.copy()
-                                    Fightable.printCoords(coordinates, enemies, enemies.index(eWho))
                                     other = screen.copy()
                                     screen.blit(screenshot, (0, 0))
                                     pygame.display.update()
                                     for b in range(0, 5):
                                         if (3 % (b + 1) == 0):
-                                            screen.blit(other, (0, 0))
-                                        else:
                                             screen.blit(screenshot, (0, 0))
+                                        else:
+                                            screen.blit(other, (0, 0))
                                         pygame.display.update()
                                         sleep(.1)
-
                                     dead = ""
                                     print eWho.health
                                     if (eWho.health <= 0):
@@ -1405,9 +1408,6 @@ class Fightable(object):
                                             for y in x:
                                                 if y == enemies.index(eWho):
                                                     y = -1
-                                        Fightable.printCoords(coordinates, enemies)
-                                    Fightable.printScreen(coordinates, enemies, heroes)
-                                    pygame.display.update()
                             else:
                                 Fightable.flavorText(who.name + "'s target is already dead...")
                                 pygame.display.update()
@@ -1502,12 +1502,9 @@ class Fightable(object):
                                     if (hWho.health <= 0):
                                         Fightable.flavorText(hWho.name + " has fainted!")
                                         pygame.display.update()
-                                        sleep(1.5)
-                                    screen.blit(screenshot, (0, 0))
-                                    pygame.display.update()
                             else:
                                 Fightable.flavorText(who.title.capitalize() + who.name + "'s target is already down...")
-                                sleep(2)
+                                sleep(1.5)
                         elif "Move" in action:
                             pass
                         else:
@@ -2338,6 +2335,7 @@ def gameMap():
         Map.update()
         saveGame()
 
+
 def combatTest():
     enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the ", 15, 4, 2, 2, [], [], 1, "Gnoll")
     enemyTest1 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 1, "Slime")
@@ -2377,9 +2375,9 @@ def combatTest():
     gallant.revert()
     gallant.health = gallant.maxHealth
 
-    Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone()])
+    Fightable.combat([gallant, throureum], [enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone()])
 
-menu()
 combatTest()
+menu()
 
 pygame.quit()
