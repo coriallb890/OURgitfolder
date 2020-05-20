@@ -1,6 +1,7 @@
 from StatsAndItems import *
 from random import randint
 from time import sleep
+from math import ceil
 import pygame
 import random
 
@@ -144,7 +145,7 @@ class Fightable(object):
             return ORANGE
         return RED
 
-    def getEffect(self, m):
+    def getEffect(self, m, screen):
         if isinstance(m, Move):
             x = 0
             while x < len(m.statusEffects()):
@@ -153,14 +154,14 @@ class Fightable(object):
                     self.statusEffects.append(m.statusEffects[x].clone())
                     Fightable.flavorText("{} has been {}".format(self.name, m.statusEffects[x].verb), screen)
                 else:
-                    self.oneAndDone(m.statusEffects[x])
+                    self.oneAndDone(m.statusEffects[x], screen)
         else:
             if m.turns > 0:
                 self.statusEffects.append(m.clone())
             else:
-                self.oneAndDone(m)
+                self.oneAndDone(m, screen)
 
-    def oneAndDone(self, st):
+    def oneAndDone(self, st, screen):
         suffered = ""
         x = 0
         while x < len(st.stats):
@@ -181,39 +182,39 @@ class Fightable(object):
                 self.fight += (st.amounts[x])
                 verb = ""
                 if abs(st.amounts[x]) > 4:
-                    verb = "greatly"
+                    verb = "greatly "
                 elif abs(st.amounts[x]) <= 2:
-                    verb = "slightly"
+                    verb = "slightly "
                 if st.amounts[x] >= 0:
-                    verb = " is " + verb + " strengthened"
+                    verb = " is " + verb + "strengthened"
                 else:
-                    verb = " is " + verb + " weakened"
+                    verb = " is " + verb + "weakened"
                 suffered += self.name + verb + "!"
 
             elif st.stats[x] == ("defense"):
                 self.defense += (st.amounts[x])
                 verb = ""
                 if abs(st.amounts[x]) > 4:
-                    verb = "greatly"
+                    verb = "greatly "
                 elif abs(st.amounts[x]) <= 2:
-                    verb = "slightly"
+                    verb = "slightly "
                 if st.amounts[x] >= 0:
-                    verb = "'s defenses are " + verb + " reinforced"
+                    verb = "'s defenses are " + verb + "reinforced"
                 else:
-                    verb = "'s defenses are " + verb + " diminished"
+                    verb = "'s defenses are " + verb + "diminished"
                 suffered += self.name + verb + "!"
 
             elif st.stats[x] == "agility":
                 self.agility += (st.amounts[x])
                 verb = ""
                 if abs(st.amounts[x]) > 4:
-                    verb = "greatly"
+                    verb = "greatly "
                 elif abs(st.amounts[x]) <= 2:
-                    verb = "slightly"
+                    verb = "slightly "
                 if st.amounts[x] >= 0:
-                    verb = "'s speed is " + verb + " increased"
+                    verb = "'s speed is " + verb + "increased"
                 else:
-                    verb = "'s speed is " + verb + " decreased"
+                    verb = "'s speed is " + verb + "decreased"
                 suffered += self.name + verb + "!"
             x += 1
 
@@ -635,9 +636,9 @@ class Fightable(object):
             if tries == 5000:
                 coordinates = None
 
+        Fightable.printScreen(coordinates, enemies, heroes, screen)
+        screenshot = screen.copy()
         while Fightable.totalHealth(heroes) > 0 and Fightable.totalHealth(enemies) > 0:
-            Fightable.printScreen(coordinates, enemies, heroes, screen)
-            screenshot = screen.copy()
             gamePlanH = []
             gamePlanE = []
             for x in range(len(heroes)):
@@ -661,7 +662,7 @@ class Fightable(object):
                                 Fightable.flavorText(who.name + " takes a defensive stance!", screen)
                                 sleep(1)
                                 screen.blit(screenshot, (0, 0))
-                                who.oneAndDone(StatusEffect("", "", ["defense"], [int(ceil(who.maxDefense*(2.0/3.0)))], 1))
+                                who.oneAndDone(StatusEffect("", "", ["defense"], [int(ceil(who.maxDefense*(2.0/3.0)))], 1), screen)
                                 deciding = False
                                 gamePlanH.append("H {} Defend".format(x))
                             elif what == "special":
@@ -686,7 +687,7 @@ class Fightable(object):
                                     sleep(1)
                 else:
                     Fightable.flavorText(who.name + " is unconscious!", screen)
-                    sleep(1)
+                    sleep(1.5)
                     screen.blit(screenshot, (0, 0))
                 screen.blit(screenshot, (0, 0))
                 pygame.display.update()
@@ -769,8 +770,7 @@ class Fightable(object):
 
             undefend = []
             for x in range(0, len(combinedGamePlan)):
-                Fightable.printScreen(coordinates, enemies, heroes, screen)
-                pygame.display.update()
+                pygame.event.pump()
                 screenshot = screen.copy()
                 action = combinedGamePlan[x]
                 print action
@@ -848,7 +848,7 @@ class Fightable(object):
                                     if (targ.health > 0):
                                         for s in range(0, len(move.statusEffects())):
                                             st = move.statusEffects()[s]
-                                            happenstances += "\n" + targ.getEffect(move) + "\n"
+                                            happenstances += "\n" + targ.getEffect(move, screen) + "\n"
                                         if (targ.health <= 0):
                                             happenstances += (targ.name + " has been defeated!\n\n")
                                             for e in range(0, len(coordinates)):
@@ -886,10 +886,6 @@ class Fightable(object):
                                 Fightable.printCoords(coordinates, enemies, screen, [enemies.index(who)])
                                 Fightable.flavorText(who.title.capitalize() + who.name + " " + who.verb + " at " + hWho.name, screen)
                                 pygame.display.update()
-                                sleep(1.5)
-                                screen.blit(screenshot, (0, 0))
-                                pygame.display.update()
-                                sleep(.005)
                                 Fightable.printScreen(coordinates, enemies, heroes, screen, enemies.index(who))
                                 pygame.display.update()
                                 sleep(.1)
@@ -903,21 +899,24 @@ class Fightable(object):
                                     if (amount <= 0):
                                         amount = 1
                                     hWho.health += (amount * -1)
-                                    Fightable.printScreen(coordinates, enemies, heroes, screen)
+                                    Fightable.printHeroes(heroes, screen, -1, heroes.index(hWho))
+                                    highlighted = screen.copy()
+                                    Fightable.printHeroes(heroes, screen)
                                     screenshot = screen.copy()
                                     for b in range(5):
                                         if (3 % (b + 1) == 1):
-                                            Fightable.printHeroes(heroes, screen, yellow=heroes.index(hWho))
+                                            screen.blit(highlighted, (0, 0))
                                         else:
-                                            Fightable.printHeroes(heroes, screen)
+                                            screen.blit(screenshot, (0, 0))
                                         pygame.display.update()
                                         sleep(.1)
                                     Fightable.flavorText(hWho.name + " takes {} damage!".format(amount), screen)
                                     pygame.display.update()
-                                    sleep(1.5)
                                     if (hWho.health <= 0):
+                                        sleep(1.25)
                                         Fightable.flavorText(hWho.name + " has fainted!", screen)
                                         pygame.display.update()
+
                             else:
                                 Fightable.flavorText(who.title.capitalize() + who.name + "'s target is already down...", screen)
                                 sleep(1.5)
@@ -925,10 +924,13 @@ class Fightable(object):
                             pass
                         else:
                             pass
+                Fightable.printScreen(coordinates, enemies, heroes, screen)
+                screenshot = screen.copy()
+                pygame.display.update()
 
             for h in undefend:
                 h.defense -= int(ceil(h.maxDefense *(2.0/3.0)))
-
+        pygame.event.clear()
         if Fightable.totalHealth(heroes) <= 0:
             fadeToBlack()
             pygame.mixer.music.fadeout(800)
@@ -1208,7 +1210,7 @@ class Enemy(Fightable):
 # Instances go here
 
 
-enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the ", 15, 4, 2, 2, [], [], 1, "Gnoll")
+enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the ", 15, 10, 2, 2, [], [], 1, "Gnoll")
 enemyTest1 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 1, "Slime")
 enemyTest2 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 2, "Slime")
 enemyTest3 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 3, "Slime")
