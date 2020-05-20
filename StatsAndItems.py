@@ -48,53 +48,53 @@ class StatusEffect:
 
     def doIt(self, who):
         blurb = []
-        if (self.turns > 0):
+        if self.turns > 0:
             for x in range(0, len(self.stats)):
-                if (self.stats[x] == "health"):
+                if self.stats[x] == "health":
                     who.health += (self.amounts[x])
                     verb = " loses "
-                    if (self.amounts[x] >= 0):
+                    if self.amounts[x] >= 0:
                         verb = " gains "
                     plural = "s"
-                    if (abs(self.amounts[x]) == 1):
+                    if abs(self.amounts[x]) == 1:
                         plural = ""
                     blurb.append(who.name + verb + str(
                         abs(self.amounts[x])) + " hitpoint" + plural + " from the " + self.name + "!")
-                elif (self.stats[x] == ("fight")):
+                elif self.stats[x] == "fight":
                     who.fight += (self.amounts[x])
                     verb = ""
-                    if (abs(self.amounts[x]) > 4):
-                        verb = "greatly"
-                    elif (abs(self.amounts[x]) <= 2):
-                        verb = "slightly"
-                    if (self.amounts[x] >= 0):
-                        verb = " is " + verb + " strengthened "
+                    if abs(self.amounts[x]) > 4:
+                        verb = "greatly "
+                    elif abs(self.amounts[x]) <= 2:
+                        verb = "slightly "
+                    if self.amounts[x] >= 0:
+                        verb = " is " + verb + "strengthened "
                     else:
-                        verb = " is " + verb + " weakened "
+                        verb = " is " + verb + "weakened "
                     blurb.append(who.name + verb + "by the " + self.name + "!")
                 elif self.stats[x] == "defense":
                     who.defense += (self.amounts[x])
                     verb = ""
-                    if (abs(self.amounts[x]) > 4):
-                        verb = "greatly"
-                    elif (abs(self.amounts[x]) <= 2):
-                        verb = "slightly"
-                    if (self.amounts[x] >= 0):
-                        verb = "'s defenses are " + verb + " reinforced "
+                    if abs(self.amounts[x]) > 4:
+                        verb = "greatly "
+                    elif abs(self.amounts[x]) <= 2:
+                        verb = "slightly "
+                    if self.amounts[x] >= 0:
+                        verb = "'s defenses are " + verb + "reinforced "
                     else:
-                        verb = "'s defenses are " + verb + " diminished "
+                        verb = "'s defenses are " + verb + "diminished "
                     blurb.append(who.name + verb + "by the " + self.name + "!")
-                elif (self.stats[x] == "agility"):
+                elif self.stats[x] == "agility":
                     who.agility += (self.amounts[x])
                     verb = ""
-                    if (abs(self.amounts[x]) > 4):
-                        verb = "greatly"
-                    elif (abs(self.amounts[x]) <= 2):
-                        verb = "slightly"
-                    if (self.amounts[x] >= 0):
-                        verb = "'s speed is " + verb + " increased "
+                    if abs(self.amounts[x]) > 4:
+                        verb = "greatly "
+                    elif abs(self.amounts[x]) <= 2:
+                        verb = "slightly "
+                    if self.amounts[x] >= 0:
+                        verb = "'s speed is " + verb + "increased "
                     else:
-                        verb = "'s speed is " + verb + " decreased "
+                        verb = "'s speed is " + verb + "decreased "
                     blurb.append(who.name + verb + "by the " + self.name + "!")
             self.turns -= 1
             return blurb
@@ -199,12 +199,12 @@ class Gender:
         self._posAdj = value
 
     @property
-    def posPos(self):
-        return self._posPos
+    def posPro(self):
+        return self._posPro
 
-    @posPos.setter
-    def posPos(self, value):
-        self._posPos = value
+    @posPro.setter
+    def posPro(self, value):
+        self._posPro = value
 
     @property
     def refl(self):
@@ -433,7 +433,7 @@ agilityp1 = Consumable("Small Agility Potion", 75, 0, "Name: Small Agility Potio
 agilityp2 = Consumable("Agility Potion", 100, 1, "Name: Agility Potion  Cost: 100", agility2)
 agilityp3 = Consumable("Big Agility Potion", 150, 2, "Name: Big Agility Potion  Cost: 150", agility3)
 
-bigp = Consumable("Everything Potion", 200, 2, "Name: The Everythin' Potion  Cost: 200", everything)
+bigp = Consumable("Everything Potion", 200, 2, "Name: Everything Potion  Cost: 200", everything)
 
 ## Moves
 ## name // target // uses // status effect

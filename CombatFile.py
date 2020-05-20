@@ -28,11 +28,12 @@ ORANGE = (255, 97, 3)
 RED = (255, 0, 0)
 
 
-inventory = random.sample(items, 5)
+inventory = []
 goldCoins = 0
 playerMoves = []
 partyMember = []
 block = 10
+experience = 0
 
 def checkList(inventory):
     original = screen.copy()
@@ -92,7 +93,7 @@ def checkList(inventory):
 
                     if (event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN) and place < maxi:
                         place += 1
-                        if cursor < 10:
+                        if cursor < 10 and cursor < maxi-1:
                             screen.blit(screenshot, (0, 0))
                             cursor += 1
                             screen.blit(font.render(inventory[place].name, True, WHITE), (180, 175+(cursor*30))) #
@@ -171,9 +172,13 @@ def useItem(item, who):
         who.getEffect(item.statusEffect)
         screen.blit(original, (0, 0))
     elif isinstance(item, Weapon):
-        pass
+        inventory.append(who.weapon)
+        who.weapon = item
+        inventory.remove(item)
     elif isinstance(item, Armor):
-        pass
+        inventory.append(who.armor)
+        who.armor = item
+        inventory.remove(item)
     return True
 
 
@@ -499,6 +504,9 @@ class Map(object):  # The main class; where the action happens
                 i += 1
 
         if currentFloor == f5:
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load("GameMusic\BossRoom.wav")
+            pygame.mixer.music.play(-1)
             tempTile = Special("Healer", "GameArt\OverworldSprites\HealerTemp.png", 3, 6)
             Map.grid[3][6].append(tempTile)
             tempTile = Special("Mage", "GameArt\OverworldSprites\MageTemp.png", 7, 6)
@@ -507,6 +515,9 @@ class Map(object):  # The main class; where the action happens
             Map.grid[5][3].append(tempTile)
 
         if currentFloor == f9:
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load("GameMusic\BossRoom.wav")
+            pygame.mixer.music.play(-1)
             tempTile = Special("Fighter", "GameArt\OverworldSprites\FighterTemp.png", 3, 6)
             Map.grid[3][6].append(tempTile)
             tempTile = Special("Rouge", "GameArt\OverworldSprites\RougeTemp.png", 7, 6)
@@ -529,6 +540,9 @@ class Map(object):  # The main class; where the action happens
             pygame.mixer.music.play(-1)
 
         if currentFloor == f13:
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load("GameMusic\FinalBossRoom.wav")
+            pygame.mixer.music.play(-1)
             tempTile = Special("Boss", "GameArt\OverworldSprites\BossTemp.png", 5, 5)
             Map.grid[5][5].append(tempTile)
 
@@ -841,6 +855,10 @@ class Fightable(object):
         if target == "Single" or target == "Vert Line":
             locations = [(185, 300 + 100 * len(coords[0])), (285, 300 + 100 * len(coords[0])),
                          (390, 300 + 100 * len(coords[0])), (490, 300 + 100 * len(coords[0]))]
+            for i in range(4):
+                if Fightable.firstOf(coords[i]) == -1:
+                    locations[i] = None
+
             img = pygame.image.load("GameArt\Buttons\This.png")
         elif target == "Hori Line":
             for x in range(0, len(coords[0])):
@@ -850,22 +868,8 @@ class Fightable(object):
             locations = [(0, 0)]
             img = pygame.image.load("GameArt\Buttons\Empty.png")
 
+        screen.blit(img, locations[l])
 
-        l = 0
-        screens = []
-        while l < len(locations)+1:
-            screen.blit(screenshot, (0, 0))
-            while l < len(coords) and Fightable.firstOf(coords[l]) == -1:
-                l += 1
-            if l < len(locations):
-                Fightable.printCoords(coords, enemies, Fightable.firstOf(coords[l]))
-                screen.blit(img, locations[l])
-            else:
-                screen.blit(pygame.image.load("GameArt\Buttons\Back.png"), (650, 650))
-            screens.append(screen.copy())
-            l += 1
-        l = 0
-        screen.blit(screens[l], (0, 0))
 
         while True:
             for event in pygame.event.get():
@@ -875,14 +879,26 @@ class Fightable(object):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
                         l -= 1
-                        if l < 0:
-                            l = len(screens)-1
-                        screen.blit(screens[l], (0, 0))
+                        while locations[l] == None or l < 0:
+                            l -= 1
+                            if l < 0:
+                                l = len(locations)
+                                break
+                        screen.blit(screenshot, (0, 0))
+                        if l < len(locations):
+                            screen.blit(img, locations[l])
+                        else:
+                            screen.blit(pygame.image.load("GameArt\Buttons\Back.png"), (650, 650))
                     if event.key == pygame.K_RIGHT:
                         l += 1
-                        if l >= len(screens):
+                        if l > len(locations):
                             l = 0
-                        screen.blit(screens[l], (0, 0))
+                        screen.blit(screenshot, (0, 0))
+                        print l
+                        if l < len(locations):
+                            screen.blit(img, locations[l])
+                        else:
+                            screen.blit(pygame.image.load("GameArt\Buttons\Back.png"), (650, 650))
                     if event.key == pygame.K_RETURN:
                         if l == len(locations):
                             return [-1]
@@ -1229,29 +1245,13 @@ class Fightable(object):
                                 gamePlanH.append("H {} Defend".format(x))
                             elif what == "special":
                                 if (len(who.moves) > 0):
-                                    choosing = True
-                                    while (choosing):
-                                        moves = []
-                                        moves.append(Fightable.printHeroes(
-                                            heroes, x) + "\n\nWhich technique?")
-                                        for m in range(0, len(who.moves)):
-                                            moves.append(who.moves[m].name)
-                                        moves.append("Nevermind")
-                                        move = ask(moves) - 1
-                                        clear()
-                                        if (move != len(moves) - 1):
-                                            hi = Fightable.selectFromCoords(coordinates, enemies,
-                                                                            heroes[x].moves[move].target)
-                                            clear()
-                                            if (hi[0] != -1):
-                                                gamePlanH.append("H " + str(x) + " Move " + str(move) + "-" + str(hi))
-                                                deciding = False
-                                                choosing = False
-                                        else:
-                                            choosing = False
+                                    move = checkList(who.moves)
+                                    if move != None:
+                                        print move.name
                                 else:
-                                    print("No known techniques.")
-                                    clearI()
+                                    Fightable.flavorText("No known special moves.")
+                                    sleep(1)
+                                    screen.blit(screenshot, (0, 0))
                             elif what == "item":
                                 if (len(inventory) > 0):
                                     item = checkList(inventory)
@@ -1369,9 +1369,6 @@ class Fightable(object):
                                     sleep(1.25)
                                     Fightable.flavorText(eWho.title.capitalize() + eWho.name + " dodges the attack!")
                                     pygame.display.update()
-                                    sleep(1.5)
-                                    screen.blit(screenshot, (0, 0))
-                                    pygame.display.update()
                                 else:
                                     amount = who.fightT() - eWho.defense
                                     if (amount <= 0):
@@ -1401,9 +1398,8 @@ class Fightable(object):
                                                     coordinates[e][w] = -1
                                     Fightable.flavorText(eWho.title.capitalize() + eWho.name + " takes {} damage! ".format(amount) + dead)
                                     pygame.display.update()
-                                    sleep(1.5)
                                     if dead != "":
-                                        sleep(.25)
+                                        sleep(1.25)
                                         for x in coordinates:
                                             for y in x:
                                                 if y == enemies.index(eWho):
@@ -1531,6 +1527,7 @@ class Fightable(object):
             pygame.mixer.music.load("GameMusic\GameOverIdle.wav")
             pygame.mixer.music.play(-1)
             return False
+
 
 class Hero(Fightable):
     def __init__(self, name, moves, leveling, caste, gender, weapon, armor):
@@ -1930,6 +1927,8 @@ def popup():
     bg_img = pygame.image.load("GameArt\Extra\menu.gif")
     pop = True
 
+    select = pygame.mixer.Sound("SoundFX\Select.wav")
+    select.set_volume(.25*VOLUME)
     while pop:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -1937,10 +1936,13 @@ def popup():
                 quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
+                    pygame.mixer.Sound.play(select)
                     selected = 1
                 elif event.key == pygame.K_DOWN:
+                    pygame.mixer.Sound.play(select)
                     selected = 2
                 if event.key == pygame.K_RETURN:
+                    pygame.mixer.Sound.play(select)
                     if selected == 1:
                         return
                     if selected == 2:
@@ -2164,7 +2166,7 @@ def shop():
     font1 = pygame.font.SysFont('Arial', 50)
     font2 = pygame.font.SysFont('Arial', 13)
     background = pygame.image.load("GameArt\Extra\Background.png")
-    merchant = pygame.image.load("GameArt\Extra\Merch.gif")
+    merchant = pygame.image.load("GameArt\Merchant\Stand.png")
     sign = pygame.image.load("GameArt\Extra\Sign.png")
     button = pygame.image.load("GameArt\Extra\Buttonfull.png")
     rest = pygame.image.load("GameArt\Extra\Rest.png")
@@ -2340,7 +2342,7 @@ def gameMap():
 
 
 def combatTest():
-    enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the", 15, 4, 2, 2, [], [], 1, "Gnoll")
+    enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the ", 15, 4, 2, 2, [], [], 1, "Gnoll")
     enemyTest1 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 1, "Slime")
     enemyTest2 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 2, "Slime")
     enemyTest3 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 3, "Slime")
@@ -2361,10 +2363,11 @@ def combatTest():
     test.revert()
     test.health = test.maxHealth
 
-    Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone()])
+    Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone()])
 
-menu()
+
 combatTest()
+menu()
 
 
 pygame.quit()
