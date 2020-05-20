@@ -12,6 +12,63 @@ YELLOW = (255, 255, 0)
 ORANGE = (255, 97, 3)
 RED = (255, 0, 0)
 
+class Gender:
+    def __init__(self, name, subj, obj, posAdj, posPro, refl):
+        self._name = name
+        self._subj = subj
+        self._obj = obj
+        self._posAdj = posAdj
+        self._posPro = posPro
+        self._refl = refl
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def subj(self):
+        return self._subj
+
+    @subj.setter
+    def subj(self, value):
+        self._subj = value
+
+    @property
+    def obj(self):
+        return self._obj
+
+    @obj.setter
+    def obj(self, value):
+        self._obj = value
+
+    @property
+    def posAdj(self):
+        return self._posAdj
+
+    @posAdj.setter
+    def posAdj(self, value):
+        self._posAdj = value
+
+    @property
+    def posPro(self):
+        return self._posPro
+
+    @posPro.setter
+    def posPro(self, value):
+        self._posPro = value
+
+    @property
+    def refl(self):
+        return self._refl
+
+    @refl.setter
+    def refl(self, value):
+        self._refl = value
+
 class Fightable(object):
     def __init__(self, name, fight, defense, agility, health, moves,
                  gender=Gender("it", "it", "it", "its", "its", "itself")):
@@ -1210,8 +1267,12 @@ class Enemy(Fightable):
             string += "\n"
         return string
 
-# Instances go here
-
+# getting some descriptions out of the way because im lazy
+GNOLL_DESC = "It's a Gnoll: savage, feral, and hungry."
+HILLGIANT_DESC = "A giant from the hills."
+FLIND_DESC = "It's a Flind: it's shorter but just as dangerous as a gnoll."
+### Instances go here
+## name // desc // verb // title // health // fight // defense // agility // moves // drops [exp, gold] // size // imageFolder
 
 f1hill_giant = Enemy("Hill Giant", HILLGIANT_DESC, "punches", "", 10, 3, 2, 1, [toHit, bludg], [2, 2], 1, "")
 f1gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 12, 4, 2, 2, [bludg, score], [4, 4], 1, "Gnoll")
@@ -1257,13 +1318,13 @@ throureum = Hero("Throurem", [], [
         [2, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4],
         [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]], "Mage", 2, fortified_staff, leather)
 
-knithen = Hero("Knithen", [], [
+knithenpf = Hero("Knithenpf", [], [
         [10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
         [3, 0, 0, 0, 0, 3, 0, 0, 0, 3, 4],
         [2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 2],
         [3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3]], "Rogue", 69, dagger, leather)
 
-frethen = Hero("Frethen", [], [
+frethenei = Hero("Frethenei", [], [
         [20, 0, 0, 0, 5, 0, 0, 0, 5, 0, 10],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [2, 1, 0, 1, 1, 0, 1, 1, 0, 1, 5],
