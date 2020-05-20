@@ -830,19 +830,19 @@ def gameOver():
     pygame.mixer.music.stop()
     pygame.mixer.music.load("GameMusic\GameOverIdle.wav")
     pygame.mixer.music.play(-1)
-    font1 = pygame.font.SysFont('Arial', 75)
+    font1 = pygame.font.SysFont('Arial', 50)
     font2 = pygame.font.SysFont('Arial', 60)
     selected = 1
     screen.blit(pygame.image.load("GameArt\Extra\menu.gif"), (0, 0))
     bg = screen.copy()
     fadeToBlack(surface=bg)
-    screen.blit(font1.render("GAME OVER", True, (255, 0, 0)), (font1.size("GAME OVER")[0]/2, 150))
+    screen.blit(font1.render("GAME OVER", True, BLACK), (358-font1.size("GAME OVER")[0]/2, 150))
 
-    screen.blit(font2.render("Return to Main Menu", True, (0, 0, 0)), (font1.size("Return to Main Menu")[0] / 2, 350))
-    screen.blit(font2.render("Return to Main Menu", True, (255, 0, 0)), (font1.size("Return to Main Menu")[0] / 2, 550))
+    screen.blit(font2.render("Return to Main Menu", True, WHITE), (358-font2.size("Return to Main Menu")[0] / 2, 350))
+    screen.blit(font2.render("Quit", True, BLACK), (358-font2.size("Quit")[0] / 2, 550))
     selected = 0
     song = pygame.mixer.Sound("SoundFX\Select.wav")
-    song.set_volume(VOLUME)
+    song.set_volume(VOLUME*.3)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -852,13 +852,13 @@ def gameOver():
                 if event.key == pygame.K_UP:
                     song.play()
                     selected = 0
-                    screen.blit(font2.render("Return to Main Menu", True, (0, 0, 0)), (font1.size("Return to Main Menu")[0] / 2, 350))
-                    screen.blit(font2.render("Quit", True, (255, 0, 0)), (font1.size("Quit")[0] / 2, 550))
+                    screen.blit(font2.render("Return to Main Menu", True, WHITE), (358-font2.size("Return to Main Menu")[0] / 2, 350))
+                    screen.blit(font2.render("Quit", True, BLACK), (358-font2.size("Quit")[0] / 2, 550))
                 if event.key == pygame.K_DOWN:
                     song.play()
                     selected = 1
-                    screen.blit(font2.render("Return to Main Menu", True, (255, 0, 0)), (font1.size("Return to Main Menu")[0] / 2, 350))
-                    screen.blit(font2.render("Quit", True, (0, 0, 0)), (font1.size("Quit")[0] / 2, 550))
+                    screen.blit(font2.render("Return to Main Menu", True, BLACK), (358-font2.size("Return to Main Menu")[0] / 2, 350))
+                    screen.blit(font2.render("Quit", True, WHITE), (358-font2.size("Quit")[0] / 2, 550))
                 if event.key == pygame.K_RETURN:
                     if selected == 1:
                         pygame.quit()
@@ -867,8 +867,6 @@ def gameOver():
                     pygame.mixer.music.stop()
                     menu()
         pygame.display.update()
-
-
 
 
 def merchText():
@@ -1268,6 +1266,8 @@ def gameMap():
                     elif Map.hero.collision("UP") == 15:
                         bossText()
                     elif Map.hero.collision("RIGHT") == block:
+                        tempTile = Special("Ground", "GameArt\Extra\Ground.png", Map.hero.column+1, Map.hero.row)
+                        Map.grid[Map.hero.column+1][Map.hero.row] = [tempTile]
                         makeCombat(block)
                     elif Map.hero.collision("RIGHT") == 20:
                         print ""
@@ -1279,6 +1279,8 @@ def gameMap():
                     elif Map.hero.collision("UP") == 15:
                         bossText()
                     elif Map.hero.collision("UP") == block:
+                        tempTile = Special("Ground", "GameArt\Extra\Ground.png", Map.hero.column, Map.hero.row-1)
+                        Map.grid[Map.hero.column][Map.hero.row+1] = [tempTile]
                         makeCombat(block)
                     elif Map.hero.collision("UP") == 20:
                         print ""
@@ -1290,6 +1292,8 @@ def gameMap():
                     elif Map.hero.collision("UP") == 15:
                         bossText()
                     elif Map.hero.collision("DOWN") == block:
+                        tempTile = Special("Ground", "GameArt\Extra\Ground.png", Map.hero.column, Map.hero.row+1)
+                        Map.grid[Map.hero.column][Map.hero.row-1] = [tempTile]
                         makeCombat(block)
                     elif Map.hero.collision("DOWN") == 20:
                         print ""
