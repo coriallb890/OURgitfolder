@@ -1143,7 +1143,7 @@ def gameMap():
 def combatTest():
     Fightable.combat([gallant, throureum], [enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone()], screen, inventory)
 
-combatTest()
 menu()
+combatTest()
 
 pygame.quit()

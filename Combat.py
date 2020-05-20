@@ -1,6 +1,6 @@
-from StatsAndItems import *
 from random import randint
 from time import sleep
+from StatsAndItems import *
 import pygame
 import random
 
@@ -10,6 +10,63 @@ GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 ORANGE = (255, 97, 3)
 RED = (255, 0, 0)
+
+class Gender:
+    def __init__(self, name, subj, obj, posAdj, posPro, refl):
+        self._name = name
+        self._subj = subj
+        self._obj = obj
+        self._posAdj = posAdj
+        self._posPro = posPro
+        self._refl = refl
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def subj(self):
+        return self._subj
+
+    @subj.setter
+    def subj(self, value):
+        self._subj = value
+
+    @property
+    def obj(self):
+        return self._obj
+
+    @obj.setter
+    def obj(self, value):
+        self._obj = value
+
+    @property
+    def posAdj(self):
+        return self._posAdj
+
+    @posAdj.setter
+    def posAdj(self, value):
+        self._posAdj = value
+
+    @property
+    def posPro(self):
+        return self._posPro
+
+    @posPro.setter
+    def posPro(self, value):
+        self._posPro = value
+
+    @property
+    def refl(self):
+        return self._refl
+
+    @refl.setter
+    def refl(self, value):
+        self._refl = value
 
 class Fightable(object):
     def __init__(self, name, fight, defense, agility, health, moves,
@@ -1205,14 +1262,45 @@ class Enemy(Fightable):
             string += "\n"
         return string
 
-# Instances go here
+# getting some descriptions out of the way because im lazy
+GNOLL_DESC = "It's a Gnoll: savage, feral, and hungry."
+HILLGIANT_DESC = "A giant from the hills."
+FLIND_DESC = "It's a Flind: it's shorter but just as dangerous as a gnoll."
 
+### Instances go here
+## name // desc // verb // title // health // fight // defense // agility // moves // drops [exp, gold] // size // imageFolder
 
-enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the ", 15, 4, 2, 2, [], [], 1, "Gnoll")
-enemyTest1 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 1, "Slime")
-enemyTest2 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 2, "Slime")
-enemyTest3 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 3, "Slime")
-enemyTest4 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 4, "Slime")
+f1hill_giant = Enemy("Hill Giant", HILLGIANT_DESC, "punches", "", 10, 3, 2, 1, [toHit, bludg], [2, 2], 1, "")
+f1gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 12, 4, 2, 2, [bludg, score], [4, 4], 1, "Gnoll")
+
+f2hill_giant = Enemy("Hill Giant", HILLGIANT_DESC, "punches", "", 11, 4, 3, 1, [toHit, bludg], [4, 3], 1, "")
+f2gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 13, 5, 2, 3, [bludg, score], [5, 6], 1, "Gnoll")
+
+f3hill_giant = Enemy("Hill Giant", HILLGIANT_DESC, "smashes", "", 12, 4, 4, 2, [toHit, bludg], [5, 4], 1, "")
+f3gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 14, 5, 2, 3, [bludg, score], [6, 8], 1, "Gnoll")
+
+miniboss1 = Enemy("Gnoll", "It seems bigger than the other Gnolls you've seen...", "slashes", "the ", 50, 10, 2, 5, [demo, wham, deepCut], [20, 25], 1, "Gnoll")
+miniboss2 = Enemy("Gnoll", "It seems angrier than the other Gnolls you've seen...", "lashes out", "the ", 75, 5, 2, 2, [demo, wham, deepCut], [20, 25], 1, "Gnoll")
+
+f5hill_giant = Enemy("Hill Giant", HILLGIANT_DESC, "smashes", "", 14, 4, 4, 2, [bludg, wham], [8, 5], 1, "")
+f5gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 18, 6, 3, 4, [bludg, score, scratch], [10, 6], 1, "Gnoll")
+
+f6gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 20, 7, 3, 4, [bludg, score, scratch], [12, 8], 1, "Gnoll")
+
+f7gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 22, 7, 4, 4, [bludg, score, scratch], [14, 10], 1, "Gnoll")
+f7flind = Enemy("Flind", FLIND_DESC, "slashes", "", 18, 6, 2, 2, [bludg, score, infectStrike], [15, 12], 1, "")
+
+miniboss3 = Enemy("Flind", "The Flind is aggressively staring into you.", "slashes", "", 75, 10, 5, 10, [demo, pulverize, decimate, infectStrike], [30, 45], 1, "")
+miniboss4 = Enemy("Flind", "Just the presence of the Flind intimidates you...", "slashes", "", 100, 5, 15, 5, [demo, pulverize, decimate, infectStrike], [30, 45], 1, "")
+
+f9gnoll = Enemy("Gnoll", GNOLL_DESC, "slashes", "", 25, 8, 3, 3, [score, scratch, deepCut], [15, 12], 1, "")
+f9flind = Enemy("Flind", FLIND_DESC, "slashes", "", 20, 7, 3, 3, [bite, score, infectStrike, deepCut, scratch], [20, 18], 1, "")
+
+f10flind = Enemy("Flind", FLIND_DESC, "slashes", "", 25, 8, 4, 3, [score, infectStrike, deepCut, scratch], [28, 25], 1, "")
+
+f11flind = Enemy("Flind", FLIND_DESC, "slashes", "", 30, 8, 5, 3, [score, infectStrike, deepCut, scratch], [35, 30], 1, "")
+
+finalboss = Enemy("Yennoghu", "This is it.", "attacks", "", 200, 20, 15, 10, [deepCut, demo, pulverize, decimate, intimidate, finalblow], [], 1, "")
 
 gallant = Hero("Gallant", [], [
         [15, 1, 1, 1, 1, 1, 3, 1, 3, 2, 4],
@@ -1226,13 +1314,13 @@ throureum = Hero("Throurem", [], [
         [2, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4],
         [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]], "Mage", 2, fortified_staff, leather)
 
-knithen = Hero("Knithen", [], [
+knithepf = Hero("Knithepf", [], [
         [10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
         [3, 0, 0, 0, 0, 3, 0, 0, 0, 3, 4],
         [2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 2],
         [3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3]], "Rogue", 69, dagger, leather)
 
-frethen = Hero("Frethen", [], [
+frethenei = Hero("Frethenei", [], [
         [20, 0, 0, 0, 5, 0, 0, 0, 5, 0, 10],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [2, 1, 0, 1, 1, 0, 1, 1, 0, 1, 5],

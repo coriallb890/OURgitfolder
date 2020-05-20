@@ -156,64 +156,6 @@ class Move:
     def clone(self):
         return Move(self.name, self.target, self.uses, self.statusEffects)
 
-
-class Gender:
-    def __init__(self, name, subj, obj, posAdj, posPro, refl):
-        self._name = name
-        self._subj = subj
-        self._obj = obj
-        self._posAdj = posAdj
-        self._posPro = posPro
-        self._refl = refl
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def subj(self):
-        return self._subj
-
-    @subj.setter
-    def subj(self, value):
-        self._subj = value
-
-    @property
-    def obj(self):
-        return self._obj
-
-    @obj.setter
-    def obj(self, value):
-        self._obj = value
-
-    @property
-    def posAdj(self):
-        return self._posAdj
-
-    @posAdj.setter
-    def posAdj(self, value):
-        self._posAdj = value
-
-    @property
-    def posPro(self):
-        return self._posPro
-
-    @posPro.setter
-    def posPro(self, value):
-        self._posPro = value
-
-    @property
-    def refl(self):
-        return self._refl
-
-    @refl.setter
-    def refl(self, value):
-        self._refl = value
-
 class Item(object):
     def __init__(self, name, cost, grade, flavor):
         self._name = name
@@ -427,6 +369,13 @@ boostAura = StatusEffect("Boost Aura", "boosted", ["health", "fight"], ["H75", "
 blessedShield = StatusEffect("Blessed Shield", "shielded", ["health", "defense"], ["H75", "H125"], 2)
 taylorAura = StatusEffect("Swift Aura", "quickened", ["health", "agility"], ["H75", "H125"], 2)
 
+# Boss crap
+demolish = StatusEffect("Demolish", "demolished", ["health"], ["F-120"], 1)
+pulv = StatusEffect("Pulverize", "pulverized", ["health"], ["F-140"], 1)
+decim8 = StatusEffect("Decimate", "decimated", ["health"], ["F-160"], 1)
+fB = StatusEffect("Final Blow", "destroyed", ["health"], ["F-180"], 1)
+intimid8 = StatusEffect("Intimidate", "intimidated", ["fight", "defense", "agility"], [15, 12, 10], 3)
+
 # Potion effects and miscellaneous stuff
 
 health1 = StatusEffect("Small Health", "drank", ["health"], [5], 1)
@@ -472,6 +421,12 @@ bigp = Consumable("Everything Potion", 200, 2, "Name: Everything Potion  Cost: 2
 ## name // target // uses // status effect
 ## Stronger at the bottom, I guess.
 
+# Generic Attacks
+toHit = Move("Attack", "Single", 10, [hit])
+bludg = Move("Bludgeon", "Single", 5, [bludgeon])
+byte = Move("Bite", "Single", 5, [bite])
+wham = Move("Whammy", "Single", 2, [whammy])
+
 # Healer-type dealios
 auraHeal = Move("Healing Aura", "All", 5, [healAura])
 swiftAura = Move("Swift Aura", "All", 5, [taylorAura])
@@ -501,8 +456,15 @@ backstab = Move("Backstab", "Single", 2, [backstabbed])
 score = Move("Score", "Single", 3, [stab, minorBleed])
 infectStrike = Move("Infected Bite", "Single", 2, [bite, poison])
 scratch = Move("Scratch", "Hori Line", 2, [skirted, minorBleed])
-deepCut = Move("Deep Cut", "Single", 4, [stab, bleed])
+deepCut = Move("Deep Cut", "Single", 1, [stab, bleed])
 noAttack = Move("Pass", "Single", 100, [])
+
+# Boss stuff... I guess?
+demo = Move("Demolish", "Single", 5, [demolish])
+pulverize = Move("Pulverize", "Single", 5, [pulv])
+decimate = Move("Decimate", "Single", 5, [decim8])
+finalblow = Move("Final Blow", "Single", 1, [fB])
+intimidate = Move("Charm", "Single", 3, [intimid8])
 
 ## List of items by grade
 grade0Items = [dagger, staff, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1]
