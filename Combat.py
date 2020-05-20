@@ -1,10 +1,6 @@
 from random import randint
 from time import sleep
-<<<<<<< HEAD
 from StatsAndItems import *
-=======
-from math import ceil
->>>>>>> 5c79b47309dbcdb9a0f81dcc916c7510a748bf04
 import pygame
 import random
 
@@ -1305,15 +1301,7 @@ f10flind = Enemy("Flind", FLIND_DESC, "slashes", "", 25, 8, 4, 3, [score, infect
 
 f11flind = Enemy("Flind", FLIND_DESC, "slashes", "", 30, 8, 5, 3, [score, infectStrike, deepCut, scratch], [35, 30], 1, "")
 
-<<<<<<< HEAD
-finalboss = Enemy("Yennoghu", "This is it.", "attacks", "", 200, 20, 15, 10, [deepCut, demo, pulverize, decimate, intimidate, finalblow], [], 1, "")
-=======
-enemyTest = Enemy("gnoll", "This is a test.", "lashes out", "the ", 15, 10, 2, 2, [], [], 1, "Gnoll")
-enemyTest1 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 1, "Slime")
-enemyTest2 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 2, "Slime")
-enemyTest3 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 3, "Slime")
-enemyTest4 = Enemy("Placeholder Slime", "This is a test.", "burbles", "", 15, 4, 2, 2, [], [], 4, "Slime")
->>>>>>> 5c79b47309dbcdb9a0f81dcc916c7510a748bf04
+finalboss = Enemy("Yennoghu", "This is it.", "attacks", "", 200, 15, 12, 10, [deepCut, demo, pulverize, decimate, intimidate, finalblow], [], 1, "")
 
 gallant = Hero("Gallant", [], [
         [15, 1, 1, 1, 1, 1, 3, 1, 3, 2, 4],
