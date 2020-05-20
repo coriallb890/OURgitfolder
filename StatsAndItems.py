@@ -353,6 +353,8 @@ class Consumable(Item):
 ## Weapons
 ## name // cost // grade // flavor text // fight // range // accuracy // consistency // critRate
 
+cross = Weapon("Cross", "used", 20, 1, "Name: Cross  Attack: 0  Range: 0  Cost: 20", 0, 0, 0, 0, 0)
+
 dagger = Weapon("Dagger", "stabs", 10, 0, "Name: Dagger  Attack: 1  Range: 1  Cost: 10", 1, 1, 80, 1, 10)
 polished_dagger = Weapon("Polished Dagger", "stabs", 20, 1, "Name: Polished Dagger  Attack: 2  Range: 1  Cost: 20", 2, 1, 80, 1, 10)
 sharpened_dagger = Weapon("Sharpened Dagger", "stabs", 35, 2, "Name: Sharpened Dagger  Attack: 4  Range: 1  Cost: 35", 4, 1, 80, 1, 12)
@@ -508,31 +510,3 @@ grade1Items = [polished_dagger, fortified_staff, red_axe, big_sword, chainmail, 
 grade2Items = [sharpened_dagger, obsidian_staff, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
 items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1, polished_dagger, red_axe, big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2,
          sharpened_dagger, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
-
-gallant = Hero("Gallant", [], [
-        [15, 1, 1, 1, 1, 1, 3, 1, 3, 2, 4],
-        [2 0, 2, 0, 0, 1, 0, 2, 2, 3, 3],
-        [5, 1, 1, 1, 0, 0, 1, 0, 0, 1, 3],
-        [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, bigger_sword, chainmail
-)
-
-throureum = Hero("Throurem", [], [
-    [12, 2, 1, 1, 1, 1, 1, 1, 1, 2, 3],
-    [4, 2, 2, 0, 0, 0, 1, 2, 3, 2, 3],
-    [2, 1, 1, 1, 1, 0, 2, 3, 2, 3, 4],
-    [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]], "Mage", 2, fortified_staff, leather
-)
-
-knithen = Hero("Knithen", [], [
-    [10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-    [3, 0, 0, 0, 0, 3, 0, 0, 0, 3, 4],
-    [2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 2],
-    [3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3]], "Rogue", 69, dagger, leather
-)
-
-frethen = Hero("Frethen", [], [
-    [],
-    [],
-    [],
-    []], "Healer", 2, cross, robes
-])

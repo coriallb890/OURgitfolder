@@ -2370,13 +2370,13 @@ def combatTest():
     )
 
     for i in range(7):
-        test.levelUp()
-    test.revert()
-    test.health = test.maxHealth
+        gallant.levelUp()
+    gallant.revert()
+    gallant.health = gallant.maxHealth
 
-    Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone()])
+    Fightable.combat([gallant, frethen], [enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone()])
 
-menu()
+#menu()
 combatTest()
 
 
