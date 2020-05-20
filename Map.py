@@ -213,9 +213,12 @@ def userWarning(string):
                         return
 
 
-def fadeToBlack(time=.01):
+def fadeToBlack(time=.01, surface=None):
     original = screen.copy()
-    screen.fill(BLACK)
+    if surface == None:
+        screen.fill(BLACK)
+    else:
+        screen.blit(surface, (0, 0))
     black = screen.copy()
     screen.blit(original, (0, 0))
     for i in range(50):
@@ -816,6 +819,58 @@ def popup():
         clock.tick(60)
 
 
+def gameOver():
+    fadeToBlack()
+    pygame.mixer.music.fadeout(800)
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load("GameMusic\GameOver.wav")
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        pass
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load("GameMusic\GameOverIdle.wav")
+    pygame.mixer.music.play(-1)
+    font1 = pygame.font.SysFont('Arial', 75)
+    font2 = pygame.font.SysFont('Arial', 60)
+    selected = 1
+    screen.blit(pygame.image.load("GameArt\Extra\menu.gif"), (0, 0))
+    bg = screen.copy()
+    fadeToBlack(surface=bg)
+    screen.blit(font1.render("GAME OVER", True, (255, 0, 0)), (font1.size("GAME OVER")[0]/2, 150))
+
+    screen.blit(font2.render("Return to Main Menu", True, (0, 0, 0)), (font1.size("Return to Main Menu")[0] / 2, 350))
+    screen.blit(font2.render("Return to Main Menu", True, (255, 0, 0)), (font1.size("Return to Main Menu")[0] / 2, 550))
+    selected = 0
+    song = pygame.mixer.Sound("SoundFX\Select.wav")
+    song.set_volume(VOLUME)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    song.play()
+                    selected = 0
+                    screen.blit(font2.render("Return to Main Menu", True, (0, 0, 0)), (font1.size("Return to Main Menu")[0] / 2, 350))
+                    screen.blit(font2.render("Quit", True, (255, 0, 0)), (font1.size("Quit")[0] / 2, 550))
+                if event.key == pygame.K_DOWN:
+                    song.play()
+                    selected = 1
+                    screen.blit(font2.render("Return to Main Menu", True, (255, 0, 0)), (font1.size("Return to Main Menu")[0] / 2, 350))
+                    screen.blit(font2.render("Quit", True, (0, 0, 0)), (font1.size("Quit")[0] / 2, 550))
+                if event.key == pygame.K_RETURN:
+                    if selected == 1:
+                        pygame.quit()
+                        quit()
+                    pygame.mixer.music.fadeout(1000)
+                    pygame.mixer.music.stop()
+                    menu()
+        pygame.display.update()
+
+
+
+
 def merchText():
     talk = True
     background = pygame.image.load("GameArt\Extra\Background.png")
@@ -1080,67 +1135,82 @@ def makeCombat(x):
         if currentFloor == f2:
             for i in range(num):
                 count.append(f1hill_giant.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
         elif currentFloor == f3:
             for i in range(num):
                 count.append(f2hill_giant.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
         elif currentFloor == f4:
             for i in range(num):
                 count.append(f3hill_giant.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
         elif currentFloor == f6:
             for i in range(num):
                 count.append(f5hill_giant.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
             
     elif x == 2:
         num = random.randint(2, 5)
         if currentFloor == f4:
             for i in range(num):
                 count.append(f2gnoll.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
         elif currentFloor == f6:
             for i in range(num):
                 count.append(f5gnoll.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
         elif currentFloor == f7:
             for i in range(num):
                 count.append(f6gnoll.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
         elif currentFloor == f8:
             for i in range(num):
                 count.append(f7gnoll.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
         elif currentFloor == f10:
             for i in range(num):
                 count.append(f9gnoll.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
         
     elif x == 3:
         num = random.randint(2, 3)
         if currentFloor == f8:
             for i in range(num):
                 count.append(f7flind.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
         elif currentFloor == f10:
             for i in range(num):
                 count.append(f9flind.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
         elif currentFloor == f11:
             for i in range(num):
                 count.append(f10flind.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
             
         elif currentFloor == f12:
             for i in range(num):
                 count.append(f11flind.clone())
-            Fightable.combat(party, count, screen, inventory)
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
 
     elif x == 4:
-        Fightable.combat(party, [miniboss1], screen, inventory)
+        if not Fightable.combat(party, [miniboss1], screen, inventory):
+            gameOver()
     elif x == 5:
-        Fightable.combat(party, [miniboss3], screen, inventory)
+        if not Fightable.combat(party, [miniboss3], screen, inventory):
+            gameOver()
     for i in party:
         i.revert()
     return
@@ -1185,6 +1255,8 @@ def gameMap():
                     elif Map.hero.collision("UP") == 15:
                         bossText()
                     elif Map.hero.collision("LEFT") == block:
+                        tempTile = Special("Ground", "GameArt\Extra\Ground.png", Map.hero.column-1, Map.hero.row)
+                        Map.grid[Map.hero.column-1][Map.hero.row] = [tempTile]
                         makeCombat(block)
                     elif Map.hero.collision("LEFT") == 20:
                         print ""
@@ -1232,13 +1304,14 @@ def gameMap():
                     shop()
 
         clock.tick(60)  # Limit to 60 fps or something
-        pygame.display.update()  # Honestly not sure what this does, but it breaks if I remove it
+        pygame.display.update()  # Updates current screen display
         Map.update()
         saveGame()
 
 
 def combatTest():
-    Fightable.combat([gallant, throureum], [enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone()], screen, inventory)
+    Fightable.combat([gallant, throureum], [f1gnoll.clone(), f1gnoll.clone(), f1gnoll.clone(), f1hill_giant.clone(), f1hill_giant.clone()], screen, inventory)
+
 
 menu()
 combatTest()

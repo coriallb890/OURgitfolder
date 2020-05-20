@@ -46,52 +46,53 @@ class StatusEffect:
     def turns(self, value):
         self._turns = value
 
-    def doIt(self, who):
+    def doIt(self, who, doer=-1):
         blurb = []
         if self.turns > 0:
             for x in range(0, len(self.stats)):
+                amount = self.amounts[x]
                 if self.stats[x] == "health":
-                    who.health += (self.amounts[x])
+                    who.health += amount
                     verb = " loses "
-                    if self.amounts[x] >= 0:
+                    if amount >= 0:
                         verb = " gains "
                     plural = "s"
-                    if abs(self.amounts[x]) == 1:
+                    if abs(amount) == 1:
                         plural = ""
                     blurb.append(who.name + verb + str(
-                        abs(self.amounts[x])) + " hitpoint" + plural + " from the " + self.name + "!")
+                        abs(amount)) + " hitpoint" + plural + " from the " + self.name + "!")
                 elif self.stats[x] == "fight":
-                    who.fight += (self.amounts[x])
+                    who.fight += amount
                     verb = ""
-                    if abs(self.amounts[x]) > 4:
+                    if abs(amount) > 4:
                         verb = "greatly "
-                    elif abs(self.amounts[x]) <= 2:
+                    elif abs(amount) <= 2:
                         verb = "slightly "
-                    if self.amounts[x] >= 0:
+                    if amount >= 0:
                         verb = " is " + verb + "strengthened "
                     else:
                         verb = " is " + verb + "weakened "
                     blurb.append(who.name + verb + "by the " + self.name + "!")
                 elif self.stats[x] == "defense":
-                    who.defense += (self.amounts[x])
+                    who.defense += amount
                     verb = ""
-                    if abs(self.amounts[x]) > 4:
+                    if abs(amount) > 4:
                         verb = "greatly "
-                    elif abs(self.amounts[x]) <= 2:
+                    elif abs(amount) <= 2:
                         verb = "slightly "
-                    if self.amounts[x] >= 0:
+                    if amount >= 0:
                         verb = "'s defenses are " + verb + "reinforced "
                     else:
                         verb = "'s defenses are " + verb + "diminished "
                     blurb.append(who.name + verb + "by the " + self.name + "!")
                 elif self.stats[x] == "agility":
-                    who.agility += (self.amounts[x])
+                    who.agility += amount
                     verb = ""
-                    if abs(self.amounts[x]) > 4:
+                    if abs(amount) > 4:
                         verb = "greatly "
-                    elif abs(self.amounts[x]) <= 2:
+                    elif abs(amount) <= 2:
                         verb = "slightly "
-                    if self.amounts[x] >= 0:
+                    if amount >= 0:
                         verb = "'s speed is " + verb + "increased "
                     else:
                         verb = "'s speed is " + verb + "decreased "
@@ -155,6 +156,7 @@ class Move:
 
     def clone(self):
         return Move(self.name, self.target, self.uses, self.statusEffects)
+
 
 class Item(object):
     def __init__(self, name, cost, grade, flavor):
@@ -301,17 +303,17 @@ dagger = Weapon("Dagger", "stabs", 10, 0, "Name: Dagger  Attack: 1  Range: 1  Co
 polished_dagger = Weapon("Polished Dagger", "stabs", 20, 1, "Name: Polished Dagger  Attack: 2  Range: 1  Cost: 20", 2, 1, 80, 1, 10)
 sharpened_dagger = Weapon("Sharpened Dagger", "stabs", 35, 2, "Name: Sharpened Dagger  Attack: 4  Range: 1  Cost: 35", 4, 1, 80, 1, 12)
 
-staff = Weapon("Staff", "casts with", 20, 0, "Name: Staff  Attack: 1,  Range: 2  Cost: 15", 2, 2, 70, 1, 10)
-fortified_staff = Weapon("Fortified Staff", "casts with", 30, 1, "Name: Fortified Staff  Attack: 4  Range: 3  Cost: 30", 4, 3, 75, 1, 15)
-obsidian_staff = Weapon("Obsidian Staff", "casts with", 45, 2, "Name: Obsidia Staff  Attack: 6  Range: 4  Cost: 45", 6, 4, 80, 1, 20)
+staff = Weapon("Staff", "casts with", 20, 0, "Name: Staff  Attack: 1,  Range: 2  Cost: 15", 2, 2, 70, 2, 10)
+fortified_staff = Weapon("Fortified Staff", "casts with", 30, 1, "Name: Fortified Staff  Attack: 4  Range: 3  Cost: 30", 4, 3, 75, 2, 15)
+obsidian_staff = Weapon("Obsidian Staff", "casts with", 45, 2, "Name: Obsidia Staff  Attack: 6  Range: 4  Cost: 45", 6, 4, 80, 2, 20)
 
-axe = Weapon("Axe", "swings", 35, 0, "Name: Axe  Attack: 4  Range: 2  Cost: 35", 4, 2, 60, 1, 15)
-red_axe = Weapon("Red Axe", "swings", 40, 1, "Name: Red Axe  Attack: 6  Range: 2  Cost: 40", 6, 2, 60, 1, 15)
-battle_axe = Weapon("Battle Axe", "swings", 50, 2, "Name: Battle Axe  Attack: 8  Range: 2  Cost: 50", 8, 2, 55, 1, 15)
+axe = Weapon("Axe", "swings", 35, 0, "Name: Axe  Attack: 4  Range: 2  Cost: 35", 4, 2, 60, 3, 15)
+red_axe = Weapon("Red Axe", "swings", 40, 1, "Name: Red Axe  Attack: 6  Range: 2  Cost: 40", 6, 2, 60, 3, 15)
+battle_axe = Weapon("Battle Axe", "swings", 50, 2, "Name: Battle Axe  Attack: 8  Range: 2  Cost: 50", 8, 2, 55, 3, 15)
 
-sword = Weapon("Sword", "slashes", 30, 0, "Name: Sword  Attack: 4  Range: 3  Cost: 30", 4, 3, 70, 1, 15)
-big_sword = Weapon("Big Sword", "slashes", 40, 1, "Name: Big Sword  Attack: 5  Range: 3  Cost: 40", 5, 3, 70, 1, 15)
-bigger_sword = Weapon("Bigger Sword", "slashes", 45, 2, "Name: Bigger Sword  Attack: 7  Range: 3  Cost: 45", 6, 3, 70, 1, 15)
+sword = Weapon("Sword", "slashes", 30, 0, "Name: Sword  Attack: 4  Range: 3  Cost: 30", 4, 3, 70, 2, 15)
+big_sword = Weapon("Big Sword", "slashes", 40, 1, "Name: Big Sword  Attack: 5  Range: 3  Cost: 40", 5, 3, 70, 2, 15)
+bigger_sword = Weapon("Bigger Sword", "slashes", 45, 2, "Name: Bigger Sword  Attack: 7  Range: 3  Cost: 45", 6, 3, 70, 2, 15)
 
 glock = Weapon("Glock 18", "shoots", 100, 100, "GLOCK.", 100, 3, 100, 1, 100)
 
@@ -338,30 +340,30 @@ bleed = StatusEffect("Bleeding", "hemorrhaged", ["health"], ["F-50"], 4)
 poison = StatusEffect("Poison", "poisoned", ["health"], ["F-75"], 3)
 
 # Generic Attacks
-hit = StatusEffect("Generic Hit", "hit", ["health"], ["F-50"], 1)
-bludgeon = StatusEffect("Bludgeon", "hit", ["health"], ["F-100"], 1)
-bite = StatusEffect("Bite", "bit", ["health"], ["F-125"], 1)
-whammy = StatusEffect("Whammy", "whammied", ["health"], ["F-150"], 1)
+hit = StatusEffect("Generic Hit", "hit", ["health"], ["F-50"], 0)
+bludgeon = StatusEffect("Bludgeon", "hit", ["health"], ["F-100"], 0)
+bite = StatusEffect("Bite", "bit", ["health"], ["F-125"], 0)
+whammy = StatusEffect("Whammy", "whammied", ["health"], ["F-150"], 0)
 
 # Mage-type casts (HAHA TYPECAST JO- not funny.)
-shocked = StatusEffect("Shock", "shocked", ["health"], ["F-150"], 1)
+shocked = StatusEffect("Shock", "shocked", ["health"], ["F-150"], 0)
 burn = StatusEffect("Burn", "burned", ["health"], ["F-100"], 2)
 frostbite = StatusEffect("Frostbite", "frostbit", ["health", "agility", "defense"], ["F-50", -3, 1], 2)
 plague = StatusEffect("Plague", "plagued", ["health", "defense"], ["F-75", -3], 3)
 
 # Metroidvania Rogue-like (Rogue stuff)
-strike = StatusEffect("Cheap Strike", "shanked", ["health"], ["A-100"], 1)
+strike = StatusEffect("Cheap Strike", "shanked", ["health"], ["A-100"], 0)
 disoriented = StatusEffect("Disorient", "disoriented", ["defense", "agility"], ["D-75", "D100"], 3)
-stab = StatusEffect("Stab", "stabbed", ["health"], ["A-125"], 1)
-skirted = StatusEffect("Skirt", "skirted", ["health"], ["F-125"], 1)
-backstabbed = StatusEffect("Backstab", "stabbed", ["health"], ["A-200"], 1)
+stab = StatusEffect("Stab", "stabbed", ["health"], ["A-125"], 0)
+skirted = StatusEffect("Skirt", "skirted", ["health"], ["F-125"], 0)
+backstabbed = StatusEffect("Backstab", "stabbed", ["health"], ["A-200"], 0)
 
 # GOOD KNIGHT
-swung = StatusEffect("Swung", "swung their sword", ["health"], ["F-100"], 1)
+swung = StatusEffect("Swung", "swung their sword", ["health"], ["F-100"], 0)
 inspired = StatusEffect("Inspiration Strike", "struck", ["fight", "defense"], ["F-125", "D100"], 2)
-charged = StatusEffect("Charge", "charged", ["health"], ["F-150"], 1)
-skewered = StatusEffect("Skewer", "skewered", ["health"], ["F-100"], 1)
-wideSliced = StatusEffect("Wide Slice", "sliced", ["health"], ["F-100"], 1)
+charged = StatusEffect("Charge", "charged", ["health"], ["F-150"], 0)
+skewered = StatusEffect("Skewer", "skewered", ["health"], ["F-100"], 0)
+wideSliced = StatusEffect("Wide Slice", "sliced", ["health"], ["F-100"], 0)
 
 # This is the stuff that you use to heal. Probably.
 healAura = StatusEffect("Healing Aura", "healed", ["health"], ["H100"], 3)
@@ -370,17 +372,17 @@ blessedShield = StatusEffect("Blessed Shield", "shielded", ["health", "defense"]
 taylorAura = StatusEffect("Swift Aura", "quickened", ["health", "agility"], ["H75", "H125"], 2)
 
 # Boss crap
-demolish = StatusEffect("Demolish", "demolished", ["health"], ["F-120"], 1)
-pulv = StatusEffect("Pulverize", "pulverized", ["health"], ["F-140"], 1)
-decim8 = StatusEffect("Decimate", "decimated", ["health"], ["F-160"], 1)
-fB = StatusEffect("Final Blow", "destroyed", ["health"], ["F-180"], 1)
+demolish = StatusEffect("Demolish", "demolished", ["health"], ["F-120"], 0)
+pulv = StatusEffect("Pulverize", "pulverized", ["health"], ["F-140"], 0)
+decim8 = StatusEffect("Decimate", "decimated", ["health"], ["F-160"], 0)
+fB = StatusEffect("Final Blow", "destroyed", ["health"], ["F-180"], 0)
 intimid8 = StatusEffect("Intimidate", "intimidated", ["fight", "defense", "agility"], [15, 12, 10], 3)
 
 # Potion effects and miscellaneous stuff
 
-health1 = StatusEffect("Small Health", "drank", ["health"], [5], 1)
-health2 = StatusEffect("Health", "drank", ["health"], [10], 1)
-health3 = StatusEffect("Big Health", "drank", ["health"], [15], 1)
+health1 = StatusEffect("Small Health", "drank", ["health"], [5], 0)
+health2 = StatusEffect("Health", "drank", ["health"], [10], 0)
+health3 = StatusEffect("Big Health", "drank", ["health"], [15], 0)
 
 fight1 = StatusEffect("Small Fight", "drank", ["fight"], [2], 2)
 fight2 = StatusEffect("Fight", "drank", ["fight"], [4], 2)
@@ -465,6 +467,9 @@ pulverize = Move("Pulverize", "Single", 5, [pulv])
 decimate = Move("Decimate", "Single", 5, [decim8])
 finalblow = Move("Final Blow", "Single", 1, [fB])
 intimidate = Move("Charm", "Single", 3, [intimid8])
+
+# As opposed to hurting moves
+helpingMoves = [inspire, healAura, taylorAura, blessedShield, boostAura]
 
 ## List of items by grade
 grade0Items = [dagger, staff, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1]

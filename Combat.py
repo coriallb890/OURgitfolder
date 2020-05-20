@@ -12,6 +12,95 @@ YELLOW = (255, 255, 0)
 ORANGE = (255, 97, 3)
 RED = (255, 0, 0)
 
+
+def checkList(inventory, screen):
+    original = screen.copy()
+    font = pygame.font.SysFont('Arial', 25)
+    scroll = pygame.image.load("GameArt\Extra\scroll.png")
+    scroll = pygame.transform.scale(scroll, (scroll.get_size()[0] * 9 / 4, scroll.get_size()[1] * 2))
+    screen.blit(scroll, (125, 100))
+    justScroll = screen.copy()
+
+    if len(inventory) == 0:
+        screen.blit(font.render("Inventory is empty.", True, BLACK), (180, 175))
+        screen.blit(font.render("Back", True, WHITE), (315, 505))
+        pygame.display.update()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        return None
+
+    maxi = len(inventory)
+    place = 0
+    cursor = 0
+    for i in range(11):
+        if i >= len(inventory):
+            break
+        screen.blit(font.render(inventory[i].name, True, BLACK), (180, 175+(i*30)))
+    screen.blit(font.render("Back", True, BLACK), (315, 505))
+    screenshot = screen.copy()
+    screen.blit(font.render(inventory[0].name, True, WHITE), (180, 175))
+    pygame.display.update()
+    while True:
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if (event.key == pygame.K_LEFT or event.key == pygame.K_UP) and place > 0:
+                        place -= 1
+                        if cursor > 0:
+                            screen.blit(screenshot, (0, 0))
+                            cursor -= 1
+                            screen.blit(font.render(inventory[place].name, True, WHITE), (180, 175+(cursor*30)))#
+                        else:
+                            screen.blit(justScroll, (0, 0))
+                            count = 0
+                            for i in range(place, place+11):
+                                if i >= len(inventory):
+                                    break
+                                screen.blit(font.render(inventory[i].name, True, BLACK), (180, 175+(count*30)))
+                                count += 1
+                            screen.blit(font.render("Back", True, BLACK), (315, 505))
+                            screenshot = screen.copy()
+                            screen.blit(font.render(inventory[place].name, True, WHITE), (180, 175)) #
+
+                    if (event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN) and place < maxi:
+                        place += 1
+                        if cursor < 10 and cursor < maxi-1:
+                            screen.blit(screenshot, (0, 0))
+                            cursor += 1
+                            screen.blit(font.render(inventory[place].name, True, WHITE), (180, 175+(cursor*30))) #
+                        elif place == maxi:
+                            screen.blit(screenshot, (0, 0))
+                            cursor += 1
+                            screen.blit(font.render("Back", True, WHITE), (315, 505)) #
+                        else:
+                            screen.blit(justScroll, (0, 0))
+                            count = 0
+                            for i in range(place-10, place+1):
+                                if i >= len(inventory):
+                                    break
+                                screen.blit(font.render(inventory[i].name, True, BLACK), (180, 175+(count*30)))
+                                count+=1
+                            screen.blit(font.render("Back", True, BLACK), (315, 505))
+                            screenshot = screen.copy()
+                            screen.blit(font.render(inventory[place].name, True, WHITE), (180, 175+(10*30))) #
+                    if event.key == pygame.K_RETURN:
+                        try:
+                            screen.blit(original, (0, 0))
+                            return inventory[place]
+                        except:
+                            screen.blit(original, (0, 0))
+                            pygame.display.update()
+                            return None
+        pygame.display.update()
+
+
 class Gender:
     def __init__(self, name, subj, obj, posAdj, posPro, refl):
         self._name = name
@@ -68,6 +157,7 @@ class Gender:
     @refl.setter
     def refl(self, value):
         self._refl = value
+
 
 class Fightable(object):
     def __init__(self, name, fight, defense, agility, health, moves,
@@ -205,13 +295,13 @@ class Fightable(object):
     def getEffect(self, m, screen):
         if isinstance(m, Move):
             x = 0
-            while x < len(m.statusEffects()):
-                x += 1
-                if m.statusEffects()[x].turns > 0:
+            while x < len(m.statusEffects):
+                if m.statusEffects[x].turns > 0:
                     self.statusEffects.append(m.statusEffects[x].clone())
                     Fightable.flavorText("{} has been {}".format(self.name, m.statusEffects[x].verb), screen)
                 else:
                     self.oneAndDone(m.statusEffects[x], screen)
+                x += 1
         else:
             if m.turns > 0:
                 self.statusEffects.append(m.clone())
@@ -276,14 +366,12 @@ class Fightable(object):
             x += 1
 
         Fightable.flavorText(suffered, screen)
-        sleep(1)
+        sleep(1.5)
 
     def sufferEffects(self):
-        x = 0
         things = []
-        while x < len(self.statusEffects):
-            things.append(self.statusEffects[x].doIt(self))
-            x += 1
+        for x in self.statusEffects:
+            things.append(x.doIt(self))
         return things
 
     def hasMovesLeft(self):
@@ -302,7 +390,7 @@ class Fightable(object):
     @staticmethod
     def area(t):
         a = 0
-        for x in range(0, len(t)):
+        for x in range(len(t)):
             a += t[x].size
         return a
 
@@ -343,7 +431,7 @@ class Fightable(object):
 
             img = pygame.image.load("GameArt\Buttons\This.png")
         elif target == "Hori Line":
-            for x in range(0, len(coords[0])):
+            for x in range(len(coords[0])):
                 locations.append((300, (x * 100 + 200)))
             img = pygame.image.load("GameArt\Buttons\This.png")
         else:
@@ -389,7 +477,21 @@ class Fightable(object):
                     if event.key == pygame.K_RETURN:
                         if l == len(locations):
                             return [-1]
-                        return [Fightable.firstOf(coords[l])]
+                        if target == "Single":
+                            return [Fightable.firstOf(coords[l])]
+                        if target == "Vert Line":
+                            picks = []
+                            for i in range(len(coords[0])):
+                                if coords[l][i] != -1:
+                                    picks.append(coords[l][i])
+                            return picks
+                        if target == "All":
+                            everyone = []
+                            for i in range(len(coords)):
+                                for t in range(len(coords[i])):
+                                    if coords[i][t] != -1:
+                                        everyone.append(coords[i][t])
+                            return everyone
             pygame.display.update()
 
     @staticmethod
@@ -431,7 +533,7 @@ class Fightable(object):
                     rec.append(None)
                 else:
                     color = enemies[coordinates[x][y]].healthColor()
-                    if highlight == coordinates[x][y]:
+                    if highlight == coordinates[x][y] or (isinstance(highlight, list) and coordinates[x][y] in highlight):
                         color = WHITE
                     rec.append(pygame.draw.rect(screen, color, [160 + (x * 100), 270 + (y * 100), 100, 100]))
             rects.append(rec)
@@ -570,8 +672,8 @@ class Fightable(object):
         while coordinates is None:
             trySize += 1
             coordinates = [[], [], [], []]
-            for o in range(0, trySize):
-                for t in range(0, 4):
+            for o in range(trySize):
+                for t in range(4):
                     coordinates[t].append(-1)
             tries = 0
             j = 0
@@ -592,8 +694,8 @@ class Fightable(object):
                         attempts += 1
                     if (x == -1):
                         coordinates = [[], [], [], []]
-                        for o in range(0, trySize):
-                            for t in range(0, 4):
+                        for o in range(trySize):
+                            for t in range(4):
                                 coordinates[t].append(-1)
                         tries += 1
                         j = -1
@@ -636,8 +738,8 @@ class Fightable(object):
                             y = -1
                     if (x == -1):
                         coordinates = [[], [], [], []]
-                        for o in range(0, trySize):
-                            for t in range(0, 4):
+                        for o in range(trySize):
+                            for t in range(4):
                                 coordinates[t].append(-1)
                         tries += 1
                         j = -1
@@ -645,8 +747,8 @@ class Fightable(object):
                     x = -1
                     y = -1
                     potentials = []
-                    for d in range(0, len(coordinates)):
-                        for f in range(0, len(coordinates[0]) - 1):
+                    for d in range(len(coordinates)):
+                        for f in range(len(coordinates[0]) - 1):
                             potentials.append([d, f])
                     while x == -1 and y == -1 and len(potentials) > 0:
                         attempt = potentials.pop(randint(0, len(potentials) - 1))
@@ -658,8 +760,8 @@ class Fightable(object):
                         coordinates[x][y + 1] = j
                     else:
                         coordinates = [[], [], [], []]
-                        for o in range(0, trySize):
-                            for t in range(0, 4):
+                        for o in range(trySize):
+                            for t in range(4):
                                 coordinates[t].append(-1)
                         tries += 1
                         j = -1
@@ -667,8 +769,8 @@ class Fightable(object):
                     x = -1
                     y = -1
                     potentials = []
-                    for d in range(0, len(coordinates) - 1):
-                        for f in range(0, len(coordinates[0]) - 1):
+                    for d in range(len(coordinates) - 1):
+                        for f in range(len(coordinates[0]) - 1):
                             potentials.append([f, f + 1, d, d + 1])
                     while (x == -1 and y == -1 and len(potentials) > 0):
                         attempt = potentials.pop(randint(0, len(potentials) - 1))
@@ -684,8 +786,8 @@ class Fightable(object):
                         coordinates[x + 1][y + 1] = j
                     else:
                         coordinates = [[], [], [], []]
-                        for o in range(0, trySize):
-                            for t in range(0, 4):
+                        for o in range(trySize):
+                            for t in range(4):
                                 coordinates[t].append(-1)
                         tries += 1
                         j = -1
@@ -704,7 +806,7 @@ class Fightable(object):
                 pygame.display.update()
                 who = heroes[x]
                 if who.health > 0:
-                    for y in range(0, (who.agility / 10) + 1):
+                    for y in range((who.agility / 10) + 1):
                         deciding = True
                         while deciding:
                             screen.blit(zoop, (0, 0))
@@ -716,7 +818,10 @@ class Fightable(object):
                                     gamePlanH.append("H {} Attack {}".format(x, w[0]))
                                     deciding = False
                             elif what == "defend":
-                                Fightable.flavorText(who.name + " takes a defensive stance!", screen)
+                                thing = "takes"
+                                if who.name == "You":
+                                    thing = "take"
+                                Fightable.flavorText(who.name + " {} a defensive stance!".format(thing), screen)
                                 sleep(1)
                                 screen.blit(screenshot, (0, 0))
                                 who.oneAndDone(StatusEffect("", "", ["defense"], [int(ceil(who.maxDefense*(2.0/3.0)))], 1), screen)
@@ -724,16 +829,23 @@ class Fightable(object):
                                 gamePlanH.append("H {} Defend".format(x))
                             elif what == "special":
                                 if (len(who.moves) > 0):
-                                    move = checkList(who.moves)
+                                    move = checkList(who.moves, screen)
                                     if move != None:
-                                        print move.name
+                                        deciding = False
+                                        effected = []
+                                        if not move in helpingMoves:
+                                            effected = Fightable.selectFromCoords(coordinates, screen, move.target)
+                                        else:
+                                            effected = Fightable.chooseAlly(screen, move.target)
+                                        gamePlanH.append("H {} {} Move {}".format(x, who.moves.index(move), effected))
+                                        print gamePlanH[len(gamePlanH)-1]
                                 else:
                                     Fightable.flavorText("No known special moves.", screen)
                                     sleep(1)
                                     screen.blit(screenshot, (0, 0))
                             elif what == "item":
                                 if (len(inventory) > 0):
-                                    item = checkList(inventory)
+                                    item = checkList(inventory, screen)
                                     screen.blit(screenshot, (0, 0))
                                     if item != None:
                                         deciding = not(useItem(item, who))
@@ -776,7 +888,7 @@ class Fightable(object):
             combinedGamePlan = []
 
             speeds = []
-            for c in range(0, len(gamePlanH)):
+            for c in range(len(gamePlanH)):
                 index = int(gamePlanH[c][2:3])
                 speeds.append(heroes[index].agility)
                 if (speeds[c] > 10):
@@ -793,7 +905,7 @@ class Fightable(object):
                     speeds[c] = 1
                 speeds[c] *= 1000
                 speeds[c] += c
-            for c in range(0, len(speeds) - 1):
+            for c in range(len(speeds) - 1):
                 if (speeds[c] < speeds[c + 1]):
                     hold = speeds[c]
                     speeds[c] = speeds[c + 1]
@@ -802,7 +914,7 @@ class Fightable(object):
                     if (c < -1):
                         c = -1
             newGamePlanH = []
-            for c in range(0, len(speeds)):
+            for c in range(len(speeds)):
                 newGamePlanH.append(gamePlanH[(speeds[c] % 1000)])
             gamePlanH = newGamePlanH
 
@@ -826,7 +938,7 @@ class Fightable(object):
                     combinedGamePlan.append(gamePlanE.pop(0))
 
             undefend = []
-            for x in range(0, len(combinedGamePlan)):
+            for x in range(len(combinedGamePlan)):
                 pygame.event.pump()
                 screenshot = screen.copy()
                 action = combinedGamePlan[x]
@@ -844,10 +956,12 @@ class Fightable(object):
                                 Fightable.flavorText(who.name + " " + who.weapon.verb + " " + who.gender.posAdj + " "
                                                      + who.weapon.name + " at " + eWho.title + eWho.name, screen)
                                 pygame.display.update()
+                                sleep(1.5)
                                 if (randint(0, 99) < eWho.agility):
                                     sleep(1.25)
                                     Fightable.flavorText(eWho.title.capitalize() + eWho.name + " dodges the attack!", screen)
                                     pygame.display.update()
+                                    sleep(1)
                                 else:
                                     amount = who.fightT() - eWho.defense
                                     if (amount <= 0):
@@ -858,7 +972,7 @@ class Fightable(object):
                                     other = screen.copy()
                                     screen.blit(screenshot, (0, 0))
                                     pygame.display.update()
-                                    for b in range(0, 5):
+                                    for b in range(5):
                                         if (3 % (b + 1) == 0):
                                             screen.blit(screenshot, (0, 0))
                                         else:
@@ -869,11 +983,12 @@ class Fightable(object):
                                     print eWho.health
                                     if (eWho.health <= 0):
                                         dead = (eWho.title.capitalize() + eWho.name + " has been defeated!")
-                                        for e in range(0, len(coordinates)):
-                                            for w in range(0, len(coordinates[0])):
+                                        for e in range(len(coordinates)):
+                                            for w in range(len(coordinates[0])):
                                                 if (coordinates[e][w] == int(action[(action.index("Attack") + 7):])):
                                                     coordinates[e][w] = -1
                                     Fightable.flavorText(eWho.title.capitalize() + eWho.name + " takes {} damage! ".format(amount) + dead, screen)
+                                    sleep(1.25)
                                     pygame.display.update()
                                     if dead != "":
                                         sleep(1.25)
@@ -888,45 +1003,54 @@ class Fightable(object):
                                 screen.blit(screenshot, (0, 0))
                                 pygame.display.update()
                         elif("Move" in action):
-                            move = who.moves[int(action[9:10])]
+                            move = who.moves[int(action[4:5])]
+                            shot = screen.copy()
                             Fightable.flavorText(who.name + " uses " + move.name + "!", screen)
-                            targets = action[action.index("[") + 1:len(action) - 1]
-                            targs = []
-                            happenstances = ""
-                            while (len(targets) > 0):
-                                targ = None
-                                if move.statusEffects[0].stats[0] < 0:
-                                    if (targets.index(",") != -1):
-                                        targ = enemies[int(targets[0:targets.index(",")])]
-                                        targets = targets[targets.index(" ") + 1:]
-                                    else:
-                                        targ = enemies[int(targets)]
-                                        targets = ""
+                            pygame.display.update()
+                            sleep(1)
+                            targets = action[action.index("[") + 1:len(action) - 1].split(", ")
+                            if not move in helpingMoves:
+                                targets.reverse()
+                                targs = []
+                                for i in range(len(targets)):
+                                    targets[i] = int(targets[i])
+                                    targs.append(enemies[targets[i]])
+                                high = []
+                                for t in targets:
+                                    high.append(t)
+                                    Fightable.printCoords(coordinates, enemies, screen, high)
+                                    pygame.display.update()
+                                for targ in targs:
                                     if (targ.health > 0):
-                                        for s in range(0, len(move.statusEffects())):
-                                            st = move.statusEffects()[s]
-                                            happenstances += "\n" + targ.getEffect(move, screen) + "\n"
-                                        if (targ.health <= 0):
-                                            happenstances += (targ.name + " has been defeated!\n\n")
-                                            for e in range(0, len(coordinates)):
-                                                for w in range(0, len(coordinates[0])):
+                                        for s in range(len(move.statusEffects)):
+                                            st = move.statusEffects[s].clone()
+                                            for q in range(len(st.amounts)):
+                                                if isinstance(st.amounts[q], str):
+                                                    amount = st.amounts[q]
+                                                    if amount[0] == "H":
+                                                        amount = int(int(amount[1:len(amount)])/100)*who.health
+                                                    elif amount[0] == "F":
+                                                        amount = int(int(amount[1:len(amount)])/100)*who.fight
+                                                    elif amount[0] == "D":
+                                                        amount = int(int(amount[1:len(amount)])/100)*who.defense
+                                                    elif amount[0] == "A":
+                                                        amount = int(int(amount[1:len(amount)])/100)*who.agility
+                                                    st.amounts[q] = amount
+                                                    print st.amounts
+                                            targ.getEffect(st, screen)
+                                            sleep(.8)
+                                            screen.blit(shot, (0, 0))
+                                            pygame.display.update()
+                                    pygame.display.update()
+                                    if (targ.health <= 0):
+                                        for e in range(len(coordinates)):
+                                                for w in range(len(coordinates[0])):
                                                     if (coordinates[e][w] == enemies.index(targ)):
                                                         coordinates[e][w] = -1
-                                        targs.append(enemies.index(targ))
-                                        clear()
-                                        print(Fightable.printHeroes(
-                                            heroes) + "\n\n" + who.name + " uses " + move.name + "!\n" + happenstances)
-                                        sleep(200)
-                                        clear()
-                                        print(Fightable.printHeroes(
-                                            heroes) + "\n" + who.name + " uses " + move.name + "!\n\n" + happenstances)
-                                        sleep(200)
-                                else:
-                                    pass
                         elif("Defend" in action):
                             Fightable.flavorText(who.name + " has " + who.gender.posAdj + " guard up!", screen)
                             undefend.append(who)
-                            sleep(.6)
+                            sleep(1.25)
                             screen.blit(screenshot, (0, 0))
                     else:
                         Fightable.flavorText(who.name + " is unconscious!", screen)
@@ -943,6 +1067,7 @@ class Fightable(object):
                                 Fightable.printCoords(coordinates, enemies, screen, [enemies.index(who)])
                                 Fightable.flavorText(who.title.capitalize() + who.name + " " + who.verb + " at " + hWho.name, screen)
                                 pygame.display.update()
+                                sleep(1.5)
                                 Fightable.printScreen(coordinates, enemies, heroes, screen, enemies.index(who))
                                 pygame.display.update()
                                 sleep(.1)
@@ -951,6 +1076,7 @@ class Fightable(object):
                                 if (randint(0, 99) < hWho.agility):
                                     Fightable.flavorText(hWho.name + " dodges the attack!", screen)
                                     pygame.display.update()
+                                    sleep(1)
                                 else:
                                     amount = who.fight - hWho.defenseT()
                                     if (amount <= 0):
@@ -967,12 +1093,16 @@ class Fightable(object):
                                             screen.blit(screenshot, (0, 0))
                                         pygame.display.update()
                                         sleep(.1)
-                                    Fightable.flavorText(hWho.name + " takes {} damage!".format(amount), screen)
+                                    thing = "takes"
+                                    if hWho.name == "You":
+                                        thing = "take"
+                                    Fightable.flavorText(hWho.name + " {} {} damage!".format(thing, amount), screen)
                                     pygame.display.update()
+                                    sleep(1)
                                     if (hWho.health <= 0):
-                                        sleep(1.25)
                                         Fightable.flavorText(hWho.name + " has fainted!", screen)
                                         pygame.display.update()
+                                        sleep(1.25)
 
                             else:
                                 Fightable.flavorText(who.title.capitalize() + who.name + "'s target is already down...", screen)
@@ -991,18 +1121,8 @@ class Fightable(object):
                 h.defense -= int(ceil(h.maxDefense *(2.0/3.0)))
         pygame.event.clear()
         if Fightable.totalHealth(heroes) <= 0:
-            """
-            fadeToBlack()
-            pygame.mixer.music.fadeout(800)
-            pygame.mixer.music.stop()
-            pygame.mixer.music.load("GameMusic\GameOver.wav")
-            pygame.mixer.music.play()
-            while pygame.mixer.music.get_busy():
-                pass
-            pygame.mixer.music.stop()
-            pygame.mixer.music.load("GameMusic\GameOverIdle.wav")
-            pygame.mixer.music.play(-1)"""
             return False
+        return True
 
 
 class Hero(Fightable):
@@ -1024,7 +1144,7 @@ class Hero(Fightable):
         elif g == 2:
             self.gender = Gender("female", "she", "her", "her", "hers", "herself")
         else:
-            self.gender = Gender("you", "you", "you", "your", "yours", "yourself")
+            self.gender = Gender("???", "they", "them", "their", "theirs", "themself")
 
     @property
     def caste(self):
@@ -1083,7 +1203,10 @@ class Hero(Fightable):
         self._armor = value
 
     def fightT(self):
-        return self.fight + self.weapon.fight
+        bonus = self.weapon.fight + randint(self.weapon.consistency*-1, self.weapon.consistency)
+        if bonus < 0:
+            bonus = 0
+        return self.fight + bonus
 
     def defenseT(self):
         return self.defense + self.armor.defense
@@ -1098,6 +1221,7 @@ class Hero(Fightable):
             m = self.learnableMoves[self.level / (10 / len(self.learnableMoves)) - 1]
             print(self.name + " has learned the new skill: " + m.name + ".")
             self.moves.append(m)
+        self.revert()
 
     def revert(self):
         self.fight = self.maxFight
@@ -1194,7 +1318,7 @@ class Enemy(Fightable):
 
     def generateImage(self):
         # This code is gonna be horrible
-        if self.name == "gnoll":
+        if self._imageFolder == "Gnoll":
             color = randint(1, 3)
             goTo = []
             if self.appearance == []:
@@ -1306,11 +1430,19 @@ f11flind = Enemy("Flind", FLIND_DESC, "slashes", "", 30, 8, 5, 3, [score, infect
 
 finalboss = Enemy("Yennoghu", "This is it.", "attacks", "", 200, 15, 12, 10, [deepCut, demo, pulverize, decimate, intimidate, finalblow], [], 1, "")
 
-gallant = Hero("Gallant", [], [
+# Vskewer #HwideSlice #Aplague #SBinspire #ABauraHeal
+
+gallant = Hero("Gallant", [skewer, wideSlice, plague, inspire, auraHeal], [
         [15, 1, 1, 1, 1, 1, 3, 1, 3, 2, 4],
         [3, 1, 2, 1, 2, 0, 0, 2, 2, 3, 4],
         [5, 1, 1, 1, 2, 1, 1, 1, 1, 2, 3],
         [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 2]], "Knight", 1, bigger_sword, chainmail)
+
+
+for i in range(10):
+    gallant.levelUp()
+gallant.health = gallant.maxHealth
+
 
 throureum = Hero("Throurem", [], [
         [12, 2, 1, 1, 1, 1, 1, 1, 1, 2, 3],
@@ -1330,8 +1462,8 @@ frethenei = Hero("Frethenei", [], [
         [2, 1, 0, 1, 1, 0, 1, 1, 0, 1, 5],
         [1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 5]], "Healer", 2, cross, robes)
 
-player = Hero("You", [], [
+player = Hero("Player", [], [
     [15, 1, 1, 1, 1, 2, 2, 2, 3, 4, 5],
     [5, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5],
     [5, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5],
-    [5, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5]], "Adventurer", 420, dagger, leather)
+    [5, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5]], "Hero", 420, dagger, leather)
