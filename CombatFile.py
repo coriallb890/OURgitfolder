@@ -4,6 +4,7 @@ from math import ceil
 from StatsAndItems import *
 import random
 import pygame
+import pickle
 
 pygame.init()  # start up dat pygame
 pygame.font.init()
@@ -35,10 +36,7 @@ partyMember = []
 block = 10
 experience = 0
 
-# Hello Josh. Please put all moves, enemies, and heroes in StatsAndItems
-# Also, this is the global variable that will hold the party
 party = []
-
 
 def checkList(inventory):
     original = screen.copy()
@@ -284,7 +282,7 @@ class FightFloor(Floor):
     def flindCount(self, value):
         self._flindCount = value
 
-    def clone():
+    def clone(self):
         return FightFloor(self.name, self.enemyCount, self.nextFloor, self.hillCount, self.gnollCount, self.flindCount)
 
 
@@ -294,7 +292,7 @@ class MiniFloor(Floor):
         self.mini = mini
         self.party = partyMem
 
-    def clone():
+    def clone(self):
         return MiniFloor(self.name, self.enemyCount, self.nextFloor, self.mini, self.partyMem)
 
 
@@ -320,7 +318,7 @@ class SpecialFloor(Floor):
     def merchant(self, value):
         self._merchant = value
 
-    def clone():
+    def clone(self):
         return SpecialFloor(self.name, self.enemyCount, self.nextFloor, self.boss, self.merchant)
 
 
@@ -1878,38 +1876,36 @@ def menu():
 
 def saveGame():
     try:
-        save = open("savefile.txt", "wt")
+        save = open("savefile.txt", "wb")
         inven = []
         pMoves = []
         pMember = []
         for i in range(len(inventory)):
             inven.append(inventory[i].clone())
-        for i in range(len(hero.party)):
-            pMember.append(hero.party[i].clone())
-        for i in range(len(hero.move)):
-            pMoves.append(hero.move[i].clone())
-        saveText = [currentFloor.clone(), int(hero.level), pMember, inven, goldCoins, pMoves]
-        save.write(str(saveText))
+        for i in range(len(party)):
+            pMember.append(party[i].clone())
+        for i in range(len(playerMoves)):
+            pMoves.append(playerMoves[i].clone())
+        saveStuff = [currentFloor.clone(), experience, pMember, inven, goldCoins, pMoves]
+        pickle.dump(saveStuff, save)
         save.close()
     except IOError:
         userWarning("Failed to save game!")
 
 def loadGame():
     try:
-        save = eval(open("savefile.txt", "rt").read())
+        save = open("savefile.txt", "r").read()
         print "Found a save file!"
         if (len(save) != 0):
             try:
+                saveFile = open("savefile.txt", "rb")
+                save = pickle.load(saveFile)
                 currentFloor = save[0]
-
-                hero.level = save[1]
-
-                partyMember = save[2]
-
+                experience = save[1]
+                party = save[2]
                 inventory = []
                 for i in range(len(save[3])):
                     inventory.append(eval(str(p[i])))
-
                 goldCoins = save[4]
                 playerMoves = save[5]
                 pygame.mixer.music.fadeout(1000)
@@ -2383,9 +2379,7 @@ def combatTest():
 
     Fightable.combat([test, test1], [enemyTest.clone(), enemyTest.clone(), enemyTest.clone(), enemyTest.clone()])
 
-
-combatTest()
 menu()
-
+combatTest()
 
 pygame.quit()
