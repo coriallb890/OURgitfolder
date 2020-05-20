@@ -309,10 +309,10 @@ class Weapon(Item):
 
 
 class Armor(Item):
-    def __init__(self, name, cost, grade, flavor, defense, durabillity):
+    def __init__(self, name, cost, grade, flavor, defense, durability):
         super(Armor, self).__init__(name, cost, grade, flavor)
         self._defense = defense
-        self._durabillity = durabillity
+        self._durability = durability
 
     @property
     def defense(self):
@@ -323,15 +323,15 @@ class Armor(Item):
         self._defense = value
 
     @property
-    def durabillity(self):
+    def durability(self):
         return self._durability
 
-    @durabillity.setter
+    @durability.setter
     def durability(self, value):
         self._durability = value
 
     def clone(self):
-        return Armor(self.name, self.cost, self.grade, self.flavor, self.defense, self.durabillity)
+        return Armor(self.name, self.cost, self.grade, self.flavor, self.defense, self.durability)
 
 
 class Consumable(Item):
@@ -353,9 +353,15 @@ class Consumable(Item):
 ## Weapons
 ## name // cost // grade // flavor text // fight // range // accuracy // consistency // critRate
 
+cross = Weapon("Cross", "used", 20, 1, "Name: Cross  Attack: 0  Range: 0  Cost: 20", 0, 0, 0, 0, 0)
+
 dagger = Weapon("Dagger", "stabs", 10, 0, "Name: Dagger  Attack: 1  Range: 1  Cost: 10", 1, 1, 80, 1, 10)
 polished_dagger = Weapon("Polished Dagger", "stabs", 20, 1, "Name: Polished Dagger  Attack: 2  Range: 1  Cost: 20", 2, 1, 80, 1, 10)
 sharpened_dagger = Weapon("Sharpened Dagger", "stabs", 35, 2, "Name: Sharpened Dagger  Attack: 4  Range: 1  Cost: 35", 4, 1, 80, 1, 12)
+
+staff = Weapon("Staff", "casts with", 20, 0, "Name: Staff  Attack: 1,  Range: 2  Cost: 15", 2, 2, 70, 1, 10)
+fortified_staff = Weapon("Fortified Staff", "casts with", 30, 1, "Name: Fortified Staff  Attack: 4  Range: 3  Cost: 30", 4, 3, 75, 1, 15)
+obsidian_staff = Weapon("Obsidian Staff", "casts with", 45, 2, "Name: Obsidia Staff  Attack: 6  Range: 4  Cost: 45", 6, 4, 80, 1, 20)
 
 axe = Weapon("Axe", "swings", 35, 0, "Name: Axe  Attack: 4  Range: 2  Cost: 35", 4, 2, 60, 1, 15)
 red_axe = Weapon("Red Axe", "swings", 40, 1, "Name: Red Axe  Attack: 6  Range: 2  Cost: 40", 6, 2, 60, 1, 15)
@@ -363,14 +369,16 @@ battle_axe = Weapon("Battle Axe", "swings", 50, 2, "Name: Battle Axe  Attack: 8 
 
 sword = Weapon("Sword", "slashes", 30, 0, "Name: Sword  Attack: 4  Range: 3  Cost: 30", 4, 3, 70, 1, 15)
 big_sword = Weapon("Big Sword", "slashes", 40, 1, "Name: Big Sword  Attack: 5  Range: 3  Cost: 40", 5, 3, 70, 1, 15)
-bigger_sword = Weapon("Bigger Sword", "slashes", 45, 2, "Name: Bigger Sword  Attack: 6  Range: 3  Cost: 45", 6, 3, 70, 1, 15)
+bigger_sword = Weapon("Bigger Sword", "slashes", 45, 2, "Name: Bigger Sword  Attack: 7  Range: 3  Cost: 45", 6, 3, 70, 1, 15)
 
 glock = Weapon("Glock 18", "shoots", 100, 100, "GLOCK.", 100, 3, 100, 1, 100)
 
 ## Armor
 ## name // cost // grade // flavor text // defense // durability
 
-leather = Armor("Leather Armor", 25, 0, "Name: Leather Armor  Defense: 2  Durability:100  Cost: 25", 2, 100)
+robes = Armor("Holy Robes", 10, 1, "Name: Holy Robes  Defense: 2  Durability: 50  Cost: 10", 2, 50)
+
+leather = Armor("Leather Armor", 25, 0, "Name: Leather Armor  Defense: 2  Durability: 100  Cost: 25", 2, 100)
 chainmail = Armor("Chainmail Armor", 75, 1, "Name: Chainmail Armor  Defense: 4  Durability: 150  Cost: 75", 4, 150)
 metalA = Armor("Full-metal Armor", 150, 2, "Name: Leather Armor  Defense: 6  Durability: 200  Cost: 150", 6, 200)
 
@@ -378,27 +386,52 @@ tree = Armor("Tree bark Shield", 25, 0, "Name: Tree Bark Shield  Defense: 3  Max
 actual = Armor("Actual Shield", 75, 1, "Name: Actual Shield  Defense: 5  Max Durability: 120  Cost: 75", 5, 120)
 metalS = Armor("Metal Shield", 150, 2, "Name: Metal Shield  Defense: 7  Max Durability: 160  Cost: 150", 7, 160)
 
+
 ## Status Effects
 ## name // verb // stats // amounts // turns
 
-minorBleed = StatusEffect("Minor Bleeding", "bled", ["health"], [-1], 3)
-bleed = StatusEffect("Bleeding", "hemorrhaged", ["health"], [-2], 4)
-poison = StatusEffect("Poison", "poisoned", ["health"], [-3], 3)
+# Damage over time type deals
+minorBleed = StatusEffect("Minor Bleeding", "bled", ["health"], ["F-25"], 3)
+bleed = StatusEffect("Bleeding", "hemorrhaged", ["health"], ["F-50"], 4)
+poison = StatusEffect("Poison", "poisoned", ["health"], ["F-75"], 3)
 
-strike = StatusEffect("Cheap Strike", "shanked", ["health"], ["F-150"], 1)
-stab = StatusEffect("Stab", "stabbed", ["health"], [-3], 1)
-bite = StatusEffect("Bite", "bit", ["health"], [-3], 1)
-skirt = StatusEffect("Skirt", "skirted", ["health"], [-2], 1)
+# Generic Attacks
+hit = StatusEffect("Generic Hit", "hit", ["health"], ["F-50"], 1)
+bludgeon = StatusEffect("Bludgeon", "hit", ["health"], ["F-100"], 1)
+bite = StatusEffect("Bite", "bit", ["health"], ["F-125"], 1)
+whammy = StatusEffect("Whammy", "whammied", ["health"], ["F-150"], 1)
 
-adren = StatusEffect("Adrenaline", "pumped up", ["fight", "agility"], [3, 3], 2)
-inspired = StatusEffect("Inspiration", "was inspired", ["fight", "defense"], [3, 2], 2)
+# Mage-type casts (HAHA TYPECAST JO- not funny.)
+shocked = StatusEffect("Shock", "shocked", ["health"], ["F-150"], 1)
+burn = StatusEffect("Burn", "burned", ["health"], ["F-100"], 2)
+frostbite = StatusEffect("Frostbite", "frostbit", ["health", "agility", "defense"], ["F-50", -3, 1], 2)
+plague = StatusEffect("Plague", "plagued", ["health", "defense"], ["F-75", -3], 3)
+
+# Metroidvania Rogue-like (Rogue stuff)
+strike = StatusEffect("Cheap Strike", "shanked", ["health"], ["A-100"], 1)
+disoriented = StatusEffect("Disorient", "disoriented", ["defense", "agility"], ["D-75", "D100"], 3)
+stab = StatusEffect("Stab", "stabbed", ["health"], ["A-125"], 1)
+skirted = StatusEffect("Skirt", "skirted", ["health"], ["F-125"], 1)
+backstabbed = StatusEffect("Backstab", "stabbed", ["health"], ["A-200"], 1)
+
+# GOOD KNIGHT
+swung = StatusEffect("Swung", "swung their sword", ["health"], ["F-100"], 1)
+inspired = StatusEffect("Inspiration Strike", "struck", ["fight", "defense"], ["F-125", "D100"], 2)
+charged = StatusEffect("Charge", "charged", ["health"], ["F-150"], 1)
+skewered = StatusEffect("Skewer", "skewered", ["health"], ["F-100"], 1)
+wideSliced = StatusEffect("Wide Slice", "sliced", ["health"], ["F-100"], 1)
+
+# This is the stuff that you use to heal. Probably.
+healAura = StatusEffect("Healing Aura", "healed", ["health"], ["H100"], 3)
+boostAura = StatusEffect("Boost Aura", "boosted", ["health", "fight"], ["H75", "H125"], 2)
+blessedShield = StatusEffect("Blessed Shield", "shielded", ["health", "defense"], ["H75", "H125"], 2)
+taylorAura = StatusEffect("Swift Aura", "quickened", ["health", "agility"], ["H75", "H125"], 2)
+
+# Potion effects and miscellaneous stuff
 
 health1 = StatusEffect("Small Health", "drank", ["health"], [5], 1)
 health2 = StatusEffect("Health", "drank", ["health"], [10], 1)
 health3 = StatusEffect("Big Health", "drank", ["health"], [15], 1)
-
-healAura = StatusEffect("Healing Aura", "healed", ["health"], [2], 3)
-aura = StatusEffect("Boost Aura", "boosted", ["health", "fight"], [3, 2], 2)
 
 fight1 = StatusEffect("Small Fight", "drank", ["fight"], [2], 2)
 fight2 = StatusEffect("Fight", "drank", ["fight"], [4], 2)
@@ -435,26 +468,45 @@ agilityp3 = Consumable("Big Agility Potion", 150, 2, "Name: Big Agility Potion  
 
 bigp = Consumable("Everything Potion", 200, 2, "Name: Everything Potion  Cost: 200", everything)
 
-## Moves
+### Moves
 ## name // target // uses // status effect
-rejuvHeal = Move("Rejuvinating Heal", "Single", 5, [aura])
-auraHeal = Move("Healing Aura", "All", 2, [healAura])
+## Stronger at the bottom, I guess.
 
-inspire = Move("Inspiration", "Single", 3, [adren])
+# Healer-type dealios
+auraHeal = Move("Healing Aura", "All", 5, [healAura])
+swiftAura = Move("Swift Aura", "All", 5, [taylorAura])
+blessedShield = Move("Blessed Shield", "All", 5, [blessedShield])
+rejuvHeal = Move("Rejuvinating Heal", "Single", 5, [boostAura])
 
+# Knight-type deals
+swing = Move("Swing", "Single", 5, [swung])
+inspire = Move("Inspiration", "Single", 3, [inspired])
+### charge = Move("Charge", "Single", 3, [charged])
+skewer = Move("Skewer", "Vert Line", 3, [skewered])
+wideSlice = Move("Wide Slice", "Hori Line", 3, [wideSliced])
 
+# Mage-type cast (haha get it, like typecasting!!!!!.... :\)
+shock = Move("Shock", "Single", 5, [shocked])
+freeze = Move("Freeze", "Single", 4, [frostbite])
+burn = Move("Burn", "Single", 3, [burn])
+plague = Move("Plague", "All", 2, [plague])
+
+# Rogue-type stuff
 cheapStrike = Move("Cheap Strike", "Single", 5, [strike])
-skirt = Move("Skirt", "Single", 5, [skirt])
+disorient = Move("Disorient", "Single", 5, [disoriented])
+skirt = Move("Skirt", "Single", 3, [skirted])
+backstab = Move("Backstab", "Single", 2, [backstabbed])
 
-infectStrike = Move("Infected Bite", "Single", 2, [bite, poison])
-scratch = Move("Scratch", "Hori Line", 2, [skirt, minorBleed])
+# Bleeding and generic damage-over-time types
 score = Move("Score", "Single", 3, [stab, minorBleed])
+infectStrike = Move("Infected Bite", "Single", 2, [bite, poison])
+scratch = Move("Scratch", "Hori Line", 2, [skirted, minorBleed])
 deepCut = Move("Deep Cut", "Single", 4, [stab, bleed])
-
+noAttack = Move("Pass", "Single", 100, [])
 
 ## List of items by grade
-grade0Items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1]
-grade1Items = [polished_dagger, red_axe, big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2]
-grade2Items = [sharpened_dagger, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
+grade0Items = [dagger, staff, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1]
+grade1Items = [polished_dagger, fortified_staff, red_axe, big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2]
+grade2Items = [sharpened_dagger, obsidian_staff, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
 items = [dagger, axe, sword, leather, tree, healthp1, fightp1, defensep1, agilityp1, polished_dagger, red_axe, big_sword, chainmail, actual, healthp2, fightp2, defensep2, agilityp2,
          sharpened_dagger, battle_axe, bigger_sword, metalA, metalS, healthp3, fightp3, defensep3, agilityp3, bigp]
