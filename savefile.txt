@@ -251,7 +251,7 @@ aI3
 aI4
 aI5
 aa(lp67
-I50
+I5
 aI2
 aI1
 aI1
@@ -368,7 +368,7 @@ p100
 I15
 sS'_maxFight'
 p101
-I50
+I5
 sg9
 S'Player'
 p102
@@ -420,7 +420,7 @@ p122
 S'themself'
 p123
 sbsg95
-I50
+I5
 sS'_statusEffects'
 p124
 (lp125
