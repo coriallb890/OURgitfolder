@@ -29,7 +29,7 @@ ORANGE = (255, 97, 3)
 RED = (255, 0, 0)
 
 
-inventory = []
+inventory = [glock]
 goldCoins = 0
 playerMoves = []
 block = 10
@@ -484,7 +484,7 @@ class Map(object):  # The main class; where the action happens
             tempTile = Special("Merchant", "GameArt\OverworldSprites\MerchSprite.gif", 5, 5)
             Map.grid[5][5].append(tempTile)
 
-        if currentFloor.name == "Floor 2" or currentFloor.name == "Floor 3" or currentFloor.name == "Floor 4" or currentFloor == "Floor 6":
+        if currentFloor.name == "Floor 2" or currentFloor.name == "Floor 3" or currentFloor.name == "Floor 4" or currentFloor.name == "Floor 6":
             i = 1
             while i <= (currentFloor.hillCount):
                 randRow = random.choice(row)
@@ -752,32 +752,32 @@ def popup():
                 if event.key == pygame.K_RETURN:
                     pygame.mixer.Sound.play(select)
                     if selected == 1:
-                        if currentFloor == f1:
+                        if currentFloor.name == "Floor 1":
                             player.moves.append(charge)
                             return
-                        if currentFloor == f5:
+                        if curentFloor.name == "Mini Boss Floor 1":
                             party.append(frethenei)
                             player.moves.append(plague)
                             return
-                        if currentFloor == f9:
+                        if curentFloor.name == "Mini Boss Floor 2":
                             party.append(gallant)
                             player.moves.append(backstab)
                             return
                     if selected == 2:
-                        if currentFloor == f1:
+                        if currentFloor.name == "Floor 1":
                             player.moves.append(burn)
                             return
-                        if currentFloor == f5:
+                        if curentFloor.name == "Mini Boss Floor 1":
                             party.append(throureum)
                             player.moves.append(auraHeal)
                             return
-                        if currentFloor == f9:
+                        if curentFloor.name == "Mini Boss Floor 2":
                             party.append(knithenpf)
                             player.moves.append(wideSlice)
                             return
 
         # Pop Up UI
-        if currentFloor == f1:
+        if currentFloor.name == "Floor 1":
             screen.blit(bg_img, bg_img.get_rect())
             title1 = font1.render("What move do you", False, BLACK)
             title2 = font1.render("want to learn?", False, BLACK)
@@ -791,11 +791,11 @@ def popup():
                 opt2 = font2.render("Spell Move", False, BLACK)
 
 
-        elif currentFloor == f5 or currentFloor == f9:
+        elif curentFloor.name == "Mini Boss Floor 1" or curentFloor.name == "Mini Boss Floor 2":
             screen.blit(bg_img, bg_img.get_rect())
             title1 = font1.render("Who do you want", False, BLACK)
             title2 = font1.render("to join your party?", False, BLACK)
-            if currentFloor == f5:
+            if curentFloor.name == "Mini Boss Floor 1":
                 if selected == 1:
                     opt1 = font2.render("Healer", False, WHITE)
                 else:
@@ -804,7 +804,7 @@ def popup():
                     opt2 = font2.render("Mage", False, WHITE)
                 else:
                     opt1 = font2.render("Mage", False, BLACK)
-            if currentFloor == f9:
+            if curentFloor.name == "Mini Boss Floor 2":
                 if selected == 1:
                     opt1 = font2.render("Knight", False, WHITE)
                 else:
@@ -1057,11 +1057,11 @@ def shop():
     buy_rect = pygame.Rect(290, 215, 400, 87)
     sell_rect = pygame.Rect(290, 390, 400, 300)
 
-    if currentFloor == f2 or currentFloor == f3 or currentFloor == f4:
+    if currentFloor.name == "Floor 2" or currentFloor.name == "Floor 3" or currentFloor.name == "Floor 4":
         shop = random.sample(grade0Items, 6)
-    elif currentFloor == f5 or currentFloor == f6 or currentFloor == f7 or currentFloor == f8:
+    elif curentFloor.name == "Mini Boss Floor 1" or currentFloor.name == "Floor 6" or currentFloor.name == "Floor 7" or currentFloor.name == "Floor 8":
         shop = random.sample(grade1Items, 6)
-    elif currentFloor == f9 or currentFloor == f10 or currentFloor == f11 or currentFloor == f12:
+    elif curentFloor.name == "Mini Boss Floor 2" or currentFloor.name == "Floor 10" or currentFloor.name == "Floor 11" or currentFloor.name == "Floor 12":
         shop = random.sample(grade2Items, 6)
     else:
         shop = []
@@ -1138,22 +1138,22 @@ def makeCombat(x):
     i = 1
     if x == 1:
         num = random.randint(1, 3)
-        if currentFloor == f2:
+        if currentFloor.name == "Floor 2":
             for i in range(num):
                 count.append(f1hill_giant.clone())
             if not Fightable.combat(party, count, screen, inventory):
                 gameOver()
-        elif currentFloor == f3:
+        elif currentFloor.name == "Floor 3":
             for i in range(num):
                 count.append(f2hill_giant.clone())
             if not Fightable.combat(party, count, screen, inventory):
                 gameOver()
-        elif currentFloor == f4:
+        elif currentFloor.name == "Floor 4":
             for i in range(num):
                 count.append(f3hill_giant.clone())
             if not Fightable.combat(party, count, screen, inventory):
                 gameOver()
-        elif currentFloor == f6:
+        elif currentFloor.name == "Floor 6":
             for i in range(num):
                 count.append(f5hill_giant.clone())
             if not Fightable.combat(party, count, screen, inventory):
@@ -1161,27 +1161,27 @@ def makeCombat(x):
             
     elif x == 2:
         num = random.randint(2, 5)
-        if currentFloor == f4:
+        if currentFloor.name == "Floor 4":
             for i in range(num):
                 count.append(f2gnoll.clone())
             if not Fightable.combat(party, count, screen, inventory):
                 gameOver()
-        elif currentFloor == f6:
+        elif currentFloor.name == "Floor 6":
             for i in range(num):
                 count.append(f5gnoll.clone())
             if not Fightable.combat(party, count, screen, inventory):
                 gameOver()
-        elif currentFloor == f7:
+        elif currentFloor.name == "Floor 7":
             for i in range(num):
                 count.append(f6gnoll.clone())
             if not Fightable.combat(party, count, screen, inventory):
                 gameOver()
-        elif currentFloor == f8:
+        elif currentFloor.name == "Floor 8":
             for i in range(num):
                 count.append(f7gnoll.clone())
             if not Fightable.combat(party, count, screen, inventory):
                 gameOver()
-        elif currentFloor == f10:
+        elif currentFloor.name == "Floor 10":
             for i in range(num):
                 count.append(f9gnoll.clone())
             if not Fightable.combat(party, count, screen, inventory):
@@ -1189,25 +1189,31 @@ def makeCombat(x):
         
     elif x == 3:
         num = random.randint(2, 3)
-        if currentFloor == f8:
+        if currentFloor.name == "Floor 8":
             for i in range(num):
                 count.append(f7flind.clone())
             if not Fightable.combat(party, count, screen, inventory):
                 gameOver()
-        elif currentFloor == f10:
+        elif currentFloor.name == "Floor 10":
             for i in range(num):
                 count.append(f9flind.clone())
             if not Fightable.combat(party, count, screen, inventory):
                 gameOver()
-        elif currentFloor == f11:
+        elif currentFloor.name == "Floor 11":
             for i in range(num):
                 count.append(f10flind.clone())
             if not Fightable.combat(party, count, screen, inventory):
                 gameOver()
             
-        elif currentFloor == f12:
+        elif currentFloor.name == "Floor 12":
             for i in range(num):
                 count.append(f11flind.clone())
+            if not Fightable.combat(party, count, screen, inventory):
+                gameOver()
+
+        elif currentFloor.name == "Final Boss Floor":
+            for i in range(num):
+                count.append(finalboss.clone())
             if not Fightable.combat(party, count, screen, inventory):
                 gameOver()
 
