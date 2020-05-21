@@ -380,23 +380,23 @@ intimid8 = StatusEffect("Intimidate", "intimidated", ["fight", "defense", "agili
 
 # Potion effects and miscellaneous stuff
 
-health1 = StatusEffect("Small Health", "drank", ["health"], [5], 0)
-health2 = StatusEffect("Health", "drank", ["health"], [10], 0)
-health3 = StatusEffect("Big Health", "drank", ["health"], [15], 0)
+health1 = StatusEffect("Small Health Potion", "drank", ["health"], [5], 0)
+health2 = StatusEffect("Health Potion", "drank", ["health"], [10], 0)
+health3 = StatusEffect("Big Health Potion", "drank", ["health"], [15], 0)
 
-fight1 = StatusEffect("Small Fight", "drank", ["fight"], [2], 2)
-fight2 = StatusEffect("Fight", "drank", ["fight"], [4], 2)
-fight3 = StatusEffect("Big Fight", "drank", ["fight"], [6], 3)
+fight1 = StatusEffect("Small Fight Potion", "drank", ["fight"], [2], 2)
+fight2 = StatusEffect("Fight Potion", "drank", ["fight"], [4], 2)
+fight3 = StatusEffect("Big Fight Potion", "drank", ["fight"], [6], 3)
 
-defense1 = StatusEffect("Small Defense", "drank", ["defense"], [2], 2)
-defense2 = StatusEffect("Defense", "drank", ["defense"], [4], 2)
-defense3 = StatusEffect("Big Defense", "drank", ["defense"], [6], 3)
+defense1 = StatusEffect("Small Defense Potion", "drank", ["defense"], [2], 2)
+defense2 = StatusEffect("Defense Potion", "drank", ["defense"], [4], 2)
+defense3 = StatusEffect("Big Defense Potion", "drank", ["defense"], [6], 3)
 
-agility1 = StatusEffect("Small Agility", "drank", ["agility"], [2], 2)
-agility2 = StatusEffect("Agility", "drank", ["agility"], [4], 2)
-agility3 = StatusEffect("Big Agility", "drank", ["agility"], [6], 3)
+agility1 = StatusEffect("Small Agility Potion", "drank", ["agility"], [2], 2)
+agility2 = StatusEffect("Agility Potion", "drank", ["agility"], [4], 2)
+agility3 = StatusEffect("Big Agility Potion", "drank", ["agility"], [6], 3)
 
-everything = StatusEffect("Big Everything", "drank", ["health", "fight", "agility", "defense"], [5, 4, 4, 4], 20)
+everything = StatusEffect("Big Everything Potion", "drank", ["health", "fight", "agility", "defense"], [5, 4, 4, 4], 20)
 
 ## Consumables
 ## name // cost // grade // flavor text // status effect
