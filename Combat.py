@@ -11,6 +11,8 @@ GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 ORANGE = (255, 97, 3)
 RED = (255, 0, 0)
+WIDTH = 716
+HEIGHT = 716
 
 
 def checkList(inventory, screen):
@@ -99,6 +101,65 @@ def checkList(inventory, screen):
                             pygame.display.update()
                             return None
         pygame.display.update()
+
+
+def useItem(item, who, screen, inventory):
+    original = screen.copy()
+    font = pygame.font.SysFont('Arial', 22)
+    scroll = pygame.image.load("GameArt\Extra\scroll.png")
+    scroll = pygame.transform.scale(scroll, (int(scroll.get_size()[0] * 1.5), int(scroll.get_size()[1] * .75)))
+    screen.blit(scroll, ((WIDTH/2) - (scroll.get_size()[0]/2), 260))
+
+    verb = "Equip"
+    if isinstance(item, Consumable):
+        verb = "Use"
+    size = font.size("{} the".format(verb))[0]
+    screen.blit(font.render("{} the".format(verb), True, BLACK), ((WIDTH/2)-(size/2), 290))
+    size = font.size(item.name + "?")[0]
+    screen.blit(font.render(item.name + "?", True, BLACK), ((WIDTH/2)-(size/2), 320))
+    screen.blit(font.render("Yes", True, BLACK), (275, 370))
+    screen.blit(font.render("No", True, BLACK), (405, 370))
+    screenshot = screen.copy()
+    screen.blit(font.render("No", True, BLACK, WHITE), (405, 370))
+    pygame.display.update()
+    which = 1
+
+    while which != -99:
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        if which == 1:
+                            which = 0
+                            screen.blit(screenshot, (0, 0))
+                            screen.blit(font.render("Yes", True, BLACK, WHITE), (275, 370))
+                    elif event.key == pygame.K_RIGHT:
+                        if which == 0:
+                            which = 1
+                            screen.blit(screenshot, (0, 0))
+                            screen.blit(font.render("No", True, BLACK, WHITE), (405, 370))
+                    elif event.key == pygame.K_RETURN:
+                        if which == 1:
+                            return False
+                        which = -99
+        pygame.display.update()
+    screen.blit(original, (0, 0))
+    if isinstance(item, Consumable):
+        Fightable.flavorText(who.name + " " + item.statusEffect.verb + " the " + item.name + "!", screen)
+        sleep(1.25)
+        who.getEffect(item.statusEffect, screen)
+        screen.blit(original, (0, 0))
+    elif isinstance(item, Weapon):
+        inventory.append(who.weapon)
+        who.weapon = item
+        inventory.remove(item)
+    elif isinstance(item, Armor):
+        inventory.append(who.armor)
+        who.armor = item
+        inventory.remove(item)
+    return True
 
 
 class Gender:
@@ -847,10 +908,9 @@ class Fightable(object):
                                 if (len(inventory) > 0):
                                     item = checkList(inventory, screen)
                                     screen.blit(screenshot, (0, 0))
+                                    print item.name
                                     if item != None:
-                                        deciding = not(useItem(item, who))
-                                        if not deciding:
-                                            inventory.remove(item)
+                                        deciding = not(useItem(item, who, screen, inventory))
                                 else:
                                     Fightable.flavorText("Inventory is empty.", screen)
                                     sleep(1)
@@ -1405,11 +1465,11 @@ f1gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 12, 4, 2, 2, [bludg, 
 f2hill_giant = Enemy("Hill Giant", HILLGIANT_DESC, "punches", "", 11, 4, 3, 1, [toHit, bludg], [4, 3], 1, "")
 f2gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 13, 5, 2, 3, [bludg, score], [5, 6], 1, "Gnoll")
 
-f3hill_giant = Enemy("Hill Giant", HILLGIANT_DESC, "smashes", "", 12, 4, 4, 2, [toHit, bludg], [5, 4], 1, "")
-f3gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 14, 5, 2, 3, [bludg, score], [6, 8], 1, "Gnoll")
+f3hill_giant = Enemy("Hill Giant", HILLGIANT_DESC, "smashes", "", 12, 6, 4, 2, [toHit, bludg], [5, 4], 1, "")
+f3gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 14, 8, 2, 3, [bludg, score], [6, 8], 1, "Gnoll")
 
-miniboss1 = Enemy("Gnoll", "It seems bigger than the other Gnolls you've seen...", "slashes", "the ", 50, 10, 2, 5, [demo, wham, deepCut], [20, 25], 1, "Gnoll")
-miniboss2 = Enemy("Gnoll", "It seems angrier than the other Gnolls you've seen...", "lashes out", "the ", 75, 5, 2, 2, [demo, wham, deepCut], [20, 25], 1, "Gnoll")
+miniboss1 = Enemy("Gnoll", "It seems bigger than the other Gnolls you've seen...", "slashes", "the ", 50, 5, 2, 5, [demo, wham, deepCut], [20, 25], 1, "Gnoll")
+miniboss2 = Enemy("Gnoll", "It seems angrier than the other Gnolls you've seen...", "lashes out", "the ", 75, 10, 2, 2, [demo, wham, deepCut], [20, 25], 1, "Gnoll")
 
 f5hill_giant = Enemy("Hill Giant", HILLGIANT_DESC, "smashes", "", 14, 4, 4, 2, [bludg, wham], [8, 5], 1, "")
 f5gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 18, 6, 3, 4, [bludg, score, scratch], [10, 6], 1, "Gnoll")
@@ -1466,5 +1526,10 @@ frethenei = Hero("Frethenei", [], [
 player = Hero("Player", [], [
     [15, 1, 1, 1, 1, 2, 2, 2, 3, 4, 5],
     [5, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5],
+<<<<<<< HEAD
     [5, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5],
     [5, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5]], "Hero", 420, glock, leather)
+=======
+    [1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5],
+    [5, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5]], "Hero", 420, dagger, leather)
+>>>>>>> 2ecfe479c49054a4343153edbbff79db41cd5b95

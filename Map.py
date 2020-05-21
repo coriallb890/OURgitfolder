@@ -35,7 +35,7 @@ playerMoves = []
 block = 10
 experience = 0
 
-party = [player]
+party = [player, knithenpf]
 
 def checkList(inventory):
     original = screen.copy()
@@ -123,65 +123,6 @@ def checkList(inventory):
                             pygame.display.update()
                             return None
         pygame.display.update()
-
-
-def useItem(item, who):
-    original = screen.copy()
-    font = pygame.font.SysFont('Arial', 22)
-    scroll = pygame.image.load("GameArt\Extra\scroll.png")
-    scroll = pygame.transform.scale(scroll, (int(scroll.get_size()[0] * 1.5), int(scroll.get_size()[1] * .75)))
-    screen.blit(scroll, ((WIDTH/2) - (scroll.get_size()[0]/2), 260))
-
-    verb = "Equip"
-    if isinstance(item, Consumable):
-        verb = "Use"
-    size = font.size("{} the".format(verb))[0]
-    screen.blit(font.render("{} the".format(verb), True, BLACK), ((WIDTH/2)-(size/2), 290))
-    size = font.size(item.name + "?")[0]
-    screen.blit(font.render(item.name + "?", True, BLACK), ((WIDTH/2)-(size/2), 320))
-    screen.blit(font.render("Yes", True, BLACK), (275, 370))
-    screen.blit(font.render("No", True, BLACK), (405, 370))
-    screenshot = screen.copy()
-    screen.blit(font.render("No", True, BLACK, WHITE), (405, 370))
-    pygame.display.update()
-    which = 1
-
-    while which != -99:
-        for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        if which == 1:
-                            which = 0
-                            screen.blit(screenshot, (0, 0))
-                            screen.blit(font.render("Yes", True, BLACK, WHITE), (275, 370))
-                    elif event.key == pygame.K_RIGHT:
-                        if which == 0:
-                            which = 1
-                            screen.blit(screenshot, (0, 0))
-                            screen.blit(font.render("No", True, BLACK, WHITE), (405, 370))
-                    elif event.key == pygame.K_RETURN:
-                        if which == 1:
-                            return False
-                        which = -99
-        pygame.display.update()
-    screen.blit(original, (0, 0))
-    if isinstance(item, Consumable):
-        Fightable.flavorText(who.name + " " + item.statusEffect.verb + " the " + item.name + "!")
-        sleep(1.25)
-        who.getEffect(item.statusEffect)
-        screen.blit(original, (0, 0))
-    elif isinstance(item, Weapon):
-        inventory.append(who.weapon)
-        who.weapon = item
-        inventory.remove(item)
-    elif isinstance(item, Armor):
-        inventory.append(who.armor)
-        who.armor = item
-        inventory.remove(item)
-    return True
 
 
 def userWarning(string):
@@ -766,10 +707,12 @@ def popup():
                         if currentFloor.name == "Mini Boss Floor 1":
                             party.append(frethenei)
                             player.moves.append(plague)
+                            shop()
                             return
                         if currentFloor.name == "Mini Boss Floor 2":
                             party.append(gallant)
                             player.moves.append(backstab)
+                            shop()
                             return
                     if selected == 2:
                         if currentFloor.name == "Floor 1":
@@ -778,10 +721,12 @@ def popup():
                         if currentFloor.name == "Mini Boss Floor 1":
                             party.append(throureum)
                             player.moves.append(auraHeal)
+                            shop()
                             return
                         if currentFloor.name == "Mini Boss Floor 2":
                             party.append(knithenpf)
                             player.moves.append(wideSlice)
+                            shop()
                             return
 
         # Pop Up UI
@@ -811,7 +756,7 @@ def popup():
                 if selected == 2:
                     opt2 = font2.render("Mage", False, WHITE)
                 else:
-                    opt1 = font2.render("Mage", False, BLACK)
+                    opt2 = font2.render("Mage", False, BLACK)
             if currentFloor.name == "Mini Boss Floor 2":
                 if selected == 1:
                     opt1 = font2.render("Knight", False, WHITE)
@@ -824,13 +769,13 @@ def popup():
 
         title1_rect = title1.get_rect()
         title2_rect = title2.get_rect()
-        start_rect = opt1.get_rect()
-        quit_rect = opt1.get_rect()
+        opt1_rect = opt1.get_rect()
+        opt2_rect = opt2.get_rect()
 
         screen.blit(title1, (WIDTH / 2 - (title1_rect[2] / 2), 80))
         screen.blit(title2, (WIDTH / 2 - (title2_rect[2] / 2), 160))
-        screen.blit(opt1, (WIDTH / 2 - (start_rect[2] / 2), 300))
-        screen.blit(opt2, (WIDTH / 2 - (quit_rect[2] / 2), 360))
+        screen.blit(opt1, (WIDTH / 2 - (opt1_rect[2] / 2), 300))
+        screen.blit(opt2, (WIDTH / 2 - (opt2_rect[2] / 2), 360))
         pygame.display.update()
         clock.tick(60)
 
@@ -1032,9 +977,7 @@ def bossText():
                     text4 = font.render("", False, BLACK)
                     i += 1
                 elif i == 3:
-                    # boss fight
-                    # boss fight
-                    # boss fight
+                    Fightable.combat(party, [finalboss], screen, inventory)
                     return
 
         screen.fill(WHITE)
@@ -1142,6 +1085,7 @@ def shop():
         pygame.display.update()
 
 def makeCombat(x):
+    global goldCoins
     count = []
     i = 1
     if x == 1:
@@ -1149,22 +1093,54 @@ def makeCombat(x):
         if currentFloor.name == "Floor 2":
             for i in range(num):
                 count.append(f1hill_giant.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 7
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade0Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
         elif currentFloor.name == "Floor 3":
             for i in range(num):
                 count.append(f2hill_giant.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 9
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade0Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
         elif currentFloor.name == "Floor 4":
             for i in range(num):
                 count.append(f3hill_giant.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 10
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade0Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
         elif currentFloor.name == "Floor 6":
             for i in range(num):
                 count.append(f5hill_giant.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins +=12
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade0Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
             
     elif x == 2:
@@ -1172,27 +1148,67 @@ def makeCombat(x):
         if currentFloor.name == "Floor 4":
             for i in range(num):
                 count.append(f2gnoll.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 13
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade1Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
         elif currentFloor.name == "Floor 6":
             for i in range(num):
                 count.append(f5gnoll.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 15
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade1Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
         elif currentFloor.name == "Floor 7":
             for i in range(num):
                 count.append(f6gnoll.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 18
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade1Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
         elif currentFloor.name == "Floor 8":
             for i in range(num):
                 count.append(f7gnoll.clone())
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 20
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade1Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
             if not Fightable.combat(party, count, screen, inventory):
                 gameOver()
         elif currentFloor.name == "Floor 10":
             for i in range(num):
                 count.append(f9gnoll.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 22
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade1Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
         
     elif x == 3:
@@ -1200,36 +1216,90 @@ def makeCombat(x):
         if currentFloor.name == "Floor 8":
             for i in range(num):
                 count.append(f7flind.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 25
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade2Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
         elif currentFloor.name == "Floor 10":
             for i in range(num):
                 count.append(f9flind.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 27
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade2Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
         elif currentFloor.name == "Floor 11":
             for i in range(num):
                 count.append(f10flind.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 30
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade2Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
             
         elif currentFloor.name == "Floor 12":
             for i in range(num):
                 count.append(f11flind.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 30
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade2Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
 
         elif currentFloor.name == "Final Boss Floor":
             for i in range(num):
                 count.append(finalboss.clone())
-            if not Fightable.combat(party, count, screen, inventory):
+            if Fightable.combat(party, count, screen, inventory):
+                for i in range(num):
+                    goldCoins += 35
+                    if len(inventory) < 20:
+                        inventory.append(random.choice(grade2Items))
+                currentFloor.enemyCount -= 1
+                if currentFloor.enemyCount == 0:
+                    shop()
+            else:
                 gameOver()
 
     elif x == 4:
-        if not Fightable.combat(party, [miniboss1], screen, inventory):
+        if Fightable.combat(party, [miniboss1], screen, inventory):
+            goldCoins += 75
+            if len(inventory) < 20:
+                inventory.append(random.choice(grade2Items))
+            currentFloor.enemyCount -= 1
+            if currentFloor.enemyCount == 0:
+                popup()
+        else:
             gameOver()
     elif x == 5:
-        if not Fightable.combat(party, [miniboss3], screen, inventory):
+        if Fightable.combat(party, [miniboss3], screen, inventory):
+            goldCoins += 100
+            if len(inventory) < 20:
+                inventory.append(random.choice(grade2Items))
+            currentFloor.enemyCount -= 1
+            if currentFloor.enemyCount == 0:
+                popup()
+        else:
             gameOver()
     for i in party:
         i.revert()
