@@ -35,7 +35,7 @@ playerMoves = []
 block = 10
 experience = 0
 
-party = [player]
+party = [player, knithenpf]
 
 def checkList(inventory):
     original = screen.copy()
@@ -123,65 +123,6 @@ def checkList(inventory):
                             pygame.display.update()
                             return None
         pygame.display.update()
-
-
-def useItem(item, who):
-    original = screen.copy()
-    font = pygame.font.SysFont('Arial', 22)
-    scroll = pygame.image.load("GameArt\Extra\scroll.png")
-    scroll = pygame.transform.scale(scroll, (int(scroll.get_size()[0] * 1.5), int(scroll.get_size()[1] * .75)))
-    screen.blit(scroll, ((WIDTH/2) - (scroll.get_size()[0]/2), 260))
-
-    verb = "Equip"
-    if isinstance(item, Consumable):
-        verb = "Use"
-    size = font.size("{} the".format(verb))[0]
-    screen.blit(font.render("{} the".format(verb), True, BLACK), ((WIDTH/2)-(size/2), 290))
-    size = font.size(item.name + "?")[0]
-    screen.blit(font.render(item.name + "?", True, BLACK), ((WIDTH/2)-(size/2), 320))
-    screen.blit(font.render("Yes", True, BLACK), (275, 370))
-    screen.blit(font.render("No", True, BLACK), (405, 370))
-    screenshot = screen.copy()
-    screen.blit(font.render("No", True, BLACK, WHITE), (405, 370))
-    pygame.display.update()
-    which = 1
-
-    while which != -99:
-        for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        if which == 1:
-                            which = 0
-                            screen.blit(screenshot, (0, 0))
-                            screen.blit(font.render("Yes", True, BLACK, WHITE), (275, 370))
-                    elif event.key == pygame.K_RIGHT:
-                        if which == 0:
-                            which = 1
-                            screen.blit(screenshot, (0, 0))
-                            screen.blit(font.render("No", True, BLACK, WHITE), (405, 370))
-                    elif event.key == pygame.K_RETURN:
-                        if which == 1:
-                            return False
-                        which = -99
-        pygame.display.update()
-    screen.blit(original, (0, 0))
-    if isinstance(item, Consumable):
-        Fightable.flavorText(who.name + " " + item.statusEffect.verb + " the " + item.name + "!")
-        sleep(1.25)
-        who.getEffect(item.statusEffect)
-        screen.blit(original, (0, 0))
-    elif isinstance(item, Weapon):
-        inventory.append(who.weapon)
-        who.weapon = item
-        inventory.remove(item)
-    elif isinstance(item, Armor):
-        inventory.append(who.armor)
-        who.armor = item
-        inventory.remove(item)
-    return True
 
 
 def userWarning(string):
