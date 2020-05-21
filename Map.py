@@ -337,16 +337,16 @@ class Special(object):  # The main class for stationary things that inhabit the 
         self.column = column
         self.row = row
 
-f13 = SpecialFloor("Floor 1", 1, None, 1, 0)
-f12 = FightFloor("Floor 3", 7, f13, 0, 0, 7)
-f11 = FightFloor("Floor 3", 5, f12, 0, 0, 5)
-f10 = FightFloor("Floor 3", 5, f11, 0, 2, 3)
+f13 = SpecialFloor("Final Boss Floor", 1, None, 1, 0)
+f12 = FightFloor("Floor 12", 7, f13, 0, 0, 7)
+f11 = FightFloor("Floor 11", 5, f12, 0, 0, 5)
+f10 = FightFloor("Floor 10", 5, f11, 0, 2, 3)
 f9 = MiniFloor("Mini Boss Floor 2", 1, f10, 1, 2)
-f8 = FightFloor("Floor 3", 5, f9, 0, 3, 2)
-f7 = FightFloor("Floor 3", 5, f8, 0, 5, 0)
-f6 = FightFloor("Floor 3", 5, f7, 2, 3, 0)
+f8 = FightFloor("Floor 8", 5, f9, 0, 3, 2)
+f7 = FightFloor("Floor 7", 5, f8, 0, 5, 0)
+f6 = FightFloor("Floor 6", 5, f7, 2, 3, 0)
 f5 = MiniFloor("Mini Boss Floor 1", 1, f6, 1, 2)
-f4 = FightFloor("Floor 3", 5, f5, 3, 2, 0)
+f4 = FightFloor("Floor 4", 5, f5, 3, 2, 0)
 f3 = FightFloor("Floor 3", 5, f4, 5, 0, 0)
 f2 = FightFloor("Floor 2", 3, f3, 3, 0, 0)
 f1 = SpecialFloor("Floor 1", 1, f2, 0, 1)
@@ -453,7 +453,6 @@ class Player(Special):  # The player
         print("Coordinates: " + str(self.column) + ", " + str(self.row))
 
 class Map(object):  # The main class; where the action happens
-
     grid = []
     hero = Player("Hero", "GameArt\OverworldSprites\PlayerSpriteTemp.gif", 5, 9, 0)
     rowRange = range(1,7) + range(10)
@@ -481,7 +480,11 @@ class Map(object):  # The main class; where the action happens
         row = [1, 2, 3, 4, 5, 6, 7]
         column = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-        if currentFloor == f2 or currentFloor == f3 or currentFloor == f4 or currentFloor == f6:
+        if currentFloor.name == "Floor 1":
+            tempTile = Special("Merchant", "GameArt\OverworldSprites\MerchSprite.gif", 5, 5)
+            Map.grid[5][5].append(tempTile)
+
+        if currentFloor.name == "Floor 2" or currentFloor.name == "Floor 3" or currentFloor.name == "Floor 4" or currentFloor == "Floor 6":
             i = 1
             while i <= (currentFloor.hillCount):
                 randRow = random.choice(row)
@@ -491,7 +494,7 @@ class Map(object):  # The main class; where the action happens
                 tempTile = Special("Giant", "GameArt\OverworldSprites\GiantSpriteTemp.gif", randColumn, randRow)
                 Map.grid[randColumn][randRow].append(tempTile)
                 i += 1
-        if currentFloor == f4 or currentFloor == f6 or currentFloor == f7 or currentFloor == f8 or currentFloor == f10:
+        if currentFloor.name == "Floor 4" or currentFloor.name == "Floor 6" or currentFloor.name == "Floor 7" or currentFloor.name == "Floor 8" or currentFloor.name == "Floor 10":
             i = 1
             while i <= (currentFloor.gnollCount):
                 randRow = random.choice(row)
@@ -501,7 +504,7 @@ class Map(object):  # The main class; where the action happens
                 tempTile = Special("Gnoll", "GameArt\OverworldSprites\GnollSprite.gif", randColumn, randRow)
                 Map.grid[randColumn][randRow].append(tempTile)
                 i += 1
-        if currentFloor == f8 or currentFloor == f11 or currentFloor == f10 or currentFloor == f12:
+        if currentFloor.name == "Floor 8" or currentFloor.name == "Floor 11" or currentFloor.name == "Floor 10" or currentFloor.name == "Floor 12":
             i = 1
             while i <= (currentFloor.flindCount):
                 randRow = random.choice(row)
@@ -512,7 +515,7 @@ class Map(object):  # The main class; where the action happens
                 Map.grid[randColumn][randRow].append(tempTile)
                 i += 1
 
-        if currentFloor == f5:
+        if currentFloor.name == "Mini Boss Floor 1":
             pygame.mixer.music.stop()
             pygame.mixer.music.load("GameMusic\BossRoom.wav")
             pygame.mixer.music.play(-1)
@@ -523,7 +526,7 @@ class Map(object):  # The main class; where the action happens
             tempTile = Special("Mini1", "GameArt\OverworldSprites\MiniTemp.png", 5, 3)
             Map.grid[5][3].append(tempTile)
 
-        if currentFloor == f9:
+        if currentFloor.name == "Mini Boss Floor 2":
             pygame.mixer.music.stop()
             pygame.mixer.music.load("GameMusic\BossRoom.wav")
             pygame.mixer.music.play(-1)
@@ -534,21 +537,7 @@ class Map(object):  # The main class; where the action happens
             tempTile = Special("Mini2", "GameArt\OverworldSprites\MiniTempT.png", 5, 3)
             Map.grid[5][3].append(tempTile)
 
-        if currentFloor == f1:
-            tempTile = Special("Merchant", "GameArt\OverworldSprites\MerchSprite.gif", 5, 5)
-            Map.grid[5][5].append(tempTile)
-
-            pygame.mixer.music.stop()
-            pygame.mixer.music.set_volume(.8*VOLUME)
-            song = pygame.mixer.music.load("GameMusic\MerchIntro.wav")
-            pygame.mixer.music.play()
-            while pygame.mixer.music.get_busy():
-                pass
-            pygame.mixer.music.stop()
-            song = pygame.mixer.music.load("GameMusic\MerchTheme.wav")
-            pygame.mixer.music.play(-1)
-
-        if currentFloor == f13:
+        if currentFloor.name == "Final Boss Floor":
             pygame.mixer.music.stop()
             pygame.mixer.music.load("GameMusic\FinalBossRoom.wav")
             pygame.mixer.music.play(-1)
@@ -633,6 +622,15 @@ def menu():
                     if selected == "start":
                         pygame.mixer.music.fadeout(1000)
                         fadeToBlack()
+                        pygame.mixer.music.stop()
+                        pygame.mixer.music.set_volume(.8*VOLUME)
+                        song = pygame.mixer.music.load("GameMusic\MerchIntro.wav")
+                        pygame.mixer.music.play()
+                        while pygame.mixer.music.get_busy():
+                            pass
+                        pygame.mixer.music.stop()
+                        song = pygame.mixer.music.load("GameMusic\MerchTheme.wav")
+                        pygame.mixer.music.play(-1)
                         gameMap()
                         return
                     if selected == "load":
@@ -695,6 +693,7 @@ def saveGame():
         userWarning("Failed to save game!")
 
 def loadGame():
+    loaded = 0
     try:
         save = open("savefile.txt", "r").read()
         print "Found a save file!"
@@ -702,23 +701,32 @@ def loadGame():
             try:
                 saveFile = open("savefile.txt", "rb")
                 save = pickle.load(saveFile)
+                loaded = 1
+
+                global currentFloor
                 currentFloor = save[0]
+                print currentFloor.name
                 experience = save[1]
                 party = save[2]
-                inventory = []
-                for i in range(len(save[3])):
-                    inventory.append(eval(str(p[i])))
+                inventory = save[3]
                 goldCoins = save[4]
                 playerMoves = save[5]
+                saveFile.close()
+
                 pygame.mixer.music.fadeout(1000)
                 fadeToBlack()
+                pygame.mixer.music.stop()
+                pygame.mixer.music.set_volume(.8*VOLUME)
+                song = pygame.mixer.music.load("GameMusic\MerchTheme.wav")
+                pygame.mixer.music.play(-1)
                 gameMap()
             except:
                 userWarning("Save file is corrupted!")
         else:
             userWarning("Save file is empty!")
     except:
-        userWarning("Unable to find or load save file!")
+        if (loaded == 0):
+            userWarning("Unable to find or load save file!")
 
 def popup():
     font1 = pygame.font.SysFont('Arial', 75)
@@ -1212,7 +1220,6 @@ def makeCombat(x):
     for i in party:
         i.revert()
     return
-        
         
 
 def changeFloor():
