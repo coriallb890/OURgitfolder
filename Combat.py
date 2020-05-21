@@ -1407,8 +1407,8 @@ f2gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 13, 5, 2, 3, [bludg, 
 f3hill_giant = Enemy("Hill Giant", HILLGIANT_DESC, "smashes", "", 12, 4, 4, 2, [toHit, bludg], [5, 4], 1, "")
 f3gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 14, 5, 2, 3, [bludg, score], [6, 8], 1, "Gnoll")
 
-miniboss1 = Enemy("Gnoll", "It seems bigger than the other Gnolls you've seen...", "slashes", "the ", 50, 10, 2, 5, [demo, wham, deepCut], [20, 25], 1, "Gnoll")
-miniboss2 = Enemy("Gnoll", "It seems angrier than the other Gnolls you've seen...", "lashes out", "the ", 75, 5, 2, 2, [demo, wham, deepCut], [20, 25], 1, "Gnoll")
+miniboss1 = Enemy("Gnoll", "It seems bigger than the other Gnolls you've seen...", "slashes", "the ", 50, 5, 2, 5, [demo, wham, deepCut], [20, 25], 1, "Gnoll")
+miniboss2 = Enemy("Gnoll", "It seems angrier than the other Gnolls you've seen...", "lashes out", "the ", 75, 10, 2, 2, [demo, wham, deepCut], [20, 25], 1, "Gnoll")
 
 f5hill_giant = Enemy("Hill Giant", HILLGIANT_DESC, "smashes", "", 14, 4, 4, 2, [bludg, wham], [8, 5], 1, "")
 f5gnoll = Enemy("Gnoll", GNOLL_DESC, "lashes out", "the ", 18, 6, 3, 4, [bludg, score, scratch], [10, 6], 1, "Gnoll")
