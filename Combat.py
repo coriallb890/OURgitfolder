@@ -1122,6 +1122,7 @@ class Fightable(object):
         pygame.event.clear()
         if Fightable.totalHealth(heroes) <= 0:
             return False
+        print player.moves
         return True
 
 
@@ -1466,4 +1467,4 @@ player = Hero("Player", [], [
     [15, 1, 1, 1, 1, 2, 2, 2, 3, 4, 5],
     [5, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5],
     [5, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5],
-    [5, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5]], "Hero", 420, dagger, leather)
+    [5, 2, 1, 1, 2, 1, 1, 1, 1, 2, 5]], "Hero", 420, glock, leather)

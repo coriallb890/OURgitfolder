@@ -29,7 +29,7 @@ ORANGE = (255, 97, 3)
 RED = (255, 0, 0)
 
 
-inventory = [glock]
+inventory = []
 goldCoins = 0
 playerMoves = []
 block = 10
@@ -681,12 +681,10 @@ def saveGame():
         pMoves = []
         pMember = []
         for i in range(len(inventory)):
-            inven.append(inventory[i].clone())
+            inven.append(inventory[i])
         for i in range(len(party)):
-            pMember.append(party[i].clone())
-        for i in range(len(playerMoves)):
-            pMoves.append(playerMoves[i].clone())
-        saveStuff = [currentFloor.clone(), experience, pMember, inven, goldCoins, pMoves]
+            pMember.append(party[i])
+        saveStuff = [currentFloor, experience, pMember, inven, goldCoins]
         pickle.dump(saveStuff, save)
         save.close()
     except IOError:
@@ -705,12 +703,22 @@ def loadGame():
 
                 global currentFloor
                 currentFloor = save[0]
+
                 print currentFloor.name
+
+                global experience
                 experience = save[1]
+
+                global party
                 party = save[2]
+
+                global inventory
                 inventory = save[3]
+                print inventory
+
+                global goldCoins
                 goldCoins = save[4]
-                playerMoves = save[5]
+
                 saveFile.close()
 
                 pygame.mixer.music.fadeout(1000)
@@ -755,11 +763,11 @@ def popup():
                         if currentFloor.name == "Floor 1":
                             player.moves.append(charge)
                             return
-                        if curentFloor.name == "Mini Boss Floor 1":
+                        if currentFloor.name == "Mini Boss Floor 1":
                             party.append(frethenei)
                             player.moves.append(plague)
                             return
-                        if curentFloor.name == "Mini Boss Floor 2":
+                        if currentFloor.name == "Mini Boss Floor 2":
                             party.append(gallant)
                             player.moves.append(backstab)
                             return
@@ -767,11 +775,11 @@ def popup():
                         if currentFloor.name == "Floor 1":
                             player.moves.append(burn)
                             return
-                        if curentFloor.name == "Mini Boss Floor 1":
+                        if currentFloor.name == "Mini Boss Floor 1":
                             party.append(throureum)
                             player.moves.append(auraHeal)
                             return
-                        if curentFloor.name == "Mini Boss Floor 2":
+                        if currentFloor.name == "Mini Boss Floor 2":
                             party.append(knithenpf)
                             player.moves.append(wideSlice)
                             return
@@ -791,11 +799,11 @@ def popup():
                 opt2 = font2.render("Spell Move", False, BLACK)
 
 
-        elif curentFloor.name == "Mini Boss Floor 1" or curentFloor.name == "Mini Boss Floor 2":
+        elif currentFloor.name == "Mini Boss Floor 1" or currentFloor.name == "Mini Boss Floor 2":
             screen.blit(bg_img, bg_img.get_rect())
             title1 = font1.render("Who do you want", False, BLACK)
             title2 = font1.render("to join your party?", False, BLACK)
-            if curentFloor.name == "Mini Boss Floor 1":
+            if currentFloor.name == "Mini Boss Floor 1":
                 if selected == 1:
                     opt1 = font2.render("Healer", False, WHITE)
                 else:
@@ -804,7 +812,7 @@ def popup():
                     opt2 = font2.render("Mage", False, WHITE)
                 else:
                     opt1 = font2.render("Mage", False, BLACK)
-            if curentFloor.name == "Mini Boss Floor 2":
+            if currentFloor.name == "Mini Boss Floor 2":
                 if selected == 1:
                     opt1 = font2.render("Knight", False, WHITE)
                 else:
@@ -1059,9 +1067,9 @@ def shop():
 
     if currentFloor.name == "Floor 2" or currentFloor.name == "Floor 3" or currentFloor.name == "Floor 4":
         shop = random.sample(grade0Items, 6)
-    elif curentFloor.name == "Mini Boss Floor 1" or currentFloor.name == "Floor 6" or currentFloor.name == "Floor 7" or currentFloor.name == "Floor 8":
+    elif currentFloor.name == "Mini Boss Floor 1" or currentFloor.name == "Floor 6" or currentFloor.name == "Floor 7" or currentFloor.name == "Floor 8":
         shop = random.sample(grade1Items, 6)
-    elif curentFloor.name == "Mini Boss Floor 2" or currentFloor.name == "Floor 10" or currentFloor.name == "Floor 11" or currentFloor.name == "Floor 12":
+    elif currentFloor.name == "Mini Boss Floor 2" or currentFloor.name == "Floor 10" or currentFloor.name == "Floor 11" or currentFloor.name == "Floor 12":
         shop = random.sample(grade2Items, 6)
     else:
         shop = []
